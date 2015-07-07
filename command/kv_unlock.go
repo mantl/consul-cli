@@ -2,8 +2,6 @@ package command
 
 import (
 	"strings"
-
-	consulapi "github.com/hashicorp/consul/api"
 )
 
 const (
@@ -12,6 +10,8 @@ const (
 
 type KVUnlockCommand struct {
 	Meta
+	session		string
+	noDestroy	bool
 }
 
 func (c *KVUnlockCommand) Help() string {
@@ -25,23 +25,24 @@ Options:
 ` + c.ConsulHelp() +
 `  --session=<sessionId>		Session ID of the lock holder. Required
 				(default: not set)
+  --no-destroy			Do not destroy the session when complete
+				(default: false)
 `
 
 	return strings.TrimSpace(helpText)
 }
 
 func (c *KVUnlockCommand) Run(args []string) int {
-	var sessionId string
-
 	flags := c.Meta.FlagSet()
-	flags.StringVar(&sessionId, "session", "", "")
+	flags.StringVar(&c.session, "session", "", "")
+	flags.BoolVar(&c.noDestroy, "no-destroy", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {
 		return 1
 	}
 
-	if sessionId == "" {
+	if c.session == "" {
 		c.UI.Error("Session ID must be provided")
 		c.UI.Error("")
 		c.UI.Error(c.Help())
@@ -63,26 +64,39 @@ func (c *KVUnlockCommand) Run(args []string) int {
 		c.UI.Error(err.Error())
 		return 1
 	}
-	client := consul.KV()
+	kvClient := consul.KV()
 	sessionClient := consul.Session()
 
-	kv := new(consulapi.KVPair)
-	kv.Key = path
-	kv.Session = sessionId
-	kv.Flags = LockFlagValue
+	queryOpts := c.QueryOptions()
 
-	writeOpts := c.WriteOptions()
-
-	success, _, err := client.Release(kv, writeOpts)
+	kv, _, err := kvClient.Get(path, queryOpts)
 	if err != nil {
 		c.UI.Error(err.Error())
 		return 1
 	}
 
-	_, err = sessionClient.Destroy(sessionId, writeOpts)
+	if kv.Session != c.session {
+		c.UI.Error("Session not lock holder")
+		return 1
+	}
+
+	// clear the session
+	kv.Session = ""
+
+	writeOpts := c.WriteOptions()
+
+	success, _, err := kvClient.Release(kv, writeOpts)
 	if err != nil {
 		c.UI.Error(err.Error())
 		return 1
+	}
+
+	if !c.noDestroy {
+		_, err = sessionClient.Destroy(c.session, writeOpts)
+		if err != nil {
+			c.UI.Error(err.Error())
+			return 1
+		}
 	}
 
 	if !success {
