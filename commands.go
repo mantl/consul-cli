@@ -127,5 +127,15 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"status-leader": func() (cli.Command, error) {
+			return &command.StatusLeaderCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"status-peers": func() (cli.Command, error) {
+			return &command.StatusPeersCommand{
+				Meta:	meta,
+			}, nil
+		},
 	}
 }
