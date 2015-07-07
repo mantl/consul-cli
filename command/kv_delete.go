@@ -32,11 +32,9 @@ Options:
 func (c *KVDeleteCommand) Run (args[]string) int {
 	var modifyIndex string
 	var doRecurse bool
-	var dc string
 
 	flags := c.Meta.FlagSet()
 	flags.StringVar(&modifyIndex, "modifyindex", "", "")
-	flags.StringVar(&dc, "datacenter", "", "")
 	flags.BoolVar(&doRecurse, "recurse", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
