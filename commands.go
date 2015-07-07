@@ -48,6 +48,26 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"health-checks": func() (cli.Command, error) {
+			return &command.HealthChecksCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"health-node": func() (cli.Command, error) {
+			return &command.HealthNodeCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"health-service": func() (cli.Command, error) {
+			return &command.HealthServiceCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"health-state": func() (cli.Command, error) {
+			return &command.HealthStateCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"kv-delete": func() (cli.Command, error) {
 			return &command.KVDeleteCommand{
 				Meta:	meta,
