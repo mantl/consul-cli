@@ -77,8 +77,33 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"session-create": func() (cli.Command, error) {
+			return &command.SessionCreateCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"session-destroy": func() (cli.Command, error) {
+			return &command.SessionDestroyCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"session-info": func() (cli.Command, error) {
+			return &command.SessionInfoCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"session-list": func() (cli.Command, error) {
 			return &command.SessionListCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"session-node": func() (cli.Command, error) {
+			return &command.SessionNodeCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"session-renew": func() (cli.Command, error) {
+			return &command.SessionRenewCommand{
 				Meta:	meta,
 			}, nil
 		},
