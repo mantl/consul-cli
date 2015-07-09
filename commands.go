@@ -97,6 +97,21 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"service-deregister": func() (cli.Command, error) {
+			return &command.ServiceDeregisterCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"service-maintenance": func() (cli.Command, error) {
+			return &command.ServiceMaintenanceCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"service-register": func() (cli.Command, error) {
+			return &command.ServiceRegisterCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"session-create": func() (cli.Command, error) {
 			return &command.SessionCreateCommand{
 				Meta:	meta,
