@@ -1,7 +1,6 @@
 package command
 
 import (
-	"encoding/json"
 	"strings"
 )
 
@@ -44,13 +43,7 @@ func (c *ACLListCommand) Run(args []string) int {
 		return 1
 	}
 
-	jsonRaw, err := json.MarshalIndent(acls, "", "  ")
-	if err != nil {
-		c.UI.Error(err.Error())
-		return 1
-	}
-
-	c.UI.Output(string(jsonRaw))
+	c.OutputJSON(acls, true)
 
 	return 0
 }

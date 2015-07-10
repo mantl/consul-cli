@@ -1,7 +1,6 @@
 package command
 
 import (
-	"encoding/json"
 	"strings"
 )
 
@@ -63,13 +62,7 @@ func (c *HealthServiceCommand) Run(args []string) int {
 		return 1
 	}
 
-	jsonRaw, err := json.MarshalIndent(h, "", "  ")
-	if err != nil {
-		c.UI.Error(err.Error())
-		return 1
-	}
-
-	c.UI.Output(string(jsonRaw))
+	c.OutputJSON(h, true)
 
 	return 0
 }

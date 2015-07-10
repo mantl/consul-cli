@@ -156,3 +156,5 @@ type funcVar func(s string) error
 func (f funcVar) Set(s string) error	{ return f(s) }
 func (f funcVar) String() string	{ return "" }
 func (f funcVar) IsBoolFlag() bool	{ return false }
+
+

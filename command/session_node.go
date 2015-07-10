@@ -1,7 +1,6 @@
 package command
 
 import (
-	"encoding/json"
 	"strings"
 )
 
@@ -54,13 +53,7 @@ func (c *SessionNodeCommand) Run(args []string) int {
 		return 1
 	}
 
-	jsonRaw, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		c.UI.Error(err.Error())
-		return 1
-	}
-
-	c.UI.Output(string(jsonRaw))
+	c.OutputJSON(s, true)
 
 	return 0
 }

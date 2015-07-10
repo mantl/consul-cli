@@ -1,7 +1,6 @@
 package command
 
 import (
-	"encoding/json"
 	"strings"
 )
 
@@ -45,13 +44,7 @@ func (c *SessionListCommand) Run(args []string) int {
 		return 1
 	}
 
-	jsonRaw, err := json.MarshalIndent(sessions, "", "  ")
-	if err != nil {
-		c.UI.Error(err.Error())
-		return 1
-	}
-
-	c.UI.Output(string(jsonRaw))
+	c.OutputJSON(sessions, true)
 
 	return 0
 }

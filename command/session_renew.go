@@ -1,7 +1,6 @@
 package command
 
 import (
-	"encoding/json"
 	"strings"
 )
 
@@ -55,13 +54,7 @@ func (c *SessionRenewCommand) Run(args []string) int {
 	}
 
 	if s != nil {
-		jsonRaw, err := json.MarshalIndent(s, "", "  ")
-		if err != nil {
-			c.UI.Error(err.Error())
-			return 1
-		}
-
-		c.UI.Output(string(jsonRaw))
+		c.OutputJSON(s, true)
 	}
 
 
