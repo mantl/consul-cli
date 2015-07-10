@@ -83,6 +83,31 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"check-fail": func() (cli.Command, error) {
+			return &command.CheckFailCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"check-deregister": func() (cli.Command, error) {
+			return &command.CheckDeregisterCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"check-pass": func() (cli.Command, error) {
+			return &command.CheckPassCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"check-register": func() (cli.Command, error) {
+			return &command.CheckRegisterCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"check-warn": func() (cli.Command, error) {
+			return &command.CheckWarnCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"health-checks": func() (cli.Command, error) {
 			return &command.HealthChecksCommand{
 				Meta:	meta,
