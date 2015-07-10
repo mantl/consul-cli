@@ -48,6 +48,41 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"agent-checks": func() (cli.Command, error) {
+			return &command.AgentChecksCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"agent-force-leave": func() (cli.Command, error) {
+			return &command.AgentForceLeaveCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"agent-join": func() (cli.Command, error) {
+			return &command.AgentJoinCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"agent-maintenance": func() (cli.Command, error) {
+			return &command.AgentMaintenanceCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"agent-members": func() (cli.Command, error) {
+			return &command.AgentMembersCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"agent-self": func() (cli.Command, error) {
+			return &command.AgentSelfCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"agent-services": func() (cli.Command, error) {
+			return &command.AgentServicesCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"health-checks": func() (cli.Command, error) {
 			return &command.HealthChecksCommand{
 				Meta:	meta,
