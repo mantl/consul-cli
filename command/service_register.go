@@ -53,8 +53,6 @@ Options:
 				(default: not set)
   --check-interval		Interval between checks
 				(default: not set)
-  --catalog			Use the /v1/catalog endpoint to register
-				(default: false)
 `
 
 	return strings.TrimSpace(helpText)
