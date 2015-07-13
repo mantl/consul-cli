@@ -106,11 +106,15 @@ func (m *Meta) ConsulHelp() string {
 				(default: false)
   --ssl-verify			Verify certificates when connecting via SSL
 				(default: true)
-  --ssl-cert			Path to an SSL certificate to use to authenticate
-				to the Consul server
+  --ssl-cert			Path to an SSL client certificate to use to authenticate
+				to the consul server.
 				(default: not set)
-  --ssl-ca-cert			Path to an SSL client certificate to use to authenticate
-				to the Consul server
+  --ssl-ca-cert			Path to a CA certificate file, containing one or more CA
+				certificates to use to validate the certificate sent
+				by the consul server to us.
+				(default: not set)
+  --auth			The basic authentication username (and optional password),
+				separated by a colon.
 				(default: not set)
   --token			The Consul ACL token
 				(default: not set)
