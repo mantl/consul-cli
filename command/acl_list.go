@@ -49,5 +49,5 @@ func (c *ACLListCommand) Run(args []string) int {
 }
 
 func (c *ACLListCommand) Synopsis() string {
-	return "List a value"
+	return "List all active ACL tokens"
 }
