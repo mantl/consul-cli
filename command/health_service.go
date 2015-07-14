@@ -18,8 +18,8 @@ Usage: consul-cli health-service [options] serviceName
 
 Options: 
 
-` + c.ConsulHelp() + `
-  --tag				Service tag to filter on
+` + c.ConsulHelp() + 
+`  --tag				Service tag to filter on
 				(default: not set)
   --passing			Only return passing checks
 				(default: false)
@@ -29,7 +29,7 @@ Options:
 }
 
 func (c *HealthServiceCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(true)
 	flags.StringVar(&c.tag, "tag", "", "")
 	flags.BoolVar(&c.passingOnly, "passing", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
@@ -40,7 +40,7 @@ func (c *HealthServiceCommand) Run(args []string) int {
 
 	extra := flags.Args()
 	if len(extra) < 1 {
-		c.UI.Error("Node name must be specified")
+		c.UI.Error("Service name must be specified")
 		c.UI.Error("")
 		c.UI.Error(c.Help())
 		return 1

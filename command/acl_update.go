@@ -13,7 +13,7 @@ type ACLUpdateCommand struct {
 
 func (c *ACLUpdateCommand) Help() string {
 	helpText := `
-Usage: consul-cli acl-update [options] id
+Usage: consul-cli acl-update [options] token
 
   Update an ACL. Will be created if it doesn't exist.
 
@@ -35,7 +35,7 @@ func (c *ACLUpdateCommand) Run(args []string) int {
 	var isManagement bool
 	var aclName string
 
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.StringVar(&aclName, "name", "", "")
 	flags.BoolVar(&isManagement, "management", false, "")
 

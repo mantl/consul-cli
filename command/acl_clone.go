@@ -10,7 +10,7 @@ type ACLCloneCommand struct {
 
 func (c *ACLCloneCommand) Help() string {
 	helpText := `
-Usage: consul-cli acl-clone [options] id
+Usage: consul-cli acl-clone [options] token
 
   Create a new token from an existing one
 
@@ -22,7 +22,7 @@ Options:
 }
 
 func (c *ACLCloneCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {

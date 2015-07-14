@@ -25,7 +25,7 @@ Options:
 }
 
 func (c *CheckPassCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.StringVar(&c.note, "note", "", "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 

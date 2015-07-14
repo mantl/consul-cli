@@ -17,7 +17,7 @@ Usage: consul-cli agent-join [options] nodeName
 
 Options:
 ` + c.ConsulHelp() + 
-`  --wan			Attempt to join WAN pool
+`  --wan				Attempt to join WAN pool
 				(default: false)
 `
 
@@ -25,7 +25,7 @@ Options:
 }
 
 func (c *AgentJoinCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.BoolVar(&c.joinWAN, "wan", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
@@ -35,7 +35,7 @@ func (c *AgentJoinCommand) Run(args []string) int {
 
 	extra := flags.Args()
 	if len(extra) < 1 {
-		c.UI.Error("Service name must be specified")
+		c.UI.Error("Node name must be specified")
 		c.UI.Error("")
 		c.UI.Error(c.Help())
 		return 1

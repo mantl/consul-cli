@@ -22,7 +22,7 @@ Options:
 }
 
 func (c *HealthChecksCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(true)
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {
@@ -31,7 +31,7 @@ func (c *HealthChecksCommand) Run(args []string) int {
 
 	extra := flags.Args()
 	if len(extra) < 1 {
-		c.UI.Error("Node name must be specified")
+		c.UI.Error("Service name must be specified")
 		c.UI.Error("")
 		c.UI.Error(c.Help())
 		return 1

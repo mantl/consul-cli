@@ -10,7 +10,7 @@ type ACLInfoCommand struct {
 
 func (c *ACLInfoCommand) Help() string {
 	helpText := `
-Usage: consul-cli acl-info [options] id
+Usage: consul-cli acl-info [options] token
 
   Query information about an ACL token
 
@@ -22,7 +22,7 @@ Options:
 }
 
 func (c *ACLInfoCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {

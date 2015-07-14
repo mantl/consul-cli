@@ -34,7 +34,7 @@ func (c *KVWriteCommand) Run(args []string) int {
 	var modifyIndex string
 	var dataFlags string
 
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(true)
 	flags.StringVar(&modifyIndex, "cas", "", "")
 	flags.StringVar(&dataFlags, "flags", "", "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }

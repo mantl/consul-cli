@@ -21,9 +21,12 @@ type Meta struct {
 	token		string
 	auth		*Auth
 	dc		string
+	hasDc		bool
 }
 
-func (m *Meta) FlagSet() *flag.FlagSet {
+func (m *Meta) FlagSet(hasDc bool) *flag.FlagSet {
+	m.hasDc = hasDc
+
 	f := flag.NewFlagSet("consul-cli", flag.ContinueOnError)
 	f.StringVar(&m.consulAddr, "consul", "127.0.0.1:8500", "")
 	f.BoolVar(&m.sslEnabled, "ssl", false, "")
@@ -31,7 +34,9 @@ func (m *Meta) FlagSet() *flag.FlagSet {
 	f.StringVar(&m.sslCert, "ssl-cert", "", "")
 	f.StringVar(&m.sslCaCert, "ssl-ca-cert", "", "")
 	f.StringVar(&m.token, "token", "", "")
-	f.StringVar(&m.dc, "datacenter", "", "")
+	if m.hasDc {
+		f.StringVar(&m.dc, "datacenter", "", "")
+	}
 
 	m.auth = new(Auth)
 	f.Var((*Auth)(m.auth), "auth", "")
@@ -118,9 +123,13 @@ func (m *Meta) ConsulHelp() string {
 				(default: not set)
   --token			The Consul ACL token
 				(default: not set)
-  --datacenter			Consul data center
+`
+	if m.hasDc {
+		helpText = helpText +
+`  --datacenter			Consul data center
 				(default: not set)
 `
+	}
 
   return helpText
 }

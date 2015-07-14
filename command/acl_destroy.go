@@ -10,7 +10,7 @@ type ACLDestroyCommand struct {
 
 func (c *ACLDestroyCommand) Help() string {
 	helpText := `
-Usage: consul-cli acl-destroy [options] id
+Usage: consul-cli acl-destroy [options] token
 
   Destroy an ACL
 
@@ -22,7 +22,7 @@ Options:
 }
 
 func (c *ACLDestroyCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {

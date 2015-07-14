@@ -1,11 +1,8 @@
 package command
 
 import (
+	"fmt"
 	"strings"
-)
-
-const (
-	LockFlagValue = 0x2ddccbc058a50c18
 )
 
 type KVUnlockCommand struct {
@@ -33,7 +30,7 @@ Options:
 }
 
 func (c *KVUnlockCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(true)
 	flags.StringVar(&c.session, "session", "", "")
 	flags.BoolVar(&c.noDestroy, "no-destroy", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
@@ -72,6 +69,11 @@ func (c *KVUnlockCommand) Run(args []string) int {
 	kv, _, err := kvClient.Get(path, queryOpts)
 	if err != nil {
 		c.UI.Error(err.Error())
+		return 1
+	}
+
+	if kv == nil {
+		c.UI.Error(fmt.Sprintf("Node '%s' does not exist", path))
 		return 1
 	}
 

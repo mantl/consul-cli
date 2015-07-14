@@ -21,7 +21,7 @@ Options:
 }
 
 func (c *AgentServicesCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {

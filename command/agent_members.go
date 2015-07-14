@@ -16,8 +16,8 @@ Usage: consul-cli agent-members [options]
   Get the members as seen by the serf agent
 
 Options:
-` + c.ConsulHelp() + `
-  --wan				Get list of WAN members instead of LAN
+` + c.ConsulHelp() + 
+`  --wan				Get list of WAN members instead of LAN
 				(default: false)
 `
 
@@ -25,7 +25,7 @@ Options:
 }
 
 func (c *AgentMembersCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(false)
 	flags.BoolVar(&c.wanFlag, "wan", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 

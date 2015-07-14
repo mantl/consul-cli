@@ -21,12 +21,12 @@ func (c *SessionCreateCommand) Help() string {
 	helpText := `
 Usage: consul-cli session-list [options]
 
-  List active sessions for a datacenter
+  Create a new session
 
 Options: 
 
 ` + c.ConsulHelp() +
-`  --lockdelay			Lock delay as a duration string
+`  --lock-delay			Lock delay as a duration string
 				(default: not set)
   --name			Session name
 				(default: not set)
@@ -45,8 +45,8 @@ Options:
 }
 
 func (c *SessionCreateCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet()
-	flags.DurationVar(&c.lockDelay, "lockdelay", 0, "")
+	flags := c.Meta.FlagSet(true)
+	flags.DurationVar(&c.lockDelay, "lock-delay", 0, "")
 	flags.StringVar(&c.nodeName, "node", "", "")
 	flags.StringVar(&c.name, "name", "", "")
 	flags.DurationVar(&c.ttl, "ttl", 15 * time.Second, "")
@@ -99,5 +99,5 @@ func (c *SessionCreateCommand) Run(args []string) int {
 }
 
 func (c *SessionCreateCommand) Synopsis() string {
-	return "Create a session"
+	return "Create a new session"
 }

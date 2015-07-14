@@ -17,11 +17,11 @@ Usage: consul-cli kv-read [options] path
 Options:
 
 ` + c.ConsulHelp() +
-`  --fields=value		Comma separated list of fields to return.
+`  --fields=<f1,f2,...>		Comma separated list of fields to return.
 				(default: value)
   --format=text			Output format. Supported options: text, json, prettyjson
 				(default: text)
-  --delimiter=			Output field delimited.
+  --delimiter=			Output field delimiter.
 				(default: " ")
   --header			Output a header row for text format
 				(default: false)
@@ -37,7 +37,7 @@ func (c *KVReadCommand) Run(args []string) int {
 	var fieldsRaw string
 	var recurse bool
 
-	flags := c.Meta.FlagSet()
+	flags := c.Meta.FlagSet(true)
 	flags.StringVar(&fieldsRaw, "fields", "value", "")
 	flags.StringVar(&format.Type, "format", "text", "")
 	flags.StringVar(&format.Delimiter, "delimiter", " ", "")
