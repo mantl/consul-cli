@@ -6,7 +6,7 @@ Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.ht
 
 | Command | Synopsis |
 | ------- | -------- |
-| [acl-clone](https://github.com/CiscoCloud/consul-cli/wiki/ACL#acl-clone)https://github.com/CiscoCloud/consul-cli/wiki/ACL#acl-create) | Create a new token from an existing one
+| [acl-clone](https://github.com/CiscoCloud/consul-cli/wiki/ACL#acl-clone) | Create a new token from an existing one
 | [acl-create](https://github.com/CiscoCloud/consul-cli/wiki/ACL#acl-create) | Create an ACL
 | [acl-destroy](https://github.com/CiscoCloud/consul-cli/wiki/ACL#acl-destroy) | Destroy an ACL
 | [acl-info](https://github.com/CiscoCloud/consul-cli/wiki/ACL#acl-info) | Query an ACL token
