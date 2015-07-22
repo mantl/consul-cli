@@ -1,6 +1,8 @@
 package command
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -12,11 +14,7 @@ type ServiceRegisterCommand struct {
 	tags			[]string
 	address			string
 	port			int
-	checkName		string
-	checkScript		string
-	checkHttp		string
-	checkTtl		string
-	checkInterval		string
+	checks			consulapi.AgentServiceChecks
 }
 
 func (c *ServiceRegisterCommand) Help() string {
@@ -31,9 +29,6 @@ be duplicate service IDs per agent however.
   If --address is not specified, the IP address of the local agent
 is used.
 
-  Only one of --check-http, --check-script and --check-ttl can be
-specified.
-
 Options:
 ` + c.ConsulHelp() + 
 `  --id				Service Id
@@ -44,15 +39,9 @@ Options:
 				(default: not set)
   --port			Service port
 				(default: not set)
-  --check-http			A URL to GET every interval
-				(default: not set)
-  --check-script		A script to run every interval
-				(default: not set)
-  --check-ttl			Fail if TTL expires before service 
-				checks in
-				(default: not set)
-  --check-interval		Interval between checks
-				(default: not set)
+  --check			Check to create. Multiple checks can be
+				created with the service. The format is:
+				[http|script|ttl]:<interval>:<command|url>
 `
 
 	return strings.TrimSpace(helpText)
@@ -71,10 +60,19 @@ func (c *ServiceRegisterCommand) Run(args []string) int {
 	}), "tag", "")
 	flags.StringVar(&c.address, "address", "", "")
 	flags.IntVar(&c.port, "port", 0, "")
-	flags.StringVar(&c.checkHttp, "check-http", "", "")
-	flags.StringVar(&c.checkScript, "check-script", "", "")
-	flags.StringVar(&c.checkTtl, "check-ttl", "", "")
-	flags.StringVar(&c.checkInterval, "check-interval", "", "")
+	flags.Var((funcVar)(func(s string) error {
+		t, err := ParseCheckConfig(s)
+		if err != nil {
+			return err
+		}
+
+		if c.checks == nil {
+			c.checks = make(consulapi.AgentServiceChecks, 0, 1)
+		}
+
+		c.checks = append(c.checks, t)
+		return nil
+	}), "check", "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {
@@ -90,17 +88,6 @@ func (c *ServiceRegisterCommand) Run(args []string) int {
 	}
 	serviceName := extra[0]
 
-	checkCount := 0
-	if c.checkHttp != "" { checkCount = checkCount + 1}
-	if c.checkScript != "" { checkCount = checkCount + 1}
-	if c.checkTtl != "" { checkCount = checkCount + 1}
-
-	if checkCount > 1 {
-		c.UI.Error("Only one of --check-http, --check-script or --check-ttl can")
-		c.UI.Error("be specified")
-		return 1
-	}
-
 	consul, err := c.Client()
 	if err != nil {	
 		c.UI.Error(err.Error())
@@ -113,15 +100,7 @@ func (c *ServiceRegisterCommand) Run(args []string) int {
 		Tags:		c.tags,
 		Port:		c.port,
 		Address:	c.address,
-	}
-
-	if checkCount == 1 {
-		service.Check = &consulapi.AgentServiceCheck{
-			Script:		c.checkScript,
-			HTTP:		c.checkHttp,
-			TTL:		c.checkTtl,
-			Interval:	c.checkInterval,
-		}
+		Checks:		c.checks,
 	}
 
 	client := consul.Agent()
@@ -136,4 +115,50 @@ func (c *ServiceRegisterCommand) Run(args []string) int {
 
 func (c *ServiceRegisterCommand) Synopsis() string {
 	return "Register a new local service"
+}
+
+func ParseCheckConfig(s string) (*consulapi.AgentServiceCheck, error) {
+	if len(strings.TrimSpace(s)) < 1 {
+		return nil, errors.New("Cannot specify empty check")
+	}
+
+	var checkType, checkInterval, checkString string
+	parts := strings.Split(s, ":")
+	partLen := len(parts)
+	switch {
+	case partLen == 2:
+		checkType, checkInterval = parts[0], parts[1]
+		checkString = ""
+	case partLen >= 3:
+		checkType, checkInterval, checkString = parts[0], parts[1], strings.Join(parts[2:], ":")
+	default:
+		return nil, fmt.Errorf("Invalid check definition '%s'", s)
+	}
+
+	switch strings.ToLower(checkType) {
+	case "http":
+		if checkString == "" {
+			return nil, errors.New("Must provide URL with HTTP check")
+		}
+
+		return &consulapi.AgentServiceCheck{
+			HTTP:		checkString,
+			Interval:	checkInterval,
+		}, nil
+	case "script":
+		if checkString == "" {
+			return nil, errors.New("Must provide command path with script check")
+		}
+
+		return &consulapi.AgentServiceCheck{
+			Script:		checkString,
+			Interval:	checkInterval,
+		}, nil
+	case "ttl":
+		return &consulapi.AgentServiceCheck{
+			TTL:		checkInterval,
+		}, nil
+	}
+
+	return nil, fmt.Errorf("Invalid check type '%s'", checkType)
 }
