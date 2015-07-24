@@ -32,6 +32,7 @@ Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.ht
 | [kv-lock](https://github.com/CiscoCloud/consul-cli/wiki/KV#kv-lock) | Lock a node
 | [kv-read](https://github.com/CiscoCloud/consul-cli/wiki/KV#kv-read) | Read a value
 | [kv-unlock](https://github.com/CiscoCloud/consul-cli/wiki/KV#kv-unlock) | Unlock a node
+| [kv-watch](https://github.com/CiscoCloud/consul-cli/wiki/KV#kv-watch) | Watch a node for changes
 | [kv-write](https://github.com/CiscoCloud/consul-cli/wiki/KV#kv-write) | Write a value
 | [service-deregister](https://github.com/CiscoCloud/consul-cli/wiki/Service#service-deregister) | Remove a service from the agent
 | [service-maintenance](https://github.com/CiscoCloud/consul-cli/wiki/Service#service-maintenance) | Manage maintenance mode on a service
