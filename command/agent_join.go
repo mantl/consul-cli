@@ -25,7 +25,7 @@ Options:
 }
 
 func (c *AgentJoinCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(false)
+	flags := c.Meta.FlagSet()
 	flags.BoolVar(&c.joinWAN, "wan", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 

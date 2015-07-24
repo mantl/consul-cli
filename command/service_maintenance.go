@@ -28,7 +28,7 @@ Options:
 }
 
 func (c *ServiceMaintenanceCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(false)
+	flags := c.Meta.FlagSet()
 	flags.BoolVar(&c.enabled, "enabled", true, "")
 	flags.StringVar(&c.reason, "reason", "", "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }

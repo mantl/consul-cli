@@ -6,6 +6,9 @@ import (
 
 type KVReadCommand struct {
 	Meta
+	format		OutputFormat
+	fieldsRaw	string
+	recurse		bool
 }
 
 func (c *KVReadCommand) Help() string {
@@ -33,16 +36,14 @@ Options:
 }
 
 func (c *KVReadCommand) Run(args []string) int {
-	var format OutputFormat
-	var fieldsRaw string
-	var recurse bool
+	c.AddDataCenter()
 
-	flags := c.Meta.FlagSet(true)
-	flags.StringVar(&fieldsRaw, "fields", "value", "")
-	flags.StringVar(&format.Type, "format", "text", "")
-	flags.StringVar(&format.Delimiter, "delimiter", " ", "")
-	flags.BoolVar(&format.Header, "header", false, "")
-	flags.BoolVar(&recurse, "recurse", false, "")
+	flags := c.Meta.FlagSet()
+	flags.StringVar(&c.fieldsRaw, "fields", "value", "")
+	flags.StringVar(&c.format.Type, "format", "text", "")
+	flags.StringVar(&c.format.Delimiter, "delimiter", " ", "")
+	flags.BoolVar(&c.format.Header, "header", false, "")
+	flags.BoolVar(&c.recurse, "recurse", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {
@@ -68,9 +69,9 @@ func (c *KVReadCommand) Run(args []string) int {
 
 	queryOpts := c.QueryOptions()
 
-	kvo := NewKVOutput(c.UI, fieldsRaw)
+	kvo := NewKVOutput(c.UI, c.fieldsRaw)
 
-	if recurse {
+	if c.recurse {
 		kvlist, _, err := client.List(path, queryOpts)
 		if err != nil {
 			c.UI.Error(err.Error())
@@ -81,7 +82,7 @@ func (c *KVReadCommand) Run(args []string) int {
 			return 0
 		}
 
-		kvo.OutputList(&kvlist, format)
+		kvo.OutputList(&kvlist, c.format)
 	} else {
 		kv, _, err := client.Get(path, queryOpts)
 		if err != nil {
@@ -93,7 +94,7 @@ func (c *KVReadCommand) Run(args []string) int {
 			return 0
 		}
 
-		kvo.Output(kv, format)
+		kvo.Output(kv, c.format)
 	}
 
 	return 0

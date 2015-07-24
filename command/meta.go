@@ -21,12 +21,20 @@ type Meta struct {
 	token		string
 	auth		*Auth
 	dc		string
+	waitIndex	uint64
 	hasDc		bool
+	hasWait		bool
 }
 
-func (m *Meta) FlagSet(hasDc bool) *flag.FlagSet {
-	m.hasDc = hasDc
+func (m *Meta) AddDataCenter() {
+	m.hasDc = true
+}
 
+func (m *Meta) AddWait() {
+	m.hasWait = true
+}
+
+func (m *Meta) FlagSet() *flag.FlagSet {
 	f := flag.NewFlagSet("consul-cli", flag.ContinueOnError)
 	f.StringVar(&m.consulAddr, "consul", "127.0.0.1:8500", "")
 	f.BoolVar(&m.sslEnabled, "ssl", false, "")
@@ -36,6 +44,9 @@ func (m *Meta) FlagSet(hasDc bool) *flag.FlagSet {
 	f.StringVar(&m.token, "token", "", "")
 	if m.hasDc {
 		f.StringVar(&m.dc, "datacenter", "", "")
+	}
+	if m.hasWait {
+		f.Uint64Var(&m.waitIndex, "wait-index", 0, "")
 	}
 
 	m.auth = new(Auth)
@@ -101,6 +112,10 @@ func (m *Meta) QueryOptions() *consulapi.QueryOptions {
 		queryOpts.Datacenter = m.dc
 	}
 
+	if m.waitIndex != 0 {
+		queryOpts.WaitIndex = m.waitIndex
+	}
+
 	return queryOpts
 }
 
@@ -128,6 +143,13 @@ func (m *Meta) ConsulHelp() string {
 		helpText = helpText +
 `  --datacenter			Consul data center
 				(default: not set)
+`
+	}
+
+	if m.hasWait{
+		helpText = helpText +
+`  --wait-index=<index>		Only return if ModifyIndex is greater than <index>
+				(default: 0)
 `
 	}
 

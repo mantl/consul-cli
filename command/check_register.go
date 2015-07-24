@@ -51,7 +51,7 @@ Options:
 }
 
 func (c *CheckRegisterCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(false)
+	flags := c.Meta.FlagSet()
 	flags.StringVar(&c.id, "id", "", "")
 	flags.StringVar(&c.http, "http", "", "")
 	flags.StringVar(&c.script, "script", "", "")

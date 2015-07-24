@@ -45,7 +45,8 @@ Options:
 }
 
 func (c *SessionCreateCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(true)
+	c.AddDataCenter()
+	flags := c.Meta.FlagSet()
 	flags.DurationVar(&c.lockDelay, "lock-delay", 0, "")
 	flags.StringVar(&c.nodeName, "node", "", "")
 	flags.StringVar(&c.name, "name", "", "")

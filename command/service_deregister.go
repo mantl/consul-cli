@@ -21,7 +21,7 @@ Options:
 }
 
 func (c *ServiceDeregisterCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(false)
+	flags := c.Meta.FlagSet()
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {

@@ -30,7 +30,8 @@ Options:
 }
 
 func (c *KVUnlockCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(true)
+	c.AddDataCenter()
+	flags := c.Meta.FlagSet()
 	flags.StringVar(&c.session, "session", "", "")
 	flags.BoolVar(&c.noDestroy, "no-destroy", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }

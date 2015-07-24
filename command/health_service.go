@@ -29,7 +29,8 @@ Options:
 }
 
 func (c *HealthServiceCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(true)
+	c.AddDataCenter()
+	flags := c.Meta.FlagSet()
 	flags.StringVar(&c.tag, "tag", "", "")
 	flags.BoolVar(&c.passingOnly, "passing", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }

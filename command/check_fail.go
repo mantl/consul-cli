@@ -25,7 +25,7 @@ Options:
 }
 
 func (c *CheckFailCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(false)
+	flags := c.Meta.FlagSet()
 	flags.StringVar(&c.note, "note", "", "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 

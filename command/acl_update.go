@@ -35,7 +35,7 @@ func (c *ACLUpdateCommand) Run(args []string) int {
 	var isManagement bool
 	var aclName string
 
-	flags := c.Meta.FlagSet(false)
+	flags := c.Meta.FlagSet()
 	flags.StringVar(&aclName, "name", "", "")
 	flags.BoolVar(&isManagement, "management", false, "")
 

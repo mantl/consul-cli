@@ -48,7 +48,7 @@ Options:
 }
 
 func (c *ServiceRegisterCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(false)
+	flags := c.Meta.FlagSet()
 	flags.StringVar(&c.id, "id", "", "")
 	flags.Var((funcVar)(func(s string) error {
 		if c.tags == nil {

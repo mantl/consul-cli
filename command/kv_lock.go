@@ -44,7 +44,8 @@ func (c *KVLockCommand) Run(args []string) int {
 
 	c.cleanSession = false
 
-	flags := c.Meta.FlagSet(true)
+	c.AddDataCenter()
+	flags := c.Meta.FlagSet()
 	flags.StringVar(&c.behavior, "behavior", "release", "")
 	flags.StringVar(&c.ttl, "ttl", "", "")
 	flags.DurationVar(&c.lockDelay, "lock-delay", time.Second * 15, "")

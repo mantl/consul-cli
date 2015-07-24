@@ -9,6 +9,8 @@ import (
 
 type KVDeleteCommand struct {
 	Meta
+	modifyIndex	string
+	doRecurse	bool
 }
 
 func (c *KVDeleteCommand) Help() string {
@@ -30,12 +32,10 @@ Options:
 }
 
 func (c *KVDeleteCommand) Run (args[]string) int {
-	var modifyIndex string
-	var doRecurse bool
-
-	flags := c.Meta.FlagSet(true)
-	flags.StringVar(&modifyIndex, "modifyindex", "", "")
-	flags.BoolVar(&doRecurse, "recurse", false, "")
+	c.AddDataCenter()
+	flags := c.Meta.FlagSet()
+	flags.StringVar(&c.modifyIndex, "modifyindex", "", "")
+	flags.BoolVar(&c.doRecurse, "recurse", false, "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {
@@ -62,14 +62,14 @@ func (c *KVDeleteCommand) Run (args[]string) int {
 	writeOpts := c.WriteOptions()
 
 	switch {
-	case doRecurse:
+	case c.doRecurse:
 		_, err := client.DeleteTree(path, writeOpts)
 		if err != nil {
 			c.UI.Error(err.Error())
 			return 1
 		}
-	case modifyIndex != "":
-		m, err := strconv.ParseUint(modifyIndex, 0, 64)
+	case c.modifyIndex != "":
+		m, err := strconv.ParseUint(c.modifyIndex, 0, 64)
 		if err != nil {
 			c.UI.Error(err.Error())
 			return 1

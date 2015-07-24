@@ -22,7 +22,8 @@ Options:
 }
 
 func (c *HealthNodeCommand) Run(args []string) int {
-	flags := c.Meta.FlagSet(true)
+	c.AddDataCenter()
+	flags := c.Meta.FlagSet()
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {

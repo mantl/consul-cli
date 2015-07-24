@@ -11,6 +11,8 @@ import (
 
 type KVWriteCommand struct {
 	Meta
+	modifyIndex	string
+	dataFlags	string
 }
 
 func (c *KVWriteCommand) Help() string {
@@ -31,12 +33,10 @@ Options:
 }
 
 func (c *KVWriteCommand) Run(args []string) int {
-	var modifyIndex string
-	var dataFlags string
-
-	flags := c.Meta.FlagSet(true)
-	flags.StringVar(&modifyIndex, "cas", "", "")
-	flags.StringVar(&dataFlags, "flags", "", "")
+	c.AddDataCenter()
+	flags := c.Meta.FlagSet()
+	flags.StringVar(&c.modifyIndex, "cas", "", "")
+	flags.StringVar(&c.dataFlags, "flags", "", "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
 	if err := flags.Parse(args); err != nil {
@@ -70,10 +70,10 @@ func (c *KVWriteCommand) Run(args []string) int {
 
 	// &flags=
 	//
-	if dataFlags != "" {
-		f, err := strconv.ParseUint(dataFlags, 0, 64)
+	if c.dataFlags != "" {
+		f, err := strconv.ParseUint(c.dataFlags, 0, 64)
 		if err != nil {
-			c.UI.Error(fmt.Sprintf("Error parsing flags: %v", dataFlags))
+			c.UI.Error(fmt.Sprintf("Error parsing flags: %v", c.dataFlags))
 			c.UI.Error("")
 			return 1
 		}
@@ -89,7 +89,7 @@ func (c *KVWriteCommand) Run(args []string) int {
 
 	writeOpts := c.WriteOptions()
 
-	if modifyIndex == "" {
+	if c.modifyIndex == "" {
 		_, err := client.Put(kv, writeOpts)
 		if err != nil {
 			c.UI.Error(err.Error())
@@ -97,9 +97,9 @@ func (c *KVWriteCommand) Run(args []string) int {
 		}
 	} else {
 		// Check-and-Set
-		i, err := strconv.ParseUint(modifyIndex, 0, 64)
+		i, err := strconv.ParseUint(c.modifyIndex, 0, 64)
 		if err != nil {
-			c.UI.Error(fmt.Sprintf("Error parsing modifyIndex: %v", modifyIndex))
+			c.UI.Error(fmt.Sprintf("Error parsing modifyIndex: %v", c.modifyIndex))
 			c.UI.Error("")
 			return 1
 		}
