@@ -133,25 +133,26 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
-
 		"kv-read": func() (cli.Command, error) {
 			return &command.KVReadCommand{
 				Meta:	meta,
 			}, nil
 		},
-
+		"kv-watch": func() (cli.Command, error) {
+			return &command.KVWatchCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"kv-write": func() (cli.Command, error) {
 			return &command.KVWriteCommand{
 				Meta:	meta,
 			}, nil
 		},
-
 		"kv-lock": func() (cli.Command, error) {
 			return &command.KVLockCommand{
 				Meta:	meta,
 			}, nil
 		},
-
 		"kv-unlock": func() (cli.Command, error) {
 			return &command.KVUnlockCommand{
 				Meta:	meta,
