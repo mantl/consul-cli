@@ -36,7 +36,7 @@ func (m *Meta) AddWait() {
 
 func (m *Meta) FlagSet() *flag.FlagSet {
 	f := flag.NewFlagSet("consul-cli", flag.ContinueOnError)
-	f.StringVar(&m.consulAddr, "consul", "127.0.0.1:8500", "")
+	f.StringVar(&m.consulAddr, "consul", "", "")
 	f.BoolVar(&m.sslEnabled, "ssl", false, "")
 	f.BoolVar(&m.sslVerify, "ssl-verify", true, "")
 	f.StringVar(&m.sslCert, "ssl-cert", "", "")
@@ -57,7 +57,10 @@ func (m *Meta) FlagSet() *flag.FlagSet {
 
 func (m *Meta) Client() (*consulapi.Client, error) {
 	config := consulapi.DefaultConfig()
-	config.Address = m.consulAddr
+
+	if m.consulAddr != "" {
+		config.Address = m.consulAddr
+	}
 
 	if m.token != "" {
 		config.Token = m.token
