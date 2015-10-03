@@ -18,7 +18,7 @@ Usage: consul-cli services-list
 	return strings.TrimSpace(helpText)
 }
 
-func (c *ServicesListCommand) Run() int {
+func (c *ServicesListCommand) Run(args []string) int {
 	flags := c.Meta.FlagSet()
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
