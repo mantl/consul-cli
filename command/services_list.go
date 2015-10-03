@@ -10,7 +10,7 @@ type ServicesListCommand struct {
 
 func (c *ServicesListCommand) Help() string {
 	helpText := `
-Usage: consul-cli services-list
+Usage: consul-cli services-list [options]
 
   List local services
 `
@@ -22,6 +22,10 @@ func (c *ServicesListCommand) Run(args []string) int {
 	flags := c.Meta.FlagSet()
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
+	if err := flags.Parse(args); err != nil {
+		return 1
+	}
+
 	consul, err := c.Client()
 	if err != nil {
 		c.UI.Error(err.Error())
@@ -29,6 +33,7 @@ func (c *ServicesListCommand) Run(args []string) int {
 	}
 
 	client := consul.Agent()
+
 	out, err := client.Services()
 	if err != nil {
 		c.UI.Error(err.Error())
