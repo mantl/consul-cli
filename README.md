@@ -37,6 +37,7 @@ Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.ht
 | [service-deregister](https://github.com/CiscoCloud/consul-cli/wiki/Service#service-deregister) | Remove a service from the agent
 | [service-maintenance](https://github.com/CiscoCloud/consul-cli/wiki/Service#service-maintenance) | Manage maintenance mode on a service
 | [service-register](https://github.com/CiscoCloud/consul-cli/wiki/Service#service-register) | Register a new local service
+| [services-list](https://github.com/CiscoCloud/consul-cli/wiki/Services#services-list) | List local services
 | [session-create](https://github.com/CiscoCloud/consul-cli/wiki/Session#session-create) | Create a new session
 | [session-destroy](https://github.com/CiscoCloud/consul-cli/wiki/Session#session-destroy) | Destroy a session
 | [session-info](https://github.com/CiscoCloud/consul-cli/wiki/Session#session-info) | Get information on a session

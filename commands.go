@@ -173,6 +173,11 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"services-list": func() (cli.Command, error) {
+			return &command.ServicesListCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"session-create": func() (cli.Command, error) {
 			return &command.SessionCreateCommand{
 				Meta:	meta,
