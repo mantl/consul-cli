@@ -9,6 +9,6 @@ RUN apk add --update go git mercurial \
 	&& go get \
 	&& go build -o /bin/consul-cli \
 	&& rm -rf /go \
-	&& apk del --purge go git mercurual
+	&& apk del --purge go git mercurial
 
 ENTRYPOINT [ "/bin/consul-cli" ]
