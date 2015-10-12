@@ -83,6 +83,31 @@ func init() {
 				Meta:	meta,
 			}, nil
 		},
+		"catalog-datacenters": func() (cli.Command, error) {
+			return &command.CatalogDatacentersCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"catalog-nodes": func() (cli.Command, error) {
+			return &command.CatalogNodesCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"catalog-node": func() (cli.Command, error) {
+			return &command.CatalogNodeCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"catalog-services": func() (cli.Command, error) {
+			return &command.CatalogServicesCommand{
+				Meta:	meta,
+			}, nil
+		},
+		"catalog-service": func() (cli.Command, error) {
+			return &command.CatalogServiceCommand{
+				Meta:	meta,
+			}, nil
+		},
 		"check-fail": func() (cli.Command, error) {
 			return &command.CheckFailCommand{
 				Meta:	meta,
