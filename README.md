@@ -19,6 +19,11 @@ Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.ht
 | [agent-members](https://github.com/CiscoCloud/consul-cli/wiki/Agent#agent-members) | Get the members as seen by the serf agent
 | [agent-self](https://github.com/CiscoCloud/consul-cli/wiki/Agent#agent-self) | Get the node configuration
 | [agent-services](https://github.com/CiscoCloud/consul-cli/wiki/Agent#agent-services) | Get the services the agent is managing
+| [catalog-datacenters](https://github.com/CiscoCloud/consul-cli/wiki/Agent#catalog-datacenters) | Get all datacenters known by the Consul agent
+| [catalog-node](https://github.com/CiscoCloud/consul-cli/wiki/Agent#catalog-node) | Get the services provided by a node
+| [catalog-nodes](https://github.com/CiscoCloud/consul-cli/wiki/Agent#catalog-nodes) | Get all nodes registered in a given DC
+| [catalog-service](https://github.com/CiscoCloud/consul-cli/wiki/Agent#catalog-service) | Get the nodes providing a service
+| [catalog-services](https://github.com/CiscoCloud/consul-cli/wiki/Agent#catalog-services) | Get all services registered in a given DC
 | [check-deregister](https://github.com/CiscoCloud/consul-cli/wiki/Check#check-deregister) | Remove a check from the agent
 | [check-fail](https://github.com/CiscoCloud/consul-cli/wiki/Check#check-fail) | Mark a local check as critical
 | [check-pass](https://github.com/CiscoCloud/consul-cli/wiki/Check#check-pass) | Mark a local check as passing

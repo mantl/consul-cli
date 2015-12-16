@@ -10,7 +10,7 @@ type CatalogNodeCommand struct {
 
 func (c *CatalogNodeCommand) Help() string {
 	helpText := `
-Usage: consul-cli catalog-node [options]
+Usage: consul-cli catalog-node <node> [options]
 
   Get the services provided by a node
 

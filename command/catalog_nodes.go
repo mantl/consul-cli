@@ -10,7 +10,7 @@ type CatalogNodesCommand struct {
 
 func (c *CatalogNodesCommand) Help() string {
 	helpText := `
-Usage: consul-cli catalog-services [options]
+Usage: consul-cli catalog-nodes [options]
 
   Get all the nodes registered with a given DC
 
