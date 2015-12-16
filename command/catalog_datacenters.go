@@ -10,7 +10,7 @@ type CatalogDatacentersCommand struct {
 
 func (c *CatalogDatacentersCommand) Help() string {
 	helpText := `
-Usage: consul-cli catalog-services [options]
+Usage: consul-cli catalog-datacenters [options]
 
   Get all the datacenters known by the Consul server
 
