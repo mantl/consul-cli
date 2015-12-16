@@ -83,9 +83,6 @@ func (c *KVUnlockCommand) Run(args []string) int {
 		return 1
 	}
 
-	// clear the session
-	kv.Session = ""
-
 	writeOpts := c.WriteOptions()
 
 	success, _, err := kvClient.Release(kv, writeOpts)
