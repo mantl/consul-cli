@@ -35,7 +35,7 @@ Options:
 func (c *KVWriteCommand) Run(args []string) int {
 	c.AddDataCenter()
 	flags := c.Meta.FlagSet()
-	flags.StringVar(&c.modifyIndex, "cas", "", "")
+	flags.StringVar(&c.modifyIndex, "modifyindex", "", "")
 	flags.StringVar(&c.dataFlags, "flags", "", "")
 	flags.Usage = func() { c.UI.Output(c.Help()) }
 
