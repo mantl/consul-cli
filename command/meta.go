@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -62,6 +63,10 @@ func (m *Meta) Client() (*consulapi.Client, error) {
 		config.Address = m.consulAddr
 	}
 
+	if os.Getenv("CONSUL_TOKEN") != "" {
+		config.Token = os.Getenv("CONSUL_TOKEN")
+	}
+
 	if m.token != "" {
 		config.Token = m.token
 	}
@@ -94,6 +99,11 @@ func (m *Meta) Client() (*consulapi.Client, error) {
 
 func (m *Meta) WriteOptions() *consulapi.WriteOptions {
 	writeOpts := new(consulapi.WriteOptions)
+
+	if os.Getenv("CONSUL_TOKEN") != "" {
+		writeOpts.Token = os.Getenv("CONSUL_TOKEN")
+	}
+
 	if m.token != "" {
 		writeOpts.Token = m.token
 	}
@@ -107,6 +117,11 @@ func (m *Meta) WriteOptions() *consulapi.WriteOptions {
 
 func (m *Meta) QueryOptions() *consulapi.QueryOptions {
 	queryOpts := new(consulapi.QueryOptions)
+
+	if os.Getenv("CONSUL_TOKEN") != "" {
+		queryOpts.Token = os.Getenv("CONSUL_TOKEN")
+	}
+
 	if m.token != "" {
 		queryOpts.Token = m.token
 	}
@@ -194,5 +209,3 @@ type funcVar func(s string) error
 func (f funcVar) Set(s string) error	{ return f(s) }
 func (f funcVar) String() string	{ return "" }
 func (f funcVar) IsBoolFlag() bool	{ return false }
-
-
