@@ -26,7 +26,6 @@ xcompile: deps test
 	@mkdir -p build
 	gox \
 		-os="darwin" \
-		-os="dragonfly" \
 		-os="freebsd" \
 		-os="linux" \
 		-os="netbsd" \
