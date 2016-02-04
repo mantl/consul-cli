@@ -3,6 +3,8 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"strings"
 	"text/template"
 )
 
@@ -38,6 +40,14 @@ func (c *Cmd) OutputJSON(v interface{}, prettyFlag bool) error {
 func (c *Cmd) OutputTemplate(v interface{}) error {
 	if c.Template == "" {
 		return fmt.Errorf("Empty output template")
+	}
+
+	if strings.HasPrefix(c.Template, "@") {
+		v, err := ioutil.ReadFile(c.Template[1:])
+		if err != nil {
+			return err
+		}
+		c.Template = string(v)
 	}
 
 	template, err := template.New("").Parse(c.Template)

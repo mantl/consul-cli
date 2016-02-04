@@ -73,7 +73,7 @@ func (c *Cmd) AddCommand(cmd *cobra.Command) {
 }
 
 func (c *Cmd) AddTemplateOption(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&c.Template, "template", "", "Output template")
+	cmd.Flags().StringVar(&c.Template, "template", "", "Output template. Use @filename to read template from a file")
 }
 
 type funcVar func(s string) error
