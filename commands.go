@@ -1,9 +1,11 @@
+// +build
+
 package main
 
 import (
 	"os"
 
-	"github.com/CiscoCloud/consul-cli/command"
+	"github.com/CiscoCloud/consul-cli/commands"
 	"github.com/mitchellh/cli"
 )
 
