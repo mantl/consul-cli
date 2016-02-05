@@ -11,13 +11,13 @@ type Service struct {
 }
 
 func (root *Cmd) initService() {
-	s := Service{ Cmd: root }
+	s := Service{Cmd: root}
 
 	serviceCmd := &cobra.Command{
-		Use: "service",
+		Use:   "service",
 		Short: "Consul Service endpoint interface",
-		Long: "Consul Service endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul Service endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}
@@ -30,12 +30,12 @@ func (root *Cmd) initService() {
 }
 
 func (s *Service) CheckIdArg(args []string) error {
-        switch {
-        case len(args) == 0:
-                return fmt.Errorf("No service id specified")
-        case len(args) > 1:
-                return fmt.Errorf("Only one service id allowed")
-        }
+	switch {
+	case len(args) == 0:
+		return fmt.Errorf("No service id specified")
+	case len(args) > 1:
+		return fmt.Errorf("Only one service id allowed")
+	}
 
-        return nil
+	return nil
 }

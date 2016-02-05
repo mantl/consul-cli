@@ -8,20 +8,20 @@ import (
 
 func (c *Catalog) AddNodeSub(cmd *cobra.Command) {
 	nodeCmd := &cobra.Command{
-		Use: "node",
+		Use:   "node",
 		Short: "Get the services provided by a node",
-		Long: "Get the services provided by a node",
+		Long:  "Get the services provided by a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Node(args)
 		},
 	}
 
 	oldNodeCmd := &cobra.Command{
-		Use: "catalog-node",
-		Short: "Get the services provided by a node",
-		Long: "Get the services provided by a node",
+		Use:        "catalog-node",
+		Short:      "Get the services provided by a node",
+		Long:       "Get the services provided by a node",
 		Deprecated: "Use catalog node",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Node(args)
 		},
@@ -43,13 +43,12 @@ func (c *Catalog) Node(args []string) error {
 	case len(args) > 1:
 		return fmt.Errorf("Only one node allowed")
 	}
-	
-	consul, err := c.Client()
+
+	client, err := c.Catalog()
 	if err != nil {
 		return err
 	}
 
-	client := consul.Catalog()
 	queryOpts := c.QueryOptions()
 	config, _, err := client.Node(args[0], queryOpts)
 	if err != nil {

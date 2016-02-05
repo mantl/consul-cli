@@ -12,20 +12,20 @@ func (c *Check) AddWarnSub(cmd *cobra.Command) {
 	cfo := &CheckWarnOptions{}
 
 	warnCmd := &cobra.Command{
-		Use: "warn <checkId>",
+		Use:   "warn <checkId>",
 		Short: "Mark a local check as warning",
-		Long: "Mark a local check as warning",
+		Long:  "Mark a local check as warning",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Warn(args, cfo)
 		},
 	}
 
 	oldWarnCmd := &cobra.Command{
-		Use: "check-warn <checkId>",
-		Short: "Mark a local check as warning",
-		Long: "Mark a local check as warning",
+		Use:        "check-warn <checkId>",
+		Short:      "Mark a local check as warning",
+		Long:       "Mark a local check as warning",
 		Deprecated: "Use check warn",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Warn(args, cfo)
 		},
@@ -45,12 +45,11 @@ func (c *Check) Warn(args []string, cfo *CheckWarnOptions) error {
 	}
 	checkId := args[0]
 
-	consul, err := c.Client()
-	if err != nil {	
+	client, err := c.Agent()
+	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	err = client.WarnTTL(checkId, cfo.Note)
 	if err != nil {
 		return err

@@ -8,20 +8,20 @@ import (
 
 func (h *Health) AddNodeSub(cmd *cobra.Command) {
 	nodeCmd := &cobra.Command{
-		Use: "node <nodeName>",
+		Use:   "node <nodeName>",
 		Short: "Get the health info for a node",
-		Long: "Get the health info for a node",
+		Long:  "Get the health info for a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Node(args)
 		},
 	}
 
 	oldNodeCmd := &cobra.Command{
-		Use: "health-node <nodeName>",
-		Short: "Get the health info for a node",
-		Long: "Get the health info for a node",
+		Use:        "health-node <nodeName>",
+		Short:      "Get the health info for a node",
+		Long:       "Get the health info for a node",
 		Deprecated: "Use health node",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Node(args)
 		},
@@ -45,15 +45,14 @@ func (h *Health) Node(args []string) error {
 	}
 	node := args[0]
 
-	client, err := h.Client()
+	client, err := h.Health()
 	if err != nil {
 		return err
 	}
 
 	queryOpts := h.QueryOptions()
-	healthClient := client.Health()
 
-	n, _, err := healthClient.Node(node, queryOpts)
+	n, _, err := client.Node(node, queryOpts)
 	if err != nil {
 		return err
 	}

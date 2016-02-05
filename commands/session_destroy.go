@@ -1,27 +1,25 @@
 package commands
 
 import (
-
 	"github.com/spf13/cobra"
 )
 
-
 func (s *Session) AddDestroySub(cmd *cobra.Command) {
 	destroyCmd := &cobra.Command{
-		Use: "destroy <sessionId>",
+		Use:   "destroy <sessionId>",
 		Short: "Destroy a session",
-		Long: "Destroy a session",
+		Long:  "Destroy a session",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Destroy(args)
 		},
 	}
 
 	oldDestroyCmd := &cobra.Command{
-		Use: "session-destroy <sessionId>",
-		Short: "Destroy a session",
-		Long: "Destroy a session",
+		Use:        "session-destroy <sessionId>",
+		Short:      "Destroy a session",
+		Long:       "Destroy a session",
 		Deprecated: "Use session destroy",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Destroy(args)
 		},
@@ -41,15 +39,14 @@ func (s *Session) Destroy(args []string) error {
 	}
 	sessionid := args[0]
 
-	client, err := s.Client()
+	client, err := s.Session()
 	if err != nil {
 		return err
 	}
 
 	writeOpts := s.WriteOptions()
-	sessionClient := client.Session()
 
-	_, err = sessionClient.Destroy(sessionid, writeOpts)
+	_, err = client.Destroy(sessionid, writeOpts)
 	if err != nil {
 		return err
 	}

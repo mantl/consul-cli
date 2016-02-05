@@ -9,13 +9,13 @@ type Kv struct {
 }
 
 func (root *Cmd) initKv() {
-	k := Kv{ Cmd: root }
+	k := Kv{Cmd: root}
 
 	kvCmd := &cobra.Command{
-		Use: "kv",
+		Use:   "kv",
 		Short: "Consul K/V endpoint interface",
-		Long: "Consul K/V endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul K/V endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}
@@ -29,4 +29,3 @@ func (root *Cmd) initKv() {
 
 	k.AddCommand(kvCmd)
 }
-

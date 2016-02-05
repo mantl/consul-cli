@@ -14,20 +14,20 @@ func (a *Agent) AddJoinSub(c *cobra.Command) {
 	ajo := &AgentJoinOptions{}
 
 	joinCmd := &cobra.Command{
-		Use: "join",
+		Use:   "join",
 		Short: "Trigger the local agent to join a node",
-		Long: "Trigger the local agent to join a node",
+		Long:  "Trigger the local agent to join a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Join(args, ajo)
 		},
 	}
 
 	oldJoinCmd := &cobra.Command{
-		Use: "agent-join",
-		Short: "Trigger the local agent to join a node",
-		Long: "Trigger the local agent to join a node",
+		Use:        "agent-join",
+		Short:      "Trigger the local agent to join a node",
+		Long:       "Trigger the local agent to join a node",
 		Deprecated: "Use agent join",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Join(args, ajo)
 		},
@@ -50,11 +50,10 @@ func (a *Agent) Join(args []string, ajo *AgentJoinOptions) error {
 		return fmt.Errorf("Only one name allowed")
 	}
 
-	consul, err := a.Client()
-	if err != nil {	
+	client, err := a.Agent()
+	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	return client.Join(args[0], ajo.wanFlag)
 }

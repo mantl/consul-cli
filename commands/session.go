@@ -11,13 +11,13 @@ type Session struct {
 }
 
 func (root *Cmd) initSession() {
-	s := Session{ Cmd: root }
+	s := Session{Cmd: root}
 
 	sessionCmd := &cobra.Command{
-		Use: "session",
+		Use:   "session",
 		Short: "Consul Session endpoint interface",
-		Long: "Consul Session endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul Session endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}

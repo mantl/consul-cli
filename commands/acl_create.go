@@ -3,34 +3,34 @@ package commands
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/cobra"
 )
 
 type AclCreateOptions struct {
-	IsManagement	bool
-	Name		string
-	ConfigRules	[]*ConfigRule
+	IsManagement bool
+	Name         string
+	ConfigRules  []*ConfigRule
 }
 
 func (a *Acl) AddCreateSub(c *cobra.Command) {
 	aco := &AclCreateOptions{}
 
 	createCmd := &cobra.Command{
-		Use: "create",
+		Use:   "create",
 		Short: "Create an ACL. Requires a management token.",
-		Long: "Create an ACL. Requires a management token.",
+		Long:  "Create an ACL. Requires a management token.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Create(args, aco)
 		},
 	}
 
 	oldCreateCmd := &cobra.Command{
-		Use: "acl-create",
-		Short: "Create an ACL. Requires a management token.",
-		Long: "Create an ACL. Requires a management token.",
-                Deprecated: "Use acl create",
-                Hidden: true,
+		Use:        "acl-create",
+		Short:      "Create an ACL. Requires a management token.",
+		Long:       "Create an ACL. Requires a management token.",
+		Deprecated: "Use acl create",
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Create(args, aco)
 		},
@@ -74,18 +74,17 @@ func (a *Acl) AddCreateSub(c *cobra.Command) {
 }
 
 func (a *Acl) Create(args []string, aco *AclCreateOptions) error {
-	consul, err := a.Client()
+	client, err := a.ACL()
 	if err != nil {
 		return err
 	}
-	client := consul.ACL()
 
 	var entry *consulapi.ACLEntry
 
 	if aco.IsManagement {
 		entry = &consulapi.ACLEntry{
-			Name:	aco.Name,
-			Type:	consulapi.ACLManagementType,
+			Name: aco.Name,
+			Type: consulapi.ACLManagementType,
 		}
 	} else {
 		rules, err := a.GetRulesString(aco.ConfigRules)
@@ -94,9 +93,9 @@ func (a *Acl) Create(args []string, aco *AclCreateOptions) error {
 		}
 
 		entry = &consulapi.ACLEntry{
-			Name:	aco.Name,
-			Type:	consulapi.ACLClientType,
-			Rules:	rules,
+			Name:  aco.Name,
+			Type:  consulapi.ACLClientType,
+			Rules: rules,
 		}
 
 	}

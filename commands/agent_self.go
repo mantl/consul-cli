@@ -6,20 +6,20 @@ import (
 
 func (a *Agent) AddSelfSub(c *cobra.Command) {
 	selfCmd := &cobra.Command{
-		Use: "self",
+		Use:   "self",
 		Short: "Get agent configuration",
-		Long: "Get agent configuration",
+		Long:  "Get agent configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Self(args)
 		},
 	}
 
 	oldSelfCmd := &cobra.Command{
-		Use: "agent-self",
-		Short: "Get agent configuration",
-		Long: "Get agent configuration",
+		Use:        "agent-self",
+		Short:      "Get agent configuration",
+		Long:       "Get agent configuration",
 		Deprecated: "Use agent self",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Self(args)
 		},
@@ -32,12 +32,11 @@ func (a *Agent) AddSelfSub(c *cobra.Command) {
 }
 
 func (a *Agent) Self(args []string) error {
-	consul, err := a.Client()
+	client, err := a.Agent()
 	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	config, err := client.Self()
 	if err != nil {
 		return err

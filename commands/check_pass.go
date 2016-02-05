@@ -12,20 +12,20 @@ func (c *Check) AddPassSub(cmd *cobra.Command) {
 	cfo := &CheckPassOptions{}
 
 	passCmd := &cobra.Command{
-		Use: "pass <checkId>",
+		Use:   "pass <checkId>",
 		Short: "Mark a local check as passing",
-		Long: "Mark a local check as passing",
+		Long:  "Mark a local check as passing",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Pass(args, cfo)
 		},
 	}
 
 	oldPassCmd := &cobra.Command{
-		Use: "check-pass <checkId>",
-		Short: "Mark a local check as passing",
-		Long: "Mark a local check as passing",
+		Use:        "check-pass <checkId>",
+		Short:      "Mark a local check as passing",
+		Long:       "Mark a local check as passing",
 		Deprecated: "Use check pass",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Pass(args, cfo)
 		},
@@ -45,12 +45,11 @@ func (c *Check) Pass(args []string, cfo *CheckPassOptions) error {
 	}
 	checkId := args[0]
 
-	consul, err := c.Client()
-	if err != nil {	
+	client, err := c.Agent()
+	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	err = client.PassTTL(checkId, cfo.Note)
 	if err != nil {
 		return err

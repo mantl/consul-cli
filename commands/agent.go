@@ -9,13 +9,13 @@ type Agent struct {
 }
 
 func (root *Cmd) initAgent() {
-	a := Agent{ Cmd: root }
+	a := Agent{Cmd: root}
 
 	agentCmd := &cobra.Command{
-		Use: "agent",
+		Use:   "agent",
 		Short: "Consul Agent endpoint interface",
-		Long: "Consul Agent endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul Agent endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}
@@ -29,4 +29,3 @@ func (root *Cmd) initAgent() {
 	a.AddServicesSub(agentCmd)
 	a.AddCommand(agentCmd)
 }
-

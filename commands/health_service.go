@@ -7,28 +7,28 @@ import (
 )
 
 type HealthServiceOptions struct {
-	Tag		string
-	PassingOnly	bool
+	Tag         string
+	PassingOnly bool
 }
 
 func (h *Health) AddServiceSub(cmd *cobra.Command) {
 	hso := &HealthServiceOptions{}
 
 	serviceCmd := &cobra.Command{
-		Use: "service <serviceName>",
+		Use:   "service <serviceName>",
 		Short: "Get the nodes and health info for a service",
-		Long: "Get the nodes and health info for a service",
+		Long:  "Get the nodes and health info for a service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Service(args, hso)
 		},
 	}
 
 	oldServiceCmd := &cobra.Command{
-		Use: "health-service <serviceName>",
-		Short: "Get the nodes and health info for a service",
-		Long: "Get the nodes and health info for a service",
+		Use:        "health-service <serviceName>",
+		Short:      "Get the nodes and health info for a service",
+		Long:       "Get the nodes and health info for a service",
 		Deprecated: "Use health service",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Service(args, hso)
 		},
@@ -52,20 +52,19 @@ func (h *Health) Service(args []string, hso *HealthServiceOptions) error {
 	switch {
 	case len(args) == 0:
 		return fmt.Errorf("Service name must be specified")
-	case len(args) > 1: 
+	case len(args) > 1:
 		return fmt.Errorf("Only one service name allowed")
 	}
 	service := args[0]
 
-	client, err := h.Client()
+	client, err := h.Health()
 	if err != nil {
 		return err
 	}
 
 	queryOpts := h.QueryOptions()
-	healthClient := client.Health()
 
-	s, _, err := healthClient.Service(service, hso.Tag, hso.PassingOnly, queryOpts)
+	s, _, err := client.Service(service, hso.Tag, hso.PassingOnly, queryOpts)
 	if err != nil {
 		return err
 	}

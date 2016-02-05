@@ -6,27 +6,27 @@ import (
 
 type ServiceMaintenanceOptions struct {
 	enabled bool
-	reason string
+	reason  string
 }
 
 func (s *Service) AddMaintenanceSub(cmd *cobra.Command) {
 	smo := &ServiceMaintenanceOptions{}
 
 	maintenanceCmd := &cobra.Command{
-		Use: "maintenance",
+		Use:   "maintenance",
 		Short: "Manage maintenance mode of a service",
-		Long: "Manage maintenance mode of a service",
+		Long:  "Manage maintenance mode of a service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Maintenance(args, smo)
 		},
 	}
 
 	oldMaintenanceCmd := &cobra.Command{
-		Use: "service-maintenance",
-		Short: "Manage maintenance mode of a service",
-		Long: "Manage maintenance mode of a service",
+		Use:        "service-maintenance",
+		Short:      "Manage maintenance mode of a service",
+		Long:       "Manage maintenance mode of a service",
 		Deprecated: "Use agent maintenance",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Maintenance(args, smo)
 		},
@@ -50,7 +50,7 @@ func (s *Service) Maintenance(args []string, smo *ServiceMaintenanceOptions) err
 	serviceId := args[0]
 
 	consul, err := s.Client()
-	if err != nil {	
+	if err != nil {
 		return err
 	}
 

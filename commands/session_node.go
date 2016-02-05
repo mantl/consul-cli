@@ -8,20 +8,20 @@ import (
 
 func (s *Session) AddNodeSub(cmd *cobra.Command) {
 	nodeCmd := &cobra.Command{
-		Use: "node <nodeName>",
+		Use:   "node <nodeName>",
 		Short: "Get active sessions for a node",
-		Long: "Get active sessions for a node",
+		Long:  "Get active sessions for a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Node(args)
 		},
 	}
 
 	oldNodeCmd := &cobra.Command{
-		Use: "session-node <nodeName>",
-		Short: "Get active sessions for a node",
-		Long: "Get active sessions for a node",
+		Use:        "session-node <nodeName>",
+		Short:      "Get active sessions for a node",
+		Long:       "Get active sessions for a node",
 		Deprecated: "Use session node",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Node(args)
 		},
@@ -45,15 +45,14 @@ func (s *Session) Node(args []string) error {
 	}
 	node := args[0]
 
-	client, err := s.Client()
+	client, err := s.Session()
 	if err != nil {
 		return err
 	}
 
 	queryOpts := s.QueryOptions()
-	sessionClient := client.Session()
 
-	sessions, _, err := sessionClient.Node(node, queryOpts)
+	sessions, _, err := client.Node(node, queryOpts)
 	if err != nil {
 		return err
 	}

@@ -9,20 +9,20 @@ import (
 
 func (h *Health) AddStateSub(cmd *cobra.Command) {
 	stateCmd := &cobra.Command{
-		Use: "state",
+		Use:   "state",
 		Short: "Get the checks in a given state",
-		Long: "Get the checks in a given state",
+		Long:  "Get the checks in a given state",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.State(args)
 		},
 	}
 
 	oldStateCmd := &cobra.Command{
-		Use: "state",
-		Short: "Get the checks in a given state",
-		Long: "Get the checks in a given state",
+		Use:        "state",
+		Short:      "Get the checks in a given state",
+		Long:       "Get the checks in a given state",
 		Deprecated: "Use health state",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.State(args)
 		},
@@ -37,7 +37,6 @@ func (h *Health) AddStateSub(cmd *cobra.Command) {
 	h.AddCommand(oldStateCmd)
 }
 
-
 func (h *Health) State(args []string) error {
 	switch {
 	case len(args) == 0:
@@ -47,15 +46,14 @@ func (h *Health) State(args []string) error {
 	}
 	state := strings.ToLower(args[0])
 
-	client, err := h.Client()
+	client, err := h.Health()
 	if err != nil {
 		return err
 	}
 
 	queryOpts := h.QueryOptions()
-	healthClient := client.Health()
 
-	s, _, err := healthClient.State(state, queryOpts)
+	s, _, err := client.State(state, queryOpts)
 	if err != nil {
 		return err
 	}

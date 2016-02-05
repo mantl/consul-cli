@@ -6,20 +6,20 @@ import (
 
 func (s *Status) AddLeaderSub(cmd *cobra.Command) {
 	leaderCmd := &cobra.Command{
-		Use: "leader",
+		Use:   "leader",
 		Short: "Get the current Raft leader",
-		Long: "Get the current Raft leader",
+		Long:  "Get the current Raft leader",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Leader(args)
 		},
 	}
 
 	oldLeaderCmd := &cobra.Command{
-		Use: "status-leader",
-		Short: "Get the current Raft leader",
-		Long: "Get the current Raft leader",
+		Use:        "status-leader",
+		Short:      "Get the current Raft leader",
+		Long:       "Get the current Raft leader",
 		Deprecated: "Use status leader",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Leader(args)
 		},
@@ -32,14 +32,12 @@ func (s *Status) AddLeaderSub(cmd *cobra.Command) {
 }
 
 func (s *Status) Leader(args []string) error {
-	client, err := s.Client()
+	client, err := s.Status()
 	if err != nil {
 		return err
 	}
 
-	statusClient := client.Status()
-
-	l, err := statusClient.Leader()
+	l, err := client.Leader()
 	if err != nil {
 		return err
 	}

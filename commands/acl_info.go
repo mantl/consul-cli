@@ -6,20 +6,20 @@ import (
 
 func (a *Acl) AddInfoSub(c *cobra.Command) {
 	infoCmd := &cobra.Command{
-		Use: "info <token>",
+		Use:   "info <token>",
 		Short: "Query information about an ACL token",
-		Long: "Query information about an ACL token",
+		Long:  "Query information about an ACL token",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Info(args)
 		},
 	}
 
-	oldInfoCmd := & cobra.Command{
-		Use: "acl-info <token>",
-		Short: "Query information about an ACL token",
-		Long: "Query information about an ACL token",
+	oldInfoCmd := &cobra.Command{
+		Use:        "acl-info <token>",
+		Short:      "Query information about an ACL token",
+		Long:       "Query information about an ACL token",
 		Deprecated: "Use acl info",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Info(args)
 		},
@@ -31,18 +31,16 @@ func (a *Acl) AddInfoSub(c *cobra.Command) {
 	a.AddCommand(oldInfoCmd)
 }
 
-
 func (a *Acl) Info(args []string) error {
 	if err := a.CheckIdArg(args); err != nil {
 		return err
 	}
 	id := args[0]
 
-	consul, err := a.Client()
+	client, err := a.ACL()
 	if err != nil {
 		return err
 	}
-	client := consul.ACL()
 
 	queryOpts := a.QueryOptions()
 	acl, _, err := client.Info(id, queryOpts)
@@ -52,4 +50,3 @@ func (a *Acl) Info(args []string) error {
 
 	return a.Output(acl)
 }
-

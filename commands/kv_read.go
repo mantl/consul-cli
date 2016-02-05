@@ -7,29 +7,29 @@ import (
 )
 
 type KvReadOptions struct {
-	Format		OutputFormat
-	FieldsRaw	string
-	Recurse		bool
+	Format    OutputFormat
+	FieldsRaw string
+	Recurse   bool
 }
 
 func (k *Kv) AddReadSub(cmd *cobra.Command) {
 	kro := &KvReadOptions{}
 
 	readCmd := &cobra.Command{
-		Use: "read <path>",
+		Use:   "read <path>",
 		Short: "Read a value from a given path",
-		Long: "Read a value from a given path",
+		Long:  "Read a value from a given path",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Read(args, kro)
 		},
 	}
 
 	oldReadCmd := &cobra.Command{
-		Use: "kv-read <path>",
-		Short: "Read a value from a given path",
-		Long: "Read a value from a given path",
+		Use:        "kv-read <path>",
+		Short:      "Read a value from a given path",
+		Long:       "Read a value from a given path",
 		Deprecated: "Use kv read",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Read(args, kro)
 		},
@@ -64,11 +64,10 @@ func (k *Kv) Read(args []string, kro *KvReadOptions) error {
 	}
 	path := args[0]
 
-	consul, err := k.Client()
+	client, err := k.KV()
 	if err != nil {
 		return err
 	}
-	client := consul.KV()
 
 	queryOpts := k.QueryOptions()
 

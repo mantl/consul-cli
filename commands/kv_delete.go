@@ -4,33 +4,33 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/spf13/cobra"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/cobra"
 )
 
 type KvDeleteOptions struct {
-	ModifyIndex	string
-	DoRecurse	bool
+	ModifyIndex string
+	DoRecurse   bool
 }
 
 func (k *Kv) AddDeleteSub(cmd *cobra.Command) {
 	kdo := &KvDeleteOptions{}
 
 	deleteCmd := &cobra.Command{
-		Use: "delete <path>",
+		Use:   "delete <path>",
 		Short: "Delete a given path from the K/V",
-		Long: "Delete a given path from the K/V",
+		Long:  "Delete a given path from the K/V",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Delete(args, kdo)
 		},
 	}
 
 	oldDeleteCmd := &cobra.Command{
-		Use: "kv-delete <path>",
-		Short: "Delete a given path from the K/V",
-		Long: "Delete a given path from the K/V",
+		Use:        "kv-delete <path>",
+		Short:      "Delete a given path from the K/V",
+		Long:       "Delete a given path from the K/V",
 		Deprecated: "Use kv delete",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Delete(args, kdo)
 		},
@@ -58,11 +58,10 @@ func (k *Kv) Delete(args []string, kdo *KvDeleteOptions) error {
 	}
 	path := args[0]
 
-	consul, err := k.Client()
+	client, err := k.KV()
 	if err != nil {
 		return err
 	}
-	client := consul.KV()
 
 	writeOpts := k.WriteOptions()
 
@@ -78,8 +77,8 @@ func (k *Kv) Delete(args []string, kdo *KvDeleteOptions) error {
 			return err
 		}
 		kv := consulapi.KVPair{
-			Key:		path,
-			ModifyIndex:	m,
+			Key:         path,
+			ModifyIndex: m,
 		}
 
 		success, _, err := client.DeleteCAS(&kv, writeOpts)

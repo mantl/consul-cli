@@ -6,20 +6,20 @@ import (
 
 func (c *Catalog) AddDatacentersSub(cmd *cobra.Command) {
 	datacentersCmd := &cobra.Command{
-		Use: "datacenters",
+		Use:   "datacenters",
 		Short: "Get all the datacenters known by the Consul server",
-		Long: "Get all the datacenters known by the Consul server",
+		Long:  "Get all the datacenters known by the Consul server",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Datacenters(args)
 		},
 	}
 
 	oldDatacentersCmd := &cobra.Command{
-		Use: "catalog-datacenters",
-		Short: "Get all the datacenters known by the Consul server",
-		Long: "Get all the datacenters known by the Consul server",
+		Use:        "catalog-datacenters",
+		Short:      "Get all the datacenters known by the Consul server",
+		Long:       "Get all the datacenters known by the Consul server",
 		Deprecated: "Use catalog datacenters",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Datacenters(args)
 		},
@@ -32,12 +32,11 @@ func (c *Catalog) AddDatacentersSub(cmd *cobra.Command) {
 }
 
 func (c *Catalog) Datacenters(args []string) error {
-	consul, err := c.Client()
+	client, err := c.Catalog()
 	if err != nil {
 		return err
 	}
 
-	client := consul.Catalog()
 	config, err := client.Datacenters()
 	if err != nil {
 		return err

@@ -7,20 +7,20 @@ import (
 
 func (a *Agent) AddForceLeaveSub(c *cobra.Command) {
 	forceLeaveCmd := &cobra.Command{
-		Use: "force-leave <node name>",
+		Use:   "force-leave <node name>",
 		Short: "Force the removal of a node",
-		Long: "Force the removal of a node",
+		Long:  "Force the removal of a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.ForceLeave(args)
 		},
 	}
 
 	oldForceLeaveCmd := &cobra.Command{
-		Use: "agent-force-leave",
-		Short: "Force the removal of a node",
-		Long: "Force the removal of a node",
+		Use:        "agent-force-leave",
+		Short:      "Force the removal of a node",
+		Long:       "Force the removal of a node",
 		Deprecated: "Use agent force-leave",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.ForceLeave(args)
 		},
@@ -40,11 +40,10 @@ func (a *Agent) ForceLeave(args []string) error {
 		return fmt.Errorf("Only one node allowed")
 	}
 
-	consul, err := a.Client()
+	client, err := a.Agent()
 	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	return client.ForceLeave(args[0])
 }

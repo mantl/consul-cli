@@ -6,20 +6,20 @@ import (
 
 func (s *Session) AddRenewSub(cmd *cobra.Command) {
 	renewCmd := &cobra.Command{
-		Use: "renew <sessionId>",
+		Use:   "renew <sessionId>",
 		Short: "Renew the given session",
-		Long: "Renew the given session",
+		Long:  "Renew the given session",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Renew(args)
 		},
 	}
 
 	oldRenewCmd := &cobra.Command{
-		Use: "session-renew <sessionId>",
-		Short: "Renew the given session",
-		Long: "Renew the given session",
+		Use:        "session-renew <sessionId>",
+		Short:      "Renew the given session",
+		Long:       "Renew the given session",
 		Deprecated: "Use session renew",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Renew(args)
 		},
@@ -40,15 +40,14 @@ func (s *Session) Renew(args []string) error {
 	}
 	sessionid := args[0]
 
-	client, err := s.Client()
+	client, err := s.Session()
 	if err != nil {
 		return err
 	}
 
 	writeOpts := s.WriteOptions()
-	sessionClient := client.Session()
 
-	session, _, err := sessionClient.Renew(sessionid, writeOpts)
+	session, _, err := client.Renew(sessionid, writeOpts)
 	if err != nil {
 		return err
 	}

@@ -6,20 +6,20 @@ import (
 
 func (c *Catalog) AddServicesSub(cmd *cobra.Command) {
 	servicesCmd := &cobra.Command{
-		Use: "services",
+		Use:   "services",
 		Short: "Get all the services registered with a given DC",
-		Long: "Get all the services registered with a given DC",
+		Long:  "Get all the services registered with a given DC",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Services(args)
 		},
 	}
 
 	oldServicesCmd := &cobra.Command{
-		Use: "catalog-services",
-		Short: "Get all the services registered with a given DC",
-		Long: "Get all the services registered with a given DC",
+		Use:        "catalog-services",
+		Short:      "Get all the services registered with a given DC",
+		Long:       "Get all the services registered with a given DC",
 		Deprecated: "Use catalog services",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Services(args)
 		},
@@ -35,12 +35,11 @@ func (c *Catalog) AddServicesSub(cmd *cobra.Command) {
 }
 
 func (c *Catalog) Services(args []string) error {
-	consul, err := c.Client()
+	client, err := c.Catalog()
 	if err != nil {
 		return err
 	}
 
-	client := consul.Catalog()
 	queryOpts := c.QueryOptions()
 	config, _, err := client.Services(queryOpts)
 	if err != nil {

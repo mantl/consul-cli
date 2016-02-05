@@ -11,13 +11,13 @@ type Check struct {
 }
 
 func (root *Cmd) initCheck() {
-	c := Check{ Cmd: root }
+	c := Check{Cmd: root}
 
 	checkCmd := &cobra.Command{
-		Use: "check",
+		Use:   "check",
 		Short: "Consul Check endpoint interface",
-		Long: "Consul Check endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul Check endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}

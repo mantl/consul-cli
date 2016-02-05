@@ -6,18 +6,18 @@ import (
 
 func (s *Session) AddInfoSub(cmd *cobra.Command) {
 	infoCmd := &cobra.Command{
-		Use: "info <sessionId>",
+		Use:   "info <sessionId>",
 		Short: "Get information on a session",
-		Long: "Get information on a session",
+		Long:  "Get information on a session",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Info(args)
 		},
 	}
 
 	oldInfoCmd := &cobra.Command{
-		Use: "info <sessionId>",
+		Use:   "info <sessionId>",
 		Short: "Get information on a session",
-		Long: "Get information on a session",
+		Long:  "Get information on a session",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Info(args)
 		},
@@ -38,15 +38,14 @@ func (s *Session) Info(args []string) error {
 	}
 	sessionid := args[0]
 
-	client, err := s.Client()
+	client, err := s.Session()
 	if err != nil {
 		return err
 	}
 
 	queryOpts := s.QueryOptions()
-	sessionClient := client.Session()
 
-	session, _, err := sessionClient.Info(sessionid, queryOpts)
+	session, _, err := client.Info(sessionid, queryOpts)
 	if err != nil {
 		return err
 	}

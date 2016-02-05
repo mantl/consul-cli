@@ -6,27 +6,27 @@ import (
 
 type AgentMaintenanceOptions struct {
 	enabled bool
-	reason string
+	reason  string
 }
 
 func (a *Agent) AddMaintenanceSub(c *cobra.Command) {
 	amo := &AgentMaintenanceOptions{}
 
 	maintenanceCmd := &cobra.Command{
-		Use: "maintenance",
+		Use:   "maintenance",
 		Short: "Manage node maintenance mode",
-		Long: "Manage node maintenance mode",
+		Long:  "Manage node maintenance mode",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Maintenance(args, amo)
 		},
 	}
 
 	oldMaintenanceCmd := &cobra.Command{
-		Use: "agent-maintenance",
-		Short: "Manage node maintenance mode",
-		Long: "Manage node maintenance mode",
+		Use:        "agent-maintenance",
+		Short:      "Manage node maintenance mode",
+		Long:       "Manage node maintenance mode",
 		Deprecated: "Use agent maintenance",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Maintenance(args, amo)
 		},
@@ -44,12 +44,10 @@ func (a *Agent) AddMaintenanceSub(c *cobra.Command) {
 }
 
 func (a *Agent) Maintenance(args []string, amo *AgentMaintenanceOptions) error {
-	consul, err := a.Client()
-	if err != nil {	
+	client, err := a.Agent()
+	if err != nil {
 		return err
 	}
-
-	client := consul.Agent()
 
 	if amo.enabled {
 		return client.EnableNodeMaintenance(amo.reason)

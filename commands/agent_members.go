@@ -12,20 +12,20 @@ func (a *Agent) AddMembersSub(c *cobra.Command) {
 	amo := &AgentMembersOptions{}
 
 	membersCmd := &cobra.Command{
-		Use: "members",
+		Use:   "members",
 		Short: "Get the members as seen by the serf agent",
-		Long: "Get the members as seen by the serf agent",
+		Long:  "Get the members as seen by the serf agent",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Members(args, amo)
 		},
 	}
 
 	oldMembersCmd := &cobra.Command{
-		Use: "agent-members",
-		Short: "Get the members as seen by the serf agent",
-		Long: "Get the members as seen by the serf agent",
+		Use:        "agent-members",
+		Short:      "Get the members as seen by the serf agent",
+		Long:       "Get the members as seen by the serf agent",
 		Deprecated: "Use agent members",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Members(args, amo)
 		},
@@ -41,12 +41,11 @@ func (a *Agent) AddMembersSub(c *cobra.Command) {
 }
 
 func (a *Agent) Members(args []string, amo *AgentMembersOptions) error {
-	consul, err := a.Client()
-	if err != nil {	
+	client, err := a.Agent()
+	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	ms, err := client.Members(amo.wanFlag)
 	if err != nil {
 		return err

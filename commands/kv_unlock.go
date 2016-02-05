@@ -7,28 +7,28 @@ import (
 )
 
 type KvUnlockOptions struct {
-	Session		string
-	NoDestroy	bool
+	Session   string
+	NoDestroy bool
 }
 
 func (k *Kv) AddUnlockSub(cmd *cobra.Command) {
 	kuo := &KvUnlockOptions{}
 
 	unlockCmd := &cobra.Command{
-		Use: "unlock <path>",
+		Use:   "unlock <path>",
 		Short: "Release a lock on a given path",
-		Long: "Release a lock on a given path",
+		Long:  "Release a lock on a given path",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Unlock(args, kuo)
 		},
 	}
 
 	oldUnlockCmd := &cobra.Command{
-		Use: "kv-unlock <path>",
-		Short: "Release a lock on a given path",
-		Long: "Release a lock on a given path",
+		Use:        "kv-unlock <path>",
+		Short:      "Release a lock on a given path",
+		Long:       "Release a lock on a given path",
 		Deprecated: "Use kv unlock",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Unlock(args, kuo)
 		},
@@ -60,16 +60,19 @@ func (k *Kv) Unlock(args []string, kuo *KvUnlockOptions) error {
 	}
 	path := args[0]
 
-	consul, err := k.Client()
+	client, err := k.KV()
 	if err != nil {
 		return err
 	}
-	kvClient := consul.KV()
-	sessionClient := consul.Session()
+
+	sessionClient, err := k.Session()
+	if err != nil {
+		return err
+	}
 
 	queryOpts := k.QueryOptions()
 
-	kv, _, err := kvClient.Get(path, queryOpts)
+	kv, _, err := client.Get(path, queryOpts)
 	if err != nil {
 		return err
 	}
@@ -84,7 +87,7 @@ func (k *Kv) Unlock(args []string, kuo *KvUnlockOptions) error {
 
 	writeOpts := k.WriteOptions()
 
-	success, _, err := kvClient.Release(kv, writeOpts)
+	success, _, err := client.Release(kv, writeOpts)
 	if err != nil {
 		return err
 	}
@@ -102,4 +105,3 @@ func (k *Kv) Unlock(args []string, kuo *KvUnlockOptions) error {
 
 	return nil
 }
-

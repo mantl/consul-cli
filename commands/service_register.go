@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/cobra"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/cobra"
 )
 
 type ServiceRegisterOptions struct {
-	Id			string
-	Tags			[]string
-	Address			string
-	Port			int
-	Checks			consulapi.AgentServiceChecks
+	Id      string
+	Tags    []string
+	Address string
+	Port    int
+	Checks  consulapi.AgentServiceChecks
 }
 
 var srLongHelp = `Register a new local service
@@ -30,20 +30,20 @@ func (s *Service) AddRegisterSub(cmd *cobra.Command) {
 	sro := &ServiceRegisterOptions{}
 
 	registerCmd := &cobra.Command{
-		Use: "register <serviceName>",
+		Use:   "register <serviceName>",
 		Short: "Register a new local service",
-		Long: srLongHelp,
+		Long:  srLongHelp,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Register(args, sro)
 		},
 	}
 
 	oldRegisterCmd := &cobra.Command{
-		Use: "service-register <serviceName>",
-		Short: "Register a new local service",
-		Long: srLongHelp,
+		Use:        "service-register <serviceName>",
+		Short:      "Register a new local service",
+		Long:       srLongHelp,
 		Deprecated: "Use service register",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Register(args, sro)
 		},
@@ -112,17 +112,17 @@ func (s *Service) Register(args []string, sro *ServiceRegisterOptions) error {
 	serviceName := args[0]
 
 	consul, err := s.Client()
-	if err != nil {	
+	if err != nil {
 		return err
 	}
 
 	service := &consulapi.AgentServiceRegistration{
-		ID:		sro.Id,
-		Name:		serviceName,
-		Tags:		sro.Tags,
-		Port:		sro.Port,
-		Address:	sro.Address,
-		Checks:		sro.Checks,
+		ID:      sro.Id,
+		Name:    serviceName,
+		Tags:    sro.Tags,
+		Port:    sro.Port,
+		Address: sro.Address,
+		Checks:  sro.Checks,
 	}
 
 	client := consul.Agent()
@@ -159,8 +159,8 @@ func ParseCheckConfig(s string) (*consulapi.AgentServiceCheck, error) {
 		}
 
 		return &consulapi.AgentServiceCheck{
-			HTTP:		checkString,
-			Interval:	checkInterval,
+			HTTP:     checkString,
+			Interval: checkInterval,
 		}, nil
 	case "script":
 		if checkString == "" {
@@ -168,12 +168,12 @@ func ParseCheckConfig(s string) (*consulapi.AgentServiceCheck, error) {
 		}
 
 		return &consulapi.AgentServiceCheck{
-			Script:		checkString,
-			Interval:	checkInterval,
+			Script:   checkString,
+			Interval: checkInterval,
 		}, nil
 	case "ttl":
 		return &consulapi.AgentServiceCheck{
-			TTL:		checkInterval,
+			TTL: checkInterval,
 		}, nil
 	}
 

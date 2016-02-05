@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/spf13/cobra"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/cobra"
 )
 
 type consul struct {
@@ -19,8 +19,71 @@ type consul struct {
 	token      string
 	auth       *auth
 
-	dc         string
+	dc        string
 	waitIndex uint64
+}
+
+func (c *Cmd) ACL() (*consulapi.ACL, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.ACL(), nil
+}
+
+func (c *Cmd) Agent() (*consulapi.Agent, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Agent(), nil
+}
+
+func (c *Cmd) Catalog() (*consulapi.Catalog, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Catalog(), nil
+}
+
+func (c *Cmd) Health() (*consulapi.Health, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Health(), nil
+}
+
+func (c *Cmd) KV() (*consulapi.KV, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.KV(), nil
+}
+
+func (c *Cmd) Session() (*consulapi.Session, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Session(), nil
+}
+
+func (c *Cmd) Status() (*consulapi.Status, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Status(), nil
 }
 
 func (c *Cmd) Client() (*consulapi.Client, error) {
@@ -111,7 +174,7 @@ func NewConsul() *consul {
 }
 
 type auth struct {
-	Enabled bool
+	Enabled  bool
 	Username string
 	Password string
 }

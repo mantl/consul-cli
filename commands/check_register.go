@@ -3,18 +3,18 @@ package commands
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/cobra"
 )
 
 type CheckRegisterOptions struct {
-	Id			string
-	Script			string
-	Http			string
-	Ttl			string
-	Interval		string
-	Notes			string
-	ServiceId		string
+	Id        string
+	Script    string
+	Http      string
+	Ttl       string
+	Interval  string
+	Notes     string
+	ServiceId string
 }
 
 var longHelp = `Register a new local check
@@ -29,20 +29,20 @@ func (c *Check) AddRegisterSub(cmd *cobra.Command) {
 	cro := &CheckRegisterOptions{}
 
 	registerCmd := &cobra.Command{
-		Use: "register <checkName>",
+		Use:   "register <checkName>",
 		Short: "Register a new local check",
-		Long: longHelp,
-		RunE: func (cmd *cobra.Command, args []string) error {
+		Long:  longHelp,
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Register(args, cro)
 		},
 	}
 	oldRegisterCmd := &cobra.Command{
-		Use: "check-register <checkName>",
-		Short: "Register a new local check",
-		Long: longHelp,
-                Deprecated: "Use acl register",
-                Hidden: true,
-		RunE: func (cmd *cobra.Command, args []string) error {
+		Use:        "check-register <checkName>",
+		Short:      "Register a new local check",
+		Long:       longHelp,
+		Deprecated: "Use acl register",
+		Hidden:     true,
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Register(args, cro)
 		},
 	}
@@ -68,7 +68,6 @@ func (c *Check) AddRegisterSub(cmd *cobra.Command) {
 	c.AddCommand(oldRegisterCmd)
 }
 
-
 func (c *Check) Register(args []string, cro *CheckRegisterOptions) error {
 	switch {
 	case len(args) == 0:
@@ -79,33 +78,38 @@ func (c *Check) Register(args []string, cro *CheckRegisterOptions) error {
 	checkName := args[0]
 
 	checkCount := 0
-	if cro.Http != "" { checkCount = checkCount + 1}
-	if cro.Script != "" { checkCount = checkCount + 1}
-	if cro.Ttl != "" { checkCount = checkCount + 1}
+	if cro.Http != "" {
+		checkCount = checkCount + 1
+	}
+	if cro.Script != "" {
+		checkCount = checkCount + 1
+	}
+	if cro.Ttl != "" {
+		checkCount = checkCount + 1
+	}
 
 	if checkCount > 1 {
 		return fmt.Errorf("Only one of --http, --script or --ttl can be specified")
 	}
 
-	consul, err := c.Client()
-	if err != nil {	
+	client, err := c.Agent()
+	if err != nil {
 		return err
 	}
 
 	check := &consulapi.AgentCheckRegistration{
-		ID:			cro.Id,
-		Name:			checkName,
-		ServiceID:		cro.ServiceId,
-		Notes:			cro.Notes,
-		AgentServiceCheck:	consulapi.AgentServiceCheck{
-			Script:		cro.Script,
-			HTTP:		cro.Http,
-			Interval:	cro.Interval,
-			TTL:		cro.Ttl,
+		ID:        cro.Id,
+		Name:      checkName,
+		ServiceID: cro.ServiceId,
+		Notes:     cro.Notes,
+		AgentServiceCheck: consulapi.AgentServiceCheck{
+			Script:   cro.Script,
+			HTTP:     cro.Http,
+			Interval: cro.Interval,
+			TTL:      cro.Ttl,
 		},
 	}
 
-	client := consul.Agent()
 	err = client.CheckRegister(check)
 	if err != nil {
 		return err

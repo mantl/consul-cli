@@ -6,20 +6,20 @@ import (
 
 func (s *Status) AddPeersSub(cmd *cobra.Command) {
 	peersCmd := &cobra.Command{
-		Use: "peers",
+		Use:   "peers",
 		Short: "Get the current Raft peers",
-		Long: "Get the current Raft peers",
+		Long:  "Get the current Raft peers",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Peers(args)
 		},
 	}
 
 	oldPeersCmd := &cobra.Command{
-		Use: "status-peers",
-		Short: "Get the current Raft peers",
-		Long: "Get the current Raft peers",
+		Use:        "status-peers",
+		Short:      "Get the current Raft peers",
+		Long:       "Get the current Raft peers",
 		Deprecated: "Use status peers",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Peers(args)
 		},
@@ -32,14 +32,13 @@ func (s *Status) AddPeersSub(cmd *cobra.Command) {
 }
 
 func (s *Status) Peers(args []string) error {
-	client, err := s.Client()
+	client, err := s.Status()
 	if err != nil {
 		return err
 	}
 
-	statusClient := client.Status()
 
-	l, err := statusClient.Peers()
+	l, err := client.Peers()
 	if err != nil {
 		return err
 	}

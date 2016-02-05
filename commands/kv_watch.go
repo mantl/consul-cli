@@ -7,28 +7,28 @@ import (
 )
 
 type KvWatchOptions struct {
-	Format		OutputFormat
-	FieldsRaw	string
+	Format    OutputFormat
+	FieldsRaw string
 }
 
 func (k *Kv) AddWatchSub(cmd *cobra.Command) {
 	kwo := &KvWatchOptions{}
 
 	watchCmd := &cobra.Command{
-		Use: "watch <path>",
+		Use:   "watch <path>",
 		Short: "Watch for changes to a K/V path",
-		Long: "Watch for changes to a K/V path",
+		Long:  "Watch for changes to a K/V path",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Watch(args, kwo)
 		},
 	}
 
 	oldWatchCmd := &cobra.Command{
-		Use: "kv-watch <path>",
-		Short: "Watch for changes to a K/V path",
-		Long: "Watch for changes to a K/V path",
+		Use:        "kv-watch <path>",
+		Short:      "Watch for changes to a K/V path",
+		Long:       "Watch for changes to a K/V path",
 		Deprecated: "Use kv watch",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Watch(args, kwo)
 		},
@@ -63,11 +63,10 @@ func (k *Kv) Watch(args []string, kwo *KvWatchOptions) error {
 	}
 	path := args[0]
 
-	consul, err := k.Client()
+	client, err := k.KV()
 	if err != nil {
 		return err
 	}
-	client := consul.KV()
 
 	queryOpts := k.QueryOptions()
 

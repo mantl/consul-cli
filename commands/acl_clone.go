@@ -8,20 +8,20 @@ import (
 
 func (a *Acl) AddCloneSub(c *cobra.Command) {
 	cloneCmd := &cobra.Command{
-		Use: "clone <token>",
+		Use:   "clone <token>",
 		Short: "Create a new token from an existing one",
-		Long: "Create a new token from an existing one",
+		Long:  "Create a new token from an existing one",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Clone(args)
 		},
 	}
 
 	oldCloneCmd := &cobra.Command{
-		Use: "acl-clone <token>",
-		Short: "Create a new token from an existing one",
-		Long: "Create a new token from an existing one",
+		Use:        "acl-clone <token>",
+		Short:      "Create a new token from an existing one",
+		Long:       "Create a new token from an existing one",
 		Deprecated: "Use acl clone",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Clone(args)
 		},
@@ -38,12 +38,11 @@ func (a *Acl) Clone(args []string) error {
 		return err
 	}
 
-	consul, err := a.Client()
+	client, err := a.ACL()
 	if err != nil {
 		return err
 	}
 
-	client := consul.ACL()
 	writeOpts := a.WriteOptions()
 	newid, _, err := client.Clone(args[0], writeOpts)
 	if err != nil {

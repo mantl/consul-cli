@@ -9,13 +9,13 @@ type Health struct {
 }
 
 func (root *Cmd) initHealth() {
-	h := Health{ Cmd: root }
+	h := Health{Cmd: root}
 
 	healthCmd := &cobra.Command{
-		Use: "health",
+		Use:   "health",
 		Short: "Consul Health endpoint interface",
-		Long: "Consul Health endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul Health endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}
@@ -27,4 +27,3 @@ func (root *Cmd) initHealth() {
 
 	h.AddCommand(healthCmd)
 }
-

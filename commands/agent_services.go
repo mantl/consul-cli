@@ -6,20 +6,20 @@ import (
 
 func (a *Agent) AddServicesSub(c *cobra.Command) {
 	servicesCmd := &cobra.Command{
-		Use: "services",
+		Use:   "services",
 		Short: "Get the services the agent is managing",
-		Long: "Get the services the agent is managing",
+		Long:  "Get the services the agent is managing",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Services(args)
 		},
 	}
 
 	oldServicesCmd := &cobra.Command{
-		Use: "agent-services",
-		Short: "Get the services the agent is managing",
-		Long: "Get the services the agent is managing",
+		Use:        "agent-services",
+		Short:      "Get the services the agent is managing",
+		Long:       "Get the services the agent is managing",
 		Deprecated: "Use agent services",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Services(args)
 		},
@@ -32,12 +32,11 @@ func (a *Agent) AddServicesSub(c *cobra.Command) {
 }
 
 func (a *Agent) Services(args []string) error {
-	consul, err := a.Client()
+	client, err := a.Agent()
 	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	config, err := client.Services()
 	if err != nil {
 		return err

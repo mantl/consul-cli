@@ -1,70 +1,70 @@
 package commands
 
 import (
-	"github.com/spf13/cobra"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/cobra"
 )
 
 type AclUpdateOptions struct {
 	IsManagement bool
-	Name string
-	ConfigRules []*ConfigRule
+	Name         string
+	ConfigRules  []*ConfigRule
 }
 
 func (a *Acl) AddUpdateSub(c *cobra.Command) {
 	auo := &AclUpdateOptions{}
 
 	updateCmd := &cobra.Command{
-		Use: "update <token>",
+		Use:   "update <token>",
 		Short: "Update an ACL. Will be created if it doesn't exist",
-		Long: "Update an ACL. Will be created if it doesn't exist",
+		Long:  "Update an ACL. Will be created if it doesn't exist",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Update(args, auo)
 		},
 	}
 
 	oldUpdateCmd := &cobra.Command{
-		Use: "acl-update <token>",
-		Short: "Update an ACL. Will be created if it doesn't exist",
-		Long: "Update an ACL. Will be created if it doesn't exist",
-                Deprecated: "Use acl update",
-                Hidden: true,
+		Use:        "acl-update <token>",
+		Short:      "Update an ACL. Will be created if it doesn't exist",
+		Long:       "Update an ACL. Will be created if it doesn't exist",
+		Deprecated: "Use acl update",
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return a.Update(args, auo)
 		},
 	}
 
-        updateCmd.Flags().BoolVar(&auo.IsManagement, "management", false, "Create a management token")
-        updateCmd.Flags().StringVar(&auo.Name, "name", "", "Name of the ACL")
-        updateCmd.Flags().Var((funcVar)(func(s string) error {
-                t, err := a.ParseRuleConfig(s)
-                if err != nil {
-                        return err
-                }
+	updateCmd.Flags().BoolVar(&auo.IsManagement, "management", false, "Create a management token")
+	updateCmd.Flags().StringVar(&auo.Name, "name", "", "Name of the ACL")
+	updateCmd.Flags().Var((funcVar)(func(s string) error {
+		t, err := a.ParseRuleConfig(s)
+		if err != nil {
+			return err
+		}
 
-                if auo.ConfigRules == nil {
-                        auo.ConfigRules = make([]*ConfigRule, 0, 1)
-                }
+		if auo.ConfigRules == nil {
+			auo.ConfigRules = make([]*ConfigRule, 0, 1)
+		}
 
-                auo.ConfigRules = append(auo.ConfigRules, t)
-                return nil
-        }), "rule", "")
+		auo.ConfigRules = append(auo.ConfigRules, t)
+		return nil
+	}), "rule", "")
 
-        oldUpdateCmd.Flags().BoolVar(&auo.IsManagement, "management", false, "Create a management token")
-        oldUpdateCmd.Flags().StringVar(&auo.Name, "name", "", "Name of the ACL")
-        oldUpdateCmd.Flags().Var((funcVar)(func(s string) error {
-                t, err := a.ParseRuleConfig(s)
-                if err != nil {
-                        return err
-                }
+	oldUpdateCmd.Flags().BoolVar(&auo.IsManagement, "management", false, "Create a management token")
+	oldUpdateCmd.Flags().StringVar(&auo.Name, "name", "", "Name of the ACL")
+	oldUpdateCmd.Flags().Var((funcVar)(func(s string) error {
+		t, err := a.ParseRuleConfig(s)
+		if err != nil {
+			return err
+		}
 
-                if auo.ConfigRules == nil {
-                        auo.ConfigRules = make([]*ConfigRule, 0, 1)
-                }
+		if auo.ConfigRules == nil {
+			auo.ConfigRules = make([]*ConfigRule, 0, 1)
+		}
 
-                auo.ConfigRules = append(auo.ConfigRules, t)
-                return nil
-        }), "rule", "")
+		auo.ConfigRules = append(auo.ConfigRules, t)
+		return nil
+	}), "rule", "")
 
 	c.AddCommand(updateCmd)
 
@@ -77,19 +77,18 @@ func (a *Acl) Update(args []string, auo *AclUpdateOptions) error {
 	}
 	id := args[0]
 
-	consul, err := a.Client()
+	client, err := a.ACL()
 	if err != nil {
 		return err
 	}
-	client := consul.ACL()
 
 	var entry *consulapi.ACLEntry
 
 	if auo.IsManagement {
 		entry = &consulapi.ACLEntry{
-			ID:	id,
-			Name:	auo.Name,
-			Type:	consulapi.ACLManagementType,
+			ID:   id,
+			Name: auo.Name,
+			Type: consulapi.ACLManagementType,
 		}
 	} else {
 		rules, err := a.GetRulesString(auo.ConfigRules)
@@ -98,10 +97,10 @@ func (a *Acl) Update(args []string, auo *AclUpdateOptions) error {
 		}
 
 		entry = &consulapi.ACLEntry{
-			ID:	id,
-			Name:	auo.Name,
-			Type:	consulapi.ACLClientType,
-			Rules:	rules,
+			ID:    id,
+			Name:  auo.Name,
+			Type:  consulapi.ACLClientType,
+			Rules: rules,
 		}
 
 	}

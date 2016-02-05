@@ -9,13 +9,13 @@ type Status struct {
 }
 
 func (root *Cmd) initStatus() {
-	s := Status{ Cmd: root }
+	s := Status{Cmd: root}
 
 	statusCmd := &cobra.Command{
-		Use: "status",
+		Use:   "status",
 		Short: "Consul Status endpoint interface",
-		Long: "Consul Status endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul Status endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}
@@ -25,4 +25,3 @@ func (root *Cmd) initStatus() {
 
 	s.AddCommand(statusCmd)
 }
-

@@ -6,20 +6,20 @@ import (
 
 func (c *Catalog) AddNodesSub(cmd *cobra.Command) {
 	nodesCmd := &cobra.Command{
-		Use: "nodes",
+		Use:   "nodes",
 		Short: "Get all the nodes registered with a given DC",
-		Long: "Get all the nodes registered with a given DC",
+		Long:  "Get all the nodes registered with a given DC",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Nodes(args)
 		},
 	}
 
 	oldNodesCmd := &cobra.Command{
-		Use: "catalog-nodes",
-		Short: "Get all the nodes registered with a given DC",
-		Long: "Get all the nodes registered with a given DC",
+		Use:        "catalog-nodes",
+		Short:      "Get all the nodes registered with a given DC",
+		Long:       "Get all the nodes registered with a given DC",
 		Deprecated: "Use catalog nodes",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Nodes(args)
 		},
@@ -35,12 +35,11 @@ func (c *Catalog) AddNodesSub(cmd *cobra.Command) {
 }
 
 func (c *Catalog) Nodes(args []string) error {
-	consul, err := c.Client()
+	client, err := c.Catalog()
 	if err != nil {
 		return err
 	}
 
-	client := consul.Catalog()
 	queryOpts := c.QueryOptions()
 	config, _, err := client.Nodes(queryOpts)
 	if err != nil {

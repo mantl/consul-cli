@@ -2,8 +2,8 @@ package commands
 
 import (
 	"encoding/json"
-	"io"
 	"fmt"
+	"io"
 	"strings"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -11,36 +11,36 @@ import (
 
 // Output structure
 type KVOutput struct {
-	Out		io.Writer
-	Err		io.Writer
+	Out io.Writer
+	Err io.Writer
 
-	All		bool
-	Key		bool
-	CreateIndex	bool
-	ModifyIndex	bool
-	LockIndex	bool
-	Flags		bool
-	Value		bool
-	Session		bool
+	All         bool
+	Key         bool
+	CreateIndex bool
+	ModifyIndex bool
+	LockIndex   bool
+	Flags       bool
+	Value       bool
+	Session     bool
 }
 
 // Output format structure
 //
 type OutputFormat struct {
-	Type		string
-	Delimiter	string
-	Header		bool
+	Type      string
+	Delimiter string
+	Header    bool
 }
 
 // Conveninece structure for JSON
 type KVJson struct {
-	Key		string
-	CreateIndex	uint64
-	ModifyIndex	uint64
-	LockIndex	uint64
-	Flags		uint64
-	Value		string
-	Session		string
+	Key         string
+	CreateIndex uint64
+	ModifyIndex uint64
+	LockIndex   uint64
+	Flags       uint64
+	Value       string
+	Session     string
 }
 
 func NewKVOutput(out, err io.Writer, fields string) *KVOutput {
@@ -86,7 +86,7 @@ func (kvo *KVOutput) Output(kv *consulapi.KVPair, of OutputFormat) error {
 		return kvo.OutputJSON(kv, true)
 	case f == "text":
 		return kvo.OutputText(kv, of)
-	default: 
+	default:
 		fmt.Fprintf(kvo.Err, "Invalid output format: '%s'\n", of.Type)
 	}
 
@@ -102,7 +102,7 @@ func (kvo *KVOutput) OutputList(kvs *consulapi.KVPairs, of OutputFormat) error {
 		return kvo.OutputJSONList(kvs, true)
 	case f == "text":
 		return kvo.OutputTextList(kvs, of)
-	default: 
+	default:
 		fmt.Fprintf(kvo.Err, "Invalid output format: '%s'\n", of.Type)
 	}
 
@@ -156,13 +156,13 @@ func (kvo *KVOutput) OutputJSON(kv *consulapi.KVPair, prettyFlag bool) error {
 
 func convertJSON(kv *consulapi.KVPair) *KVJson {
 	return &KVJson{
-		Key:		kv.Key,
-		CreateIndex:	kv.CreateIndex,
-		ModifyIndex:	kv.ModifyIndex,
-		LockIndex:	kv.LockIndex,
-		Flags:		kv.Flags,
-		Value:		string(kv.Value),
-		Session:	kv.Session,
+		Key:         kv.Key,
+		CreateIndex: kv.CreateIndex,
+		ModifyIndex: kv.ModifyIndex,
+		LockIndex:   kv.LockIndex,
+		Flags:       kv.Flags,
+		Value:       string(kv.Value),
+		Session:     kv.Session,
 	}
 }
 
@@ -217,7 +217,6 @@ func (kvo *KVOutput) makeTextArray(kv *consulapi.KVPair) []string {
 
 	return s
 }
-
 
 func (kvo *KVOutput) OutputHeader(of OutputFormat) {
 	s := []string{}

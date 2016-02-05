@@ -12,20 +12,20 @@ func (c *Check) AddFailSub(cmd *cobra.Command) {
 	cfo := &CheckFailOptions{}
 
 	failCmd := &cobra.Command{
-		Use: "fail <checkId>",
+		Use:   "fail <checkId>",
 		Short: "Mark a local check as critical",
-		Long: "Mark a local check as critical",
+		Long:  "Mark a local check as critical",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Fail(args, cfo)
 		},
 	}
 
 	oldFailCmd := &cobra.Command{
-		Use: "check-fail <checkId>",
-		Short: "Mark a local check as critical",
-		Long: "Mark a local check as critical",
+		Use:        "check-fail <checkId>",
+		Short:      "Mark a local check as critical",
+		Long:       "Mark a local check as critical",
 		Deprecated: "Use check fail",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Fail(args, cfo)
 		},
@@ -45,12 +45,11 @@ func (c *Check) Fail(args []string, cfo *CheckFailOptions) error {
 	}
 	checkId := args[0]
 
-	consul, err := c.Client()
-	if err != nil {	
+	client, err := c.Agent()
+	if err != nil {
 		return err
 	}
 
-	client := consul.Agent()
 	err = client.FailTTL(checkId, cfo.Note)
 	if err != nil {
 		return err

@@ -6,23 +6,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 func (h *Health) AddChecksSub(cmd *cobra.Command) {
 	checksCmd := &cobra.Command{
-		Use: "checks <serviceName>",
+		Use:   "checks <serviceName>",
 		Short: "Get the health checks for a service",
-		Long: "Get the health checks for a service",
+		Long:  "Get the health checks for a service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Checks(args)
 		},
 	}
 
 	oldChecksCmd := &cobra.Command{
-		Use: "health-checks <serviceName>",
-		Short: "Get the health checks for a service",
-		Long: "Get the health checks for a service",
+		Use:        "health-checks <serviceName>",
+		Short:      "Get the health checks for a service",
+		Long:       "Get the health checks for a service",
 		Deprecated: "Use health checks",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Checks(args)
 		},
@@ -46,19 +45,17 @@ func (h *Health) Checks(args []string) error {
 	}
 	service := args[0]
 
-	client, err := h.Client()
+	client, err := h.Health()
 	if err != nil {
 		return err
 	}
 
 	queryOpts := h.QueryOptions()
-	healthClient := client.Health()
 
-	checks, _, err := healthClient.Checks(service, queryOpts)
+	checks, _, err := client.Checks(service, queryOpts)
 	if err != nil {
 		return err
 	}
 
 	return h.Output(checks)
 }
-

@@ -6,33 +6,33 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/spf13/cobra"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/cobra"
 )
 
 type KvWriteOptions struct {
-	ModifyIndex	string
-	DataFlags	string
+	ModifyIndex string
+	DataFlags   string
 }
 
 func (k *Kv) AddWriteSub(cmd *cobra.Command) {
 	kwo := &KvWriteOptions{}
 
 	writeCmd := &cobra.Command{
-		Use: "write <path> <value>",
+		Use:   "write <path> <value>",
 		Short: "Write a value to a given path",
-		Long: "Write a value to a given path",
+		Long:  "Write a value to a given path",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Write(args, kwo)
 		},
 	}
 
 	oldWriteCmd := &cobra.Command{
-		Use: "kv-write <path> <value>",
-		Short: "Write a value to a given path",
-		Long: "Write a value to a given path",
+		Use:        "kv-write <path> <value>",
+		Short:      "Write a value to a given path",
+		Long:       "Write a value to a given path",
 		Deprecated: "Use kv write",
-		Hidden: true,
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Write(args, kwo)
 		},
@@ -82,11 +82,10 @@ func (k *Kv) Write(args []string, kwo *KvWriteOptions) error {
 		kv.Flags = f
 	}
 
-	consul, err := k.Client()
-	if err != nil {	
+	client, err := k.KV()
+	if err != nil {
 		return err
 	}
-	client := consul.KV()
 
 	writeOpts := k.WriteOptions()
 
@@ -112,7 +111,6 @@ func (k *Kv) Write(args []string, kwo *KvWriteOptions) error {
 			return fmt.Errorf("Failed to write to K/V")
 		}
 	}
-
 
 	return nil
 }

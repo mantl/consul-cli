@@ -14,13 +14,13 @@ type Acl struct {
 }
 
 func (root *Cmd) initAcl() {
-	a := Acl{ Cmd: root }
+	a := Acl{Cmd: root}
 
 	aclCmd := &cobra.Command{
-		Use: "acl",
+		Use:   "acl",
 		Short: "Consul Acl endpoint interface",
-		Long: "Consul Acl endpoint interface",
-		Run: func (cmd *cobra.Command, args []string) {
+		Long:  "Consul Acl endpoint interface",
+		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
 	}
@@ -47,9 +47,9 @@ func (a *Acl) CheckIdArg(args []string) error {
 }
 
 type ConfigRule struct {
-        PathType        string
-        Path            string
-        Policy          string
+	PathType string
+	Path     string
+	Policy   string
 }
 
 func (a *Acl) ParseRuleConfig(s string) (*ConfigRule, error) {
@@ -70,23 +70,23 @@ func (a *Acl) ParseRuleConfig(s string) (*ConfigRule, error) {
 		return nil, fmt.Errorf("invalid rule declaration '%s'", s)
 	}
 
-	return &ConfigRule{ pathType, path, policy }, nil
+	return &ConfigRule{pathType, path, policy}, nil
 }
 
 type rulePath struct {
-	Policy	string
+	Policy string
 }
 
 type aclRule struct {
-	Key	map[string]*rulePath	`json:"key,omitempty"`
-	Service	map[string]*rulePath	`json:"service,omitempty"`
+	Key     map[string]*rulePath `json:"key,omitempty"`
+	Service map[string]*rulePath `json:"service,omitempty"`
 }
 
 // Convert a list of Rules to a JSON string
-func (a *Acl) GetRulesString(rs []*ConfigRule)  (string, error) {
+func (a *Acl) GetRulesString(rs []*ConfigRule) (string, error) {
 	rules := &aclRule{
-		Key:		make(map[string]*rulePath),
-		Service:	make(map[string]*rulePath),
+		Key:     make(map[string]*rulePath),
+		Service: make(map[string]*rulePath),
 	}
 
 	for _, r := range rs {
@@ -100,9 +100,9 @@ func (a *Acl) GetRulesString(rs []*ConfigRule)  (string, error) {
 
 		switch strings.ToLower(r.PathType) {
 		case "key":
-			rules.Key[r.Path] = &rulePath{ r.Policy }
+			rules.Key[r.Path] = &rulePath{r.Policy}
 		case "service":
-			rules.Service[r.Path] = &rulePath{ r.Policy }
+			rules.Service[r.Path] = &rulePath{r.Policy}
 		default:
 			return "", fmt.Errorf("Invalid path type: '%s'", r.PathType)
 		}
