@@ -16,7 +16,7 @@ func (root *Cmd) initCoordinate() {
 		Short: "Consul /coordinate endpoint interface",
 		Long:  "Consul /coordinate endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
-			root.Help()
+			cmd.Help()
 		},
 	}
 

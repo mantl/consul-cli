@@ -16,7 +16,7 @@ func (root *Cmd) initKv() {
 		Short: "Consul /kv endpoint interface",
 		Long:  "Consul /kv endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
-			root.Help()
+			cmd.Help()
 		},
 	}
 

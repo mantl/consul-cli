@@ -16,7 +16,7 @@ func (root *Cmd) initAgent() {
 		Short: "Consul /agent endpoint interface",
 		Long:  "Consul /agent endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
-			root.Help()
+			cmd.Help()
 		},
 	}
 

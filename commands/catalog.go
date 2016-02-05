@@ -16,7 +16,7 @@ func (root *Cmd) initCatalog() {
 		Short: "Consul /catalog endpoint interface",
 		Long:  "Consul /catalog endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
-			root.Help()
+			cmd.Help()
 		},
 	}
 
