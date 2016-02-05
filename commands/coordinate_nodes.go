@@ -6,9 +6,9 @@ import (
 
 func (c *Coordinate) AddNodesSub(cmd *cobra.Command) {
 	nodesCmd := &cobra.Command{
-		Use: "nodes",
+		Use:   "nodes",
 		Short: "Queries for LAN coordinates of Consul servers",
-		Long: "Queries for LAN coordinates of Consul servers",
+		Long:  "Queries for LAN coordinates of Consul servers",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Nodes(args)
 		},

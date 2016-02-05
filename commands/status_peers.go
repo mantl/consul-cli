@@ -37,7 +37,6 @@ func (s *Status) Peers(args []string) error {
 		return err
 	}
 
-
 	l, err := client.Peers()
 	if err != nil {
 		return err

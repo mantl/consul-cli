@@ -80,7 +80,7 @@ func (k *Kv) Lock(args []string, klo *KvLockOptions) error {
 	writeOpts := k.WriteOptions()
 	queryOpts := k.QueryOptions()
 	queryOpts.WaitTime = 15 * time.Second
-	
+
 	sessionClient, err := k.Session()
 	if err != nil {
 		return err
