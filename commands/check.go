@@ -15,8 +15,8 @@ func (root *Cmd) initCheck() {
 
 	checkCmd := &cobra.Command{
 		Use:   "check",
-		Short: "Consul Check endpoint interface",
-		Long:  "Consul Check endpoint interface",
+		Short: "Consul /agent/check interface",
+		Long:  "Consul /agent/check interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},

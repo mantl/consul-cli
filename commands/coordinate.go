@@ -13,8 +13,8 @@ func (root *Cmd) initCoordinate() {
 
 	coordinateCmd := &cobra.Command{
 		Use:   "coordinate",
-		Short: "Consul Coordinate endpoint interface",
-		Long:  "Consul Coordinate endpoint interface",
+		Short: "Consul /coordinate endpoint interface",
+		Long:  "Consul /coordinate endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},

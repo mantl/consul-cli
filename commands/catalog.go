@@ -13,8 +13,8 @@ func (root *Cmd) initCatalog() {
 
 	catalogCmd := &cobra.Command{
 		Use:   "catalog",
-		Short: "Consul Catalog endpoint interface",
-		Long:  "Consul Catalog endpoint interface",
+		Short: "Consul /catalog endpoint interface",
+		Long:  "Consul /catalog endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},

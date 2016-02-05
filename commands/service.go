@@ -15,8 +15,8 @@ func (root *Cmd) initService() {
 
 	serviceCmd := &cobra.Command{
 		Use:   "service",
-		Short: "Consul Service endpoint interface",
-		Long:  "Consul Service endpoint interface",
+		Short: "Consul /agent/service endpoint interface",
+		Long:  "Consul /agent/service endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},

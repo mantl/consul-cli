@@ -18,8 +18,8 @@ func (root *Cmd) initAcl() {
 
 	aclCmd := &cobra.Command{
 		Use:   "acl",
-		Short: "Consul Acl endpoint interface",
-		Long:  "Consul Acl endpoint interface",
+		Short: "Consul /acl endpoint interface",
+		Long:  "Consul /acl endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},

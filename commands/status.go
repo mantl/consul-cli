@@ -13,8 +13,8 @@ func (root *Cmd) initStatus() {
 
 	statusCmd := &cobra.Command{
 		Use:   "status",
-		Short: "Consul Status endpoint interface",
-		Long:  "Consul Status endpoint interface",
+		Short: "Consul /status endpoint interface",
+		Long:  "Consul /status endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},

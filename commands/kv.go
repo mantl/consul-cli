@@ -13,8 +13,8 @@ func (root *Cmd) initKv() {
 
 	kvCmd := &cobra.Command{
 		Use:   "kv",
-		Short: "Consul K/V endpoint interface",
-		Long:  "Consul K/V endpoint interface",
+		Short: "Consul /kv endpoint interface",
+		Long:  "Consul /kv endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},

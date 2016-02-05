@@ -13,8 +13,8 @@ func (root *Cmd) initHealth() {
 
 	healthCmd := &cobra.Command{
 		Use:   "health",
-		Short: "Consul Health endpoint interface",
-		Long:  "Consul Health endpoint interface",
+		Short: "Consul /health endpoint interface",
+		Long:  "Consul /health endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			root.Help()
 		},
