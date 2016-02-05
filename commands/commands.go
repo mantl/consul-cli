@@ -51,6 +51,7 @@ func Init() *Cmd {
 	c.initAgent()
 	c.initCatalog()
 	c.initCheck()
+	c.initCoordinate()
 	c.initHealth()
 	c.initKv()
 	c.initService()

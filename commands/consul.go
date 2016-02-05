@@ -50,6 +50,15 @@ func (c *Cmd) Catalog() (*consulapi.Catalog, error) {
 	return consul.Catalog(), nil
 }
 
+func (c *Cmd) Coordinate() (*consulapi.Coordinate, error) {
+	consul, err := c.Client()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Coordinate(), nil
+}
+
 func (c *Cmd) Health() (*consulapi.Health, error) {
 	consul, err := c.Client()
 	if err != nil {
