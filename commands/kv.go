@@ -21,6 +21,7 @@ func (root *Cmd) initKv() {
 	}
 
 	k.AddDeleteSub(kvCmd)
+	k.AddKeysSub(kvCmd)
 	k.AddLockSub(kvCmd)
 	k.AddReadSub(kvCmd)
 	k.AddUnlockSub(kvCmd)
