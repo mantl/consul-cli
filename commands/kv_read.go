@@ -104,6 +104,4 @@ func (k *Kv) Read(args []string, kro *KvReadOptions) error {
 			return kvo.Output(kv, kro.Format)
 		}
 	}
-
-	return nil
 }

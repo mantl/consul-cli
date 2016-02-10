@@ -14,8 +14,6 @@ func (c *Cmd) Output(v interface{}) error {
 	} else {
 		return c.OutputTemplate(v)
 	}
-
-	return nil
 }
 
 func (c *Cmd) OutputJSON(v interface{}, prettyFlag bool) error {
