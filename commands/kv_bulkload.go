@@ -12,7 +12,7 @@ import (
 )
 
 type KvBulkloadOptions struct {
-	Json string
+	Json   string
 	Prefix string
 }
 
@@ -22,7 +22,7 @@ func (k *Kv) AddBulkloadSub(cmd *cobra.Command) {
 	bulkloadCmd := &cobra.Command{
 		Use:   "bulkload",
 		Short: "Bulkload value to the K/V store",
-		Long: "Bulkload value to the K/V store",
+		Long:  "Bulkload value to the K/V store",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Bulkload(args, kbo)
 		},
@@ -51,10 +51,10 @@ func (k *Kv) Bulkload(args []string, kbo *KvBulkloadOptions) error {
 		}
 
 		kvPairs = flatten(data, kbo.Prefix)
-	default :
+	default:
 		return fmt.Errorf("Must specify --json")
 	}
-		
+
 	client, err := k.KV()
 	if err != nil {
 		return err
@@ -83,29 +83,31 @@ func _flatten(v reflect.Value, prefix string) []*consulapi.KVPair {
 	}
 
 	switch v.Kind() {
-        case reflect.Map:
-                for _, k := range v.MapKeys() {
-                        if k.Kind() != reflect.String { continue }
-                        dest = append(dest, _flatten(v.MapIndex(k), path.Join(prefix, k.String()))...)
-                }
-        case reflect.Slice:
-                for k := 0; k < v.Len(); k++ {
-                        dest = append(dest, _flatten(v.Index(k), path.Join(prefix, fmt.Sprintf("%d", k)))...)
-                }
-        case reflect.Bool, reflect.Float64, reflect.String:
-                dest = append(dest, &consulapi.KVPair{
-			Key: prefix,
+	case reflect.Map:
+		for _, k := range v.MapKeys() {
+			if k.Kind() != reflect.String {
+				continue
+			}
+			dest = append(dest, _flatten(v.MapIndex(k), path.Join(prefix, k.String()))...)
+		}
+	case reflect.Slice:
+		for k := 0; k < v.Len(); k++ {
+			dest = append(dest, _flatten(v.Index(k), path.Join(prefix, fmt.Sprintf("%d", k)))...)
+		}
+	case reflect.Bool, reflect.Float64, reflect.String:
+		dest = append(dest, &consulapi.KVPair{
+			Key:   prefix,
 			Value: []byte(fmt.Sprintf("%v", v.Interface())),
 		})
-        case reflect.Invalid:
-                // JSON null
-                dest = append(dest, &consulapi.KVPair{
-			Key: prefix, 
+	case reflect.Invalid:
+		// JSON null
+		dest = append(dest, &consulapi.KVPair{
+			Key:   prefix,
 			Value: []byte(fmt.Sprintf("%v", nil)),
 		})
-        default:
-                fmt.Printf("invalid kind: %s\n", v.Kind().String())
-        }
+	default:
+		fmt.Printf("invalid kind: %s\n", v.Kind().String())
+	}
 
 	return dest
 }

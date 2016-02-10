@@ -16,7 +16,7 @@ func (k *Kv) AddKeysSub(cmd *cobra.Command) {
 	keysCmd := &cobra.Command{
 		Use:   "keys <path>",
 		Short: "List K/V keys",
-		Long: "List K/V keys",
+		Long:  "List K/V keys",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return k.Keys(args, kko)
 		},
