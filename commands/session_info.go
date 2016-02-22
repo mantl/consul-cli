@@ -15,9 +15,11 @@ func (s *Session) AddInfoSub(cmd *cobra.Command) {
 	}
 
 	oldInfoCmd := &cobra.Command{
-		Use:   "info <sessionId>",
-		Short: "Get information on a session",
-		Long:  "Get information on a session",
+		Use:        "session-info <sessionId>",
+		Short:      "Get information on a session",
+		Long:       "Get information on a session",
+		Deprecated: "Use session info",
+		Hidden:     true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Info(args)
 		},
