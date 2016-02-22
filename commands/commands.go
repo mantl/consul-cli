@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -18,7 +19,7 @@ type Cmd struct {
 	Template string
 }
 
-func Init() *Cmd {
+func Init(name, version string) *Cmd {
 	c := Cmd{
 		Err: os.Stderr,
 		Out: os.Stdout,
@@ -57,6 +58,17 @@ func Init() *Cmd {
 	c.initService()
 	c.initSession()
 	c.initStatus()
+
+	versionCmd := &cobra.Command{
+		Use: "version",
+		Short: "Print version information",
+		Long: "Print version information",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Printf("%s %s\n", name, version)
+			return nil
+		},
+	}
+	c.root.AddCommand(versionCmd)
 
 	return &c
 }

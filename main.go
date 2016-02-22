@@ -15,7 +15,7 @@ const Version = "0.2.0"
 func main() {
 	log.SetOutput(ioutil.Discard)
 
-	root := commands.Init()
+	root := commands.Init(Name, Version)
 	if err := root.Execute(); err != nil {
 		fmt.Fprintln(root.Err, err)
 		os.Exit(1)
