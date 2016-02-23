@@ -1,5 +1,7 @@
 # consul-cli
 
+[![Build Status](https://travis-ci.org/CiscoCloud/consul-cli.svg)](https://travis-ci.org/CiscoCloud/consul-cli)
+
 Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.html)
 
 ## Subcommands
