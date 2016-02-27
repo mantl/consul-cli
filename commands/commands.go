@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+        "os/user"
+        "reflect"
 
+        "github.com/BurntSushi/toml"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +20,34 @@ type Cmd struct {
 	consul *consul
 
 	Template string
+}
+
+type ConfigFromFile struct {
+    Consul string
+    SslEnabled bool
+    SslVerify bool
+}
+
+func CheckConfigFile() string {
+    user, _ := user.Current()
+    homeDir := user.HomeDir
+    fmt.Println(homeDir)
+    tempConfigFile := "/home/vagrant/.consul-cli"
+    _, err := os.Stat(tempConfigFile)
+
+    if err == nil {
+        return tempConfigFile
+    }
+    return ""
+}
+
+func ReadConfigFile(configFile string) ConfigFromFile {
+    var config ConfigFromFile
+    _, err := toml.DecodeFile(configFile, &config)
+    if err != nil {
+        fmt.Println("ERROR")
+    }
+    return config
 }
 
 func Init(name, version string) *Cmd {
@@ -40,9 +71,28 @@ func Init(name, version string) *Cmd {
 		},
 	}
 
-	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", "127.0.0.1:8500", "Consul address:port")
-	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", false, "Use HTTPS when talking to Consul")
-	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", true, "Verify certificates when connecting via SSL")
+        tempConsul := "127.0.0.1:8500"
+        tempSslEnabled := false
+        tempSslVerify := true
+
+        if tempConfigFile := CheckConfigFile(); tempConfigFile != "" {
+            configFromFile := ReadConfigFile(tempConfigFile)
+            if configFromFile.Consul != "" {
+                tempConsul = configFromFile.Consul
+            }
+            if reflect.TypeOf(configFromFile.SslEnabled) != nil {
+                tempSslEnabled = configFromFile.SslEnabled
+            }
+            if reflect.TypeOf(configFromFile.SslVerify) != nil {
+                tempSslVerify = configFromFile.SslVerify
+            }
+
+        }
+
+	c.root.PersistentFlags().StringVar(&c.consul.configFile, "consul-file", "~/.consul-cli", "Configuration file")
+	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", tempConsul, "Consul address:port")
+	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", tempSslEnabled, "Use HTTPS when talking to Consul")
+	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", tempSslVerify, "Verify certificates when connecting via SSL")
 	c.root.PersistentFlags().StringVar(&c.consul.sslCert, "ssl-cert", "", "Path to an SSL client certificate for authentication")
 	c.root.PersistentFlags().StringVar(&c.consul.sslCaCert, "ssl-ca-cert", "", "Path to a CA certificate file to validate the Consul server")
 	c.root.PersistentFlags().Var((*auth)(c.consul.auth), "auth", "The HTTP basic authentication username (and optional password) separated by a colon")
