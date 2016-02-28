@@ -3,8 +3,10 @@ package commands
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/user"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/spf13/cobra"
@@ -30,13 +32,14 @@ type ConfigFromFile struct {
 	Token     string
 }
 
-func CheckConfigFile() string {
-	user, _ := user.Current()
-	homeDir := user.HomeDir
-	fmt.Println(homeDir)
-	tempConfigFile := fmt.Sprint(homeDir, "/.consul-cli")
+func CheckConfigFile(inputFile string) string {
+	tempConfigFile := inputFile
+	if inputFile[:2] == "~/" {
+		user, _ := user.Current()
+		homeDir := fmt.Sprint(user.HomeDir + "/")
+		tempConfigFile = strings.Replace(inputFile, "~/", homeDir, 1)
+	}
 	_, err := os.Stat(tempConfigFile)
-
 	if err == nil {
 		return tempConfigFile
 	}
@@ -47,7 +50,7 @@ func ReadConfigFile(configFile string) (toml.MetaData, ConfigFromFile) {
 	var config ConfigFromFile
 	metadata, err := toml.DecodeFile(configFile, &config)
 	if err != nil {
-		fmt.Println("ERROR")
+		log.Fatal(err)
 	}
 	return metadata, config
 }
@@ -73,6 +76,7 @@ func Init(name, version string) *Cmd {
 		},
 	}
 
+	tempConfigFile := "~/.consul-cli"
 	tempConsul := "127.0.0.1:8500"
 	tempSslEnabled := false
 	tempSslVerify := true
@@ -80,7 +84,7 @@ func Init(name, version string) *Cmd {
 	tempSslCaCert := ""
 	tempToken := ""
 
-	if tempConfigFile := CheckConfigFile(); tempConfigFile != "" {
+	if tempConfigFile := CheckConfigFile(tempConfigFile); tempConfigFile != "" {
 		metadata, configFromFile := ReadConfigFile(tempConfigFile)
 
 		if metadata.IsDefined("consul") {
@@ -103,7 +107,7 @@ func Init(name, version string) *Cmd {
 		}
 	}
 
-	c.root.PersistentFlags().StringVar(&c.consul.configFile, "consul-file", "~/.consul-cli", "Configuration file")
+	c.root.PersistentFlags().StringVar(&c.consul.configFile, "consul-file", tempConfigFile, "Configuration file")
 	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", tempConsul, "Consul address:port")
 	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", tempSslEnabled, "Use HTTPS when talking to Consul")
 	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", tempSslVerify, "Verify certificates when connecting via SSL")
