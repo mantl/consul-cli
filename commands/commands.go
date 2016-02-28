@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-        "os/user"
-        "reflect"
+	"os/user"
 
-        "github.com/BurntSushi/toml"
+	"github.com/BurntSushi/toml"
 	"github.com/spf13/cobra"
 )
 
@@ -23,31 +22,34 @@ type Cmd struct {
 }
 
 type ConfigFromFile struct {
-    Consul string
-    SslEnabled bool
-    SslVerify bool
+	Consul    string
+	Ssl       bool   `toml:"ssl"`
+	SslCaCert string `toml:"ssl-ca-cert"`
+	SslCert   string `toml:"ssl-cert"`
+	SslVerify bool   `toml:"ssl-verify"`
+	Token     string
 }
 
 func CheckConfigFile() string {
-    user, _ := user.Current()
-    homeDir := user.HomeDir
-    fmt.Println(homeDir)
-    tempConfigFile := "/home/vagrant/.consul-cli"
-    _, err := os.Stat(tempConfigFile)
+	user, _ := user.Current()
+	homeDir := user.HomeDir
+	fmt.Println(homeDir)
+	tempConfigFile := fmt.Sprint(homeDir, "/.consul-cli")
+	_, err := os.Stat(tempConfigFile)
 
-    if err == nil {
-        return tempConfigFile
-    }
-    return ""
+	if err == nil {
+		return tempConfigFile
+	}
+	return ""
 }
 
-func ReadConfigFile(configFile string) ConfigFromFile {
-    var config ConfigFromFile
-    _, err := toml.DecodeFile(configFile, &config)
-    if err != nil {
-        fmt.Println("ERROR")
-    }
-    return config
+func ReadConfigFile(configFile string) (toml.MetaData, ConfigFromFile) {
+	var config ConfigFromFile
+	metadata, err := toml.DecodeFile(configFile, &config)
+	if err != nil {
+		fmt.Println("ERROR")
+	}
+	return metadata, config
 }
 
 func Init(name, version string) *Cmd {
@@ -71,32 +73,44 @@ func Init(name, version string) *Cmd {
 		},
 	}
 
-        tempConsul := "127.0.0.1:8500"
-        tempSslEnabled := false
-        tempSslVerify := true
+	tempConsul := "127.0.0.1:8500"
+	tempSslEnabled := false
+	tempSslVerify := true
+	tempSslCert := ""
+	tempSslCaCert := ""
+	tempToken := ""
 
-        if tempConfigFile := CheckConfigFile(); tempConfigFile != "" {
-            configFromFile := ReadConfigFile(tempConfigFile)
-            if configFromFile.Consul != "" {
-                tempConsul = configFromFile.Consul
-            }
-            if reflect.TypeOf(configFromFile.SslEnabled) != nil {
-                tempSslEnabled = configFromFile.SslEnabled
-            }
-            if reflect.TypeOf(configFromFile.SslVerify) != nil {
-                tempSslVerify = configFromFile.SslVerify
-            }
+	if tempConfigFile := CheckConfigFile(); tempConfigFile != "" {
+		metadata, configFromFile := ReadConfigFile(tempConfigFile)
 
-        }
+		if metadata.IsDefined("consul") {
+			tempConsul = configFromFile.Consul
+		}
+		if metadata.IsDefined("ssl") {
+			tempSslEnabled = configFromFile.Ssl
+		}
+		if metadata.IsDefined("ssl-verify") {
+			tempSslVerify = configFromFile.SslVerify
+		}
+		if metadata.IsDefined("ssl-cert") {
+			tempSslCert = configFromFile.SslCert
+		}
+		if metadata.IsDefined("ssl-ca-cert") {
+			tempSslCaCert = configFromFile.SslCaCert
+		}
+		if metadata.IsDefined("token") {
+			tempToken = configFromFile.Token
+		}
+	}
 
 	c.root.PersistentFlags().StringVar(&c.consul.configFile, "consul-file", "~/.consul-cli", "Configuration file")
 	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", tempConsul, "Consul address:port")
 	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", tempSslEnabled, "Use HTTPS when talking to Consul")
 	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", tempSslVerify, "Verify certificates when connecting via SSL")
-	c.root.PersistentFlags().StringVar(&c.consul.sslCert, "ssl-cert", "", "Path to an SSL client certificate for authentication")
-	c.root.PersistentFlags().StringVar(&c.consul.sslCaCert, "ssl-ca-cert", "", "Path to a CA certificate file to validate the Consul server")
+	c.root.PersistentFlags().StringVar(&c.consul.sslCert, "ssl-cert", tempSslCert, "Path to an SSL client certificate for authentication")
+	c.root.PersistentFlags().StringVar(&c.consul.sslCaCert, "ssl-ca-cert", tempSslCaCert, "Path to a CA certificate file to validate the Consul server")
 	c.root.PersistentFlags().Var((*auth)(c.consul.auth), "auth", "The HTTP basic authentication username (and optional password) separated by a colon")
-	c.root.PersistentFlags().StringVar(&c.consul.token, "token", "", "The Consul ACL token")
+	c.root.PersistentFlags().StringVar(&c.consul.token, "token", tempToken, "The Consul ACL token")
 
 	c.initAcl()
 	c.initAgent()
@@ -110,9 +124,9 @@ func Init(name, version string) *Cmd {
 	c.initStatus()
 
 	versionCmd := &cobra.Command{
-		Use: "version",
+		Use:   "version",
 		Short: "Print version information",
-		Long: "Print version information",
+		Long:  "Print version information",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Printf("%s %s\n", name, version)
 			return nil
