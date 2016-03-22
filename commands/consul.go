@@ -2,7 +2,9 @@ package commands
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -15,9 +17,11 @@ type consul struct {
 	sslEnabled bool
 	sslVerify  bool
 	sslCert    string
+	sslKey     string
 	sslCaCert  string
 	token      string
 	auth       *auth
+	tlsConfig  *tls.Config
 
 	dc        string
 	waitIndex uint64
@@ -98,6 +102,7 @@ func (c *Cmd) Status() (*consulapi.Status, error) {
 func (c *Cmd) Client() (*consulapi.Client, error) {
 	config := consulapi.DefaultConfig()
 	csl := c.consul
+	csl.tlsConfig = new(tls.Config)
 
 	if csl.address != "" {
 		config.Address = c.consul.address
@@ -109,15 +114,34 @@ func (c *Cmd) Client() (*consulapi.Client, error) {
 
 	if csl.sslEnabled {
 		config.Scheme = "https"
-	}
 
-	if !csl.sslVerify {
-		config.HttpClient.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
+		if csl.sslCert != "" {
+			clientCert, err := tls.LoadX509KeyPair(csl.sslCert, csl.sslKey)
+			if err != nil {
+				return nil, err
+			}
+
+			caCert, err := ioutil.ReadFile(csl.sslCaCert)
+			if err != nil {
+				return nil, err
+			}
+
+			caCertPool := x509.NewCertPool()
+			caCertPool.AppendCertsFromPEM(caCert)
+
+			csl.tlsConfig.Certificates = []tls.Certificate{clientCert}
+			csl.tlsConfig.RootCAs = caCertPool
+			csl.tlsConfig.BuildNameToCertificate()
 		}
 	}
+
+	transport := new(http.Transport)
+	transport.TLSClientConfig = csl.tlsConfig
+
+	if !csl.sslVerify {
+		transport.TLSClientConfig.InsecureSkipVerify = true
+	}
+	config.HttpClient.Transport = transport
 
 	if csl.auth.Enabled {
 		config.HttpAuth = &consulapi.HttpBasicAuth{

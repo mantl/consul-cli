@@ -44,6 +44,7 @@ func Init(name, version string) *Cmd {
 	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", false, "Use HTTPS when talking to Consul")
 	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", true, "Verify certificates when connecting via SSL")
 	c.root.PersistentFlags().StringVar(&c.consul.sslCert, "ssl-cert", "", "Path to an SSL client certificate for authentication")
+	c.root.PersistentFlags().StringVar(&c.consul.sslKey, "ssl-key", "", "Path to an SSL client certificate key for authentication")
 	c.root.PersistentFlags().StringVar(&c.consul.sslCaCert, "ssl-ca-cert", "", "Path to a CA certificate file to validate the Consul server")
 	c.root.PersistentFlags().Var((*auth)(c.consul.auth), "auth", "The HTTP basic authentication username (and optional password) separated by a colon")
 	c.root.PersistentFlags().StringVar(&c.consul.token, "token", "", "The Consul ACL token")
@@ -60,9 +61,9 @@ func Init(name, version string) *Cmd {
 	c.initStatus()
 
 	versionCmd := &cobra.Command{
-		Use: "version",
+		Use:   "version",
 		Short: "Print version information",
-		Long: "Print version information",
+		Long:  "Print version information",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Printf("%s %s\n", name, version)
 			return nil
