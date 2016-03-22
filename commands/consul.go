@@ -3,6 +3,7 @@ package commands
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -116,6 +117,9 @@ func (c *Cmd) Client() (*consulapi.Client, error) {
 		config.Scheme = "https"
 
 		if csl.sslCert != "" {
+			if csl.sslKey == "" || csl.sslCaCert == "" {
+				return nil, errors.New("--ssl-key and --ssl-ca-cert must be provided in order to use certificates for authentication")
+			}
 			clientCert, err := tls.LoadX509KeyPair(csl.sslCert, csl.sslKey)
 			if err != nil {
 				return nil, err
