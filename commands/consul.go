@@ -21,6 +21,7 @@ type consul struct {
 	sslKey     string
 	sslCaCert  string
 	token      string
+	tokenFile  string
 	auth       *auth
 	tlsConfig  *tls.Config
 
@@ -107,6 +108,19 @@ func (c *Cmd) Client() (*consulapi.Client, error) {
 
 	if csl.address != "" {
 		config.Address = c.consul.address
+	}
+
+	if csl.token != "" && csl.tokenFile != "" {
+		return nil, errors.New("--token and --token-file can not both be provided")
+	}
+
+	if csl.tokenFile != "" {
+		b, err := ioutil.ReadFile(csl.tokenFile)
+		if err != nil {
+			return nil, fmt.Errorf("Error reading token file: %s", err)
+		}
+
+		config.Token = strings.TrimSpace(string(b))
 	}
 
 	if csl.token != "" {
