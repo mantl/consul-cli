@@ -23,7 +23,16 @@ type Cmd struct {
 	Template string
 }
 
-type ConfigFromFile struct {
+type TomlConfig struct {
+	Env   string
+	Prod  ConsulFromFile
+	Stage ConsulFromFile
+	QA    ConsulFromFile
+	West  ConsulFromFile
+	East  ConsulFromFile
+}
+
+type ConsulFromFile struct {
 	Consul    string
 	Ssl       bool   `toml:"ssl"`
 	SslCaCert string `toml:"ssl-ca-cert"`
@@ -32,27 +41,70 @@ type ConfigFromFile struct {
 	Token     string
 }
 
-func CheckConfigFile(inputFile string) string {
-	tempConfigFile := inputFile
+func CheckConsulFile(inputFile string) string {
+	tempConsulFile := inputFile
 	if inputFile[:2] == "~/" {
 		user, _ := user.Current()
 		homeDir := fmt.Sprint(user.HomeDir + "/")
-		tempConfigFile = strings.Replace(inputFile, "~/", homeDir, 1)
+		tempConsulFile = strings.Replace(inputFile, "~/", homeDir, 1)
 	}
-	_, err := os.Stat(tempConfigFile)
+	_, err := os.Stat(tempConsulFile)
 	if err == nil {
-		return tempConfigFile
+		return tempConsulFile
 	}
 	return ""
 }
 
-func ReadConfigFile(configFile string) (toml.MetaData, ConfigFromFile) {
-	var config ConfigFromFile
-	metadata, err := toml.DecodeFile(configFile, &config)
+func ReadConsulFile(configFile, env string) map[string]interface{} {
+	var config TomlConfig
+	_, err := toml.DecodeFile(configFile, &config)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return metadata, config
+
+	realConfig := map[string]interface{}{}
+	if config.Env == "qa" {
+		realConfig["consul"] = config.QA.Consul
+		realConfig["ssl"] = config.QA.Ssl
+		realConfig["ssl-ca-cert"] = config.QA.SslCaCert
+		realConfig["ssl-cert"] = config.QA.SslCert
+		realConfig["ssl-verify"] = config.QA.SslVerify
+		realConfig["token"] = config.QA.Token
+	}
+	if config.Env == "stage" {
+		realConfig["consul"] = config.Stage.Consul
+		realConfig["ssl"] = config.Stage.Ssl
+		realConfig["ssl-ca-cert"] = config.Stage.SslCaCert
+		realConfig["ssl-cert"] = config.Stage.SslCert
+		realConfig["ssl-verify"] = config.Stage.SslVerify
+		realConfig["token"] = config.Stage.Token
+	}
+	if config.Env == "prod" {
+		realConfig["consul"] = config.Prod.Consul
+		realConfig["ssl"] = config.Prod.Ssl
+		realConfig["ssl-ca-cert"] = config.Prod.SslCaCert
+		realConfig["ssl-cert"] = config.Prod.SslCert
+		realConfig["ssl-verify"] = config.Prod.SslVerify
+		realConfig["token"] = config.Prod.Token
+	}
+	if config.Env == "west" {
+		realConfig["consul"] = config.West.Consul
+		realConfig["ssl"] = config.West.Ssl
+		realConfig["ssl-ca-cert"] = config.West.SslCaCert
+		realConfig["ssl-cert"] = config.West.SslCert
+		realConfig["ssl-verify"] = config.West.SslVerify
+		realConfig["token"] = config.West.Token
+	}
+	if config.Env == "east" {
+		realConfig["consul"] = config.East.Consul
+		realConfig["ssl"] = config.East.Ssl
+		realConfig["ssl-ca-cert"] = config.East.SslCaCert
+		realConfig["ssl-cert"] = config.East.SslCert
+		realConfig["ssl-verify"] = config.East.SslVerify
+		realConfig["token"] = config.East.Token
+	}
+
+	return realConfig
 }
 
 func Init(name, version string) *Cmd {
@@ -76,7 +128,7 @@ func Init(name, version string) *Cmd {
 		},
 	}
 
-	tempConfigFile := "~/.consul-cli"
+	tempConsulFile := "~/.consul-cli"
 	tempConsul := "127.0.0.1:8500"
 	tempSslEnabled := false
 	tempSslVerify := true
@@ -84,30 +136,30 @@ func Init(name, version string) *Cmd {
 	tempSslCaCert := ""
 	tempToken := ""
 
-	if tempConfigFile := CheckConfigFile(tempConfigFile); tempConfigFile != "" {
-		metadata, configFromFile := ReadConfigFile(tempConfigFile)
+	if tempConsulFile := CheckConsulFile(tempConsulFile); tempConsulFile != "" {
+		configFromFile := ReadConsulFile(tempConsulFile, c.consul.env)
 
-		if metadata.IsDefined("consul") {
-			tempConsul = configFromFile.Consul
+		if _, ok := configFromFile["consul"]; ok {
+			tempConsul = configFromFile["consul"].(string)
 		}
-		if metadata.IsDefined("ssl") {
-			tempSslEnabled = configFromFile.Ssl
+		if _, ok := configFromFile["ssl"]; ok {
+			tempSslEnabled = configFromFile["ssl"].(bool)
 		}
-		if metadata.IsDefined("ssl-verify") {
-			tempSslVerify = configFromFile.SslVerify
+		if _, ok := configFromFile["ssl-verify"]; ok {
+			tempSslVerify = configFromFile["ssl-verify"].(bool)
 		}
-		if metadata.IsDefined("ssl-cert") {
-			tempSslCert = configFromFile.SslCert
+		if _, ok := configFromFile["ssl-cert"]; ok {
+			tempSslCert = configFromFile["ssl-cert"].(string)
 		}
-		if metadata.IsDefined("ssl-ca-cert") {
-			tempSslCaCert = configFromFile.SslCaCert
+		if _, ok := configFromFile["ssl-ca-cert"]; ok {
+			tempSslCaCert = configFromFile["ssl-ca-cert"].(string)
 		}
-		if metadata.IsDefined("token") {
-			tempToken = configFromFile.Token
+		if _, ok := configFromFile["token"]; ok {
+			tempToken = configFromFile["token"].(string)
 		}
 	}
 
-	c.root.PersistentFlags().StringVar(&c.consul.configFile, "consul-file", tempConfigFile, "Configuration file")
+	c.root.PersistentFlags().StringVar(&c.consul.configFile, "consul-file", tempConsulFile, "Configuration file")
 	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", tempConsul, "Consul address:port")
 	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", tempSslEnabled, "Use HTTPS when talking to Consul")
 	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", tempSslVerify, "Verify certificates when connecting via SSL")

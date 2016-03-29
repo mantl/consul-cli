@@ -12,6 +12,7 @@ import (
 
 type consul struct {
 	configFile string
+	env        string
 	address    string
 	sslEnabled bool
 	sslVerify  bool
