@@ -18,6 +18,7 @@ type consul struct {
 	sslVerify  bool
 	sslCert    string
 	sslCaCert  string
+	sslKey     string
 	token      string
 	auth       *auth
 
@@ -97,7 +98,35 @@ func (c *Cmd) Status() (*consulapi.Status, error) {
 	return consul.Status(), nil
 }
 
+// Get the values from ~/.consul-cli which will override
+// what is specified in the command-line
 func (c *Cmd) Client() (*consulapi.Client, error) {
+	ConsulFile := "~/.consul-cli"
+	if ConsulFile := CheckConsulFile(ConsulFile); ConsulFile != "" {
+		configFromFile := ReadConsulFile(ConsulFile, c.consul.env)
+		if _, ok := configFromFile["consul"]; ok {
+			c.consul.address = configFromFile["consul"].(string)
+		}
+		if _, ok := configFromFile["ssl"]; ok {
+			c.consul.sslEnabled = configFromFile["ssl"].(bool)
+		}
+		if _, ok := configFromFile["ssl-verify"]; ok {
+			c.consul.sslVerify = configFromFile["ssl-verify"].(bool)
+		}
+		if _, ok := configFromFile["ssl-cert"]; ok {
+			c.consul.sslCert = configFromFile["ssl-cert"].(string)
+		}
+		if _, ok := configFromFile["ssl-ca-cert"]; ok {
+			c.consul.sslCaCert = configFromFile["ssl-ca-cert"].(string)
+		}
+		if _, ok := configFromFile["ssl-key"]; ok {
+			c.consul.sslCert = configFromFile["ssl-key"].(string)
+		}
+		if _, ok := configFromFile["token"]; ok {
+			c.consul.token = configFromFile["token"].(string)
+		}
+	}
+
 	config := consulapi.DefaultConfig()
 	csl := c.consul
 

@@ -37,6 +37,7 @@ type ConsulFromFile struct {
 	Ssl       bool   `toml:"ssl"`
 	SslCaCert string `toml:"ssl-ca-cert"`
 	SslCert   string `toml:"ssl-cert"`
+	SslKey    string `toml:"ssl-key"`
 	SslVerify bool   `toml:"ssl-verify"`
 	Token     string
 }
@@ -63,43 +64,48 @@ func ReadConsulFile(configFile, env string) map[string]interface{} {
 	}
 
 	realConfig := map[string]interface{}{}
-	if config.Env == "qa" {
+	if env == "qa" {
 		realConfig["consul"] = config.QA.Consul
 		realConfig["ssl"] = config.QA.Ssl
 		realConfig["ssl-ca-cert"] = config.QA.SslCaCert
 		realConfig["ssl-cert"] = config.QA.SslCert
+		realConfig["ssl-key"] = config.QA.SslKey
 		realConfig["ssl-verify"] = config.QA.SslVerify
 		realConfig["token"] = config.QA.Token
 	}
-	if config.Env == "stage" {
+	if env == "stage" {
 		realConfig["consul"] = config.Stage.Consul
 		realConfig["ssl"] = config.Stage.Ssl
 		realConfig["ssl-ca-cert"] = config.Stage.SslCaCert
 		realConfig["ssl-cert"] = config.Stage.SslCert
+		realConfig["ssl-key"] = config.Stage.SslKey
 		realConfig["ssl-verify"] = config.Stage.SslVerify
 		realConfig["token"] = config.Stage.Token
 	}
-	if config.Env == "prod" {
+	if env == "prod" {
 		realConfig["consul"] = config.Prod.Consul
 		realConfig["ssl"] = config.Prod.Ssl
 		realConfig["ssl-ca-cert"] = config.Prod.SslCaCert
 		realConfig["ssl-cert"] = config.Prod.SslCert
+		realConfig["ssl-key"] = config.Prod.SslKey
 		realConfig["ssl-verify"] = config.Prod.SslVerify
 		realConfig["token"] = config.Prod.Token
 	}
-	if config.Env == "west" {
+	if env == "west" {
 		realConfig["consul"] = config.West.Consul
 		realConfig["ssl"] = config.West.Ssl
 		realConfig["ssl-ca-cert"] = config.West.SslCaCert
 		realConfig["ssl-cert"] = config.West.SslCert
+		realConfig["ssl-key"] = config.West.SslKey
 		realConfig["ssl-verify"] = config.West.SslVerify
 		realConfig["token"] = config.West.Token
 	}
-	if config.Env == "east" {
+	if env == "east" {
 		realConfig["consul"] = config.East.Consul
 		realConfig["ssl"] = config.East.Ssl
 		realConfig["ssl-ca-cert"] = config.East.SslCaCert
 		realConfig["ssl-cert"] = config.East.SslCert
+		realConfig["ssl-key"] = config.East.SslKey
 		realConfig["ssl-verify"] = config.East.SslVerify
 		realConfig["token"] = config.East.Token
 	}
@@ -128,45 +134,15 @@ func Init(name, version string) *Cmd {
 		},
 	}
 
-	tempConsulFile := "~/.consul-cli"
-	tempConsul := "127.0.0.1:8500"
-	tempSslEnabled := false
-	tempSslVerify := true
-	tempSslCert := ""
-	tempSslCaCert := ""
-	tempToken := ""
-
-	if tempConsulFile := CheckConsulFile(tempConsulFile); tempConsulFile != "" {
-		configFromFile := ReadConsulFile(tempConsulFile, c.consul.env)
-
-		if _, ok := configFromFile["consul"]; ok {
-			tempConsul = configFromFile["consul"].(string)
-		}
-		if _, ok := configFromFile["ssl"]; ok {
-			tempSslEnabled = configFromFile["ssl"].(bool)
-		}
-		if _, ok := configFromFile["ssl-verify"]; ok {
-			tempSslVerify = configFromFile["ssl-verify"].(bool)
-		}
-		if _, ok := configFromFile["ssl-cert"]; ok {
-			tempSslCert = configFromFile["ssl-cert"].(string)
-		}
-		if _, ok := configFromFile["ssl-ca-cert"]; ok {
-			tempSslCaCert = configFromFile["ssl-ca-cert"].(string)
-		}
-		if _, ok := configFromFile["token"]; ok {
-			tempToken = configFromFile["token"].(string)
-		}
-	}
-
-	c.root.PersistentFlags().StringVar(&c.consul.configFile, "consul-file", tempConsulFile, "Configuration file")
-	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", tempConsul, "Consul address:port")
-	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", tempSslEnabled, "Use HTTPS when talking to Consul")
-	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", tempSslVerify, "Verify certificates when connecting via SSL")
-	c.root.PersistentFlags().StringVar(&c.consul.sslCert, "ssl-cert", tempSslCert, "Path to an SSL client certificate for authentication")
-	c.root.PersistentFlags().StringVar(&c.consul.sslCaCert, "ssl-ca-cert", tempSslCaCert, "Path to a CA certificate file to validate the Consul server")
+	c.root.PersistentFlags().StringVar(&c.consul.env, "env", "qa", "default environment")
+	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", "127.0.0.1:8500", "Consul address:port")
+	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", false, "Use HTTPS when talking to Consul")
+	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", true, "Verify certificates when connecting via SSL")
+	c.root.PersistentFlags().StringVar(&c.consul.sslCert, "ssl-cert", "", "Path to an SSL client certificate for authentication")
+	c.root.PersistentFlags().StringVar(&c.consul.sslKey, "ssl-key", "", "Path to an SSL client certificate key for authentication")
+	c.root.PersistentFlags().StringVar(&c.consul.sslCaCert, "ssl-ca-cert", "", "Path to a CA certificate file to validate the Consul server")
 	c.root.PersistentFlags().Var((*auth)(c.consul.auth), "auth", "The HTTP basic authentication username (and optional password) separated by a colon")
-	c.root.PersistentFlags().StringVar(&c.consul.token, "token", tempToken, "The Consul ACL token")
+	c.root.PersistentFlags().StringVar(&c.consul.token, "token", "", "The Consul ACL token")
 
 	c.initAcl()
 	c.initAgent()
