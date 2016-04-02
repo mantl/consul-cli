@@ -20,7 +20,6 @@ type consul struct {
 	sslEnabled bool
 	sslVerify  bool
 	sslCert    string
-	sslKey     string
 	sslCaCert  string
 	sslKey     string
 	token      string

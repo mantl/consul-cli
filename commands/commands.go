@@ -25,6 +25,7 @@ type Cmd struct {
 
 type TomlConfig struct {
 	Env   string
+	Dev   ConsulFromFile
 	Prod  ConsulFromFile
 	Stage ConsulFromFile
 	QA    ConsulFromFile
@@ -64,6 +65,15 @@ func ReadConsulFile(configFile, env string) map[string]interface{} {
 	}
 
 	realConfig := map[string]interface{}{}
+	if env == "dev" {
+		realConfig["consul"] = config.Dev.Consul
+		realConfig["ssl"] = config.Dev.Ssl
+		realConfig["ssl-ca-cert"] = config.Dev.SslCaCert
+		realConfig["ssl-cert"] = config.Dev.SslCert
+		realConfig["ssl-key"] = config.Dev.SslKey
+		realConfig["ssl-verify"] = config.Dev.SslVerify
+		realConfig["token"] = config.Dev.Token
+	}
 	if env == "qa" {
 		realConfig["consul"] = config.QA.Consul
 		realConfig["ssl"] = config.QA.Ssl
