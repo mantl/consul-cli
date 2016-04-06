@@ -103,6 +103,20 @@ func Test_GetRulesString(t *testing.T) {
 			ExpectedString: `{"event":{"destroy-":{"Policy":"write"}}}`,
 			ExpectedErr: nil,
 		},
+		{
+			Value: []*ConfigRule{
+				&ConfigRule{"foo","destroy-","write"},
+			},
+			ExpectedString: "",
+			ExpectedErr: errors.New("error"),
+		},
+		{
+			Value: []*ConfigRule{
+				&ConfigRule{"key","destroy-","invalid"},
+			},
+			ExpectedString: "",
+			ExpectedErr: errors.New("error"),
+		},
 	}
 
 	acl := newTestAcl()
