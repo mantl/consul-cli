@@ -80,14 +80,22 @@ type rulePath struct {
 type aclRule struct {
 	Key     map[string]*rulePath `json:"key,omitempty"`
 	Service map[string]*rulePath `json:"service,omitempty"`
+	Event   map[string]*rulePath `json:"event,omitempty"`
+	Query   map[string]*rulePath `json:"query,omitempty"`
+}
+
+func NewAclRule() *aclRule {
+	return &aclRule{
+		Key:     make(map[string]*rulePath),
+		Service: make(map[string]*rulePath),
+		Event:   make(map[string]*rulePath),
+		Query:   make(map[string]*rulePath),
+	}
 }
 
 // Convert a list of Rules to a JSON string
 func (a *Acl) GetRulesString(rs []*ConfigRule) (string, error) {
-	rules := &aclRule{
-		Key:     make(map[string]*rulePath),
-		Service: make(map[string]*rulePath),
-	}
+	rules := NewAclRule()
 
 	for _, r := range rs {
 		// Verify policy is one of "read", "write", or "deny"
@@ -103,6 +111,10 @@ func (a *Acl) GetRulesString(rs []*ConfigRule) (string, error) {
 			rules.Key[r.Path] = &rulePath{r.Policy}
 		case "service":
 			rules.Service[r.Path] = &rulePath{r.Policy}
+		case "event":
+			rules.Event[r.Path] = &rulePath{r.Policy}
+		case "query":
+			rules.Query[r.Path] = &rulePath{r.Policy}
 		default:
 			return "", fmt.Errorf("Invalid path type: '%s'", r.PathType)
 		}
