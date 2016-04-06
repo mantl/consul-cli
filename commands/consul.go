@@ -131,12 +131,21 @@ func (c *Cmd) Client() (*consulapi.Client, error) {
 		config.Scheme = "https"
 
 		if csl.sslCert != "" {
-			if csl.sslKey == "" || csl.sslCaCert == "" {
-				return nil, errors.New("--ssl-key and --ssl-ca-cert must be provided in order to use certificates for authentication")
+			if csl.sslKey == "" {
+				return nil, errors.New("--ssl-key must be provided in order to use certificates for authentication")
 			}
 			clientCert, err := tls.LoadX509KeyPair(csl.sslCert, csl.sslKey)
 			if err != nil {
 				return nil, err
+			}
+
+			csl.tlsConfig.Certificates = []tls.Certificate{clientCert}
+			csl.tlsConfig.BuildNameToCertificate()
+		}
+
+		if csl.sslVerify {
+			if csl.sslCaCert == "" {
+				return nil, errors.New("--ssl-ca-cert must be provided in order to use certificates for verification")
 			}
 
 			caCert, err := ioutil.ReadFile(csl.sslCaCert)
@@ -146,10 +155,7 @@ func (c *Cmd) Client() (*consulapi.Client, error) {
 
 			caCertPool := x509.NewCertPool()
 			caCertPool.AppendCertsFromPEM(caCert)
-
-			csl.tlsConfig.Certificates = []tls.Certificate{clientCert}
 			csl.tlsConfig.RootCAs = caCertPool
-			csl.tlsConfig.BuildNameToCertificate()
 		}
 	}
 
