@@ -24,6 +24,7 @@ type consul struct {
 	tokenFile  string
 	auth       *auth
 	tlsConfig  *tls.Config
+	quiet      bool
 
 	dc        string
 	waitIndex uint64
