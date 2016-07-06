@@ -30,8 +30,6 @@ func (c *Cmd) OutputJSON(v interface{}, prettyFlag bool) error {
 		return err
 	}
 
-	fmt.Fprintf(c.Out, string(jsonRaw))
-
 	jsonStr := string(jsonRaw)
 	if strings.HasSuffix(jsonStr, "\n") {
 		fmt.Fprintf(c.Out, jsonStr)
