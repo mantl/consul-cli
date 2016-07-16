@@ -18,7 +18,7 @@ func (root *Cmd) initSession() {
 		Short: "Consul /session endpoint interface",
 		Long:  "Consul /session endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+			cmd.HelpFunc()(cmd, []string{})
 		},
 	}
 
