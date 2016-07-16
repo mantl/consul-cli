@@ -35,7 +35,7 @@ func Init(name, version string) *Cmd {
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c.root.Help()
+			cmd.HelpFunc()(cmd, []string{})
 			return nil
 		},
 	}
@@ -49,7 +49,7 @@ func Init(name, version string) *Cmd {
 	c.root.PersistentFlags().Var((*auth)(c.consul.auth), "auth", "The HTTP basic authentication username (and optional password) separated by a colon")
 	c.root.PersistentFlags().StringVar(&c.consul.token, "token", "", "The Consul ACL token")
 	c.root.PersistentFlags().StringVar(&c.consul.tokenFile, "token-file", "", "Path to file containing Consul ACL token")
-	c.root.PersistentFlags().BoolVarP(&c.root.SilenceUsage, "quiet", "q", false, "Don't show usage on error")
+	c.root.PersistentFlags().BoolVarP(&c.root.SilenceUsage, "quiet", "q", true, "Don't show usage on error")
 
 	c.initAcl()
 	c.initAgent()
@@ -78,10 +78,6 @@ func Init(name, version string) *Cmd {
 
 func (c *Cmd) Execute() error {
 	return c.root.Execute()
-}
-
-func (c *Cmd) Help() error {
-	return c.root.Help()
 }
 
 func (c *Cmd) AddCommand(cmd *cobra.Command) {
