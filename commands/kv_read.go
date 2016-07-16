@@ -40,6 +40,7 @@ func (k *Kv) AddReadSub(cmd *cobra.Command) {
 	readCmd.Flags().StringVar(&kro.Format.Delimiter, "delimiter", " ", "Output field delimiter")
 	readCmd.Flags().BoolVar(&kro.Format.Header, "header", false, "Output a header row for text format")
 	readCmd.Flags().BoolVar(&kro.Recurse, "recurse", false, "Perform a recursive read")
+	k.AddConsistency(readCmd)
 	k.AddDatacenterOption(readCmd)
 	k.AddTemplateOption(readCmd)
 

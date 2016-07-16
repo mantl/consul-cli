@@ -27,6 +27,7 @@ func (s *Session) AddListSub(cmd *cobra.Command) {
 
 	s.AddDatacenterOption(listCmd)
 	s.AddTemplateOption(listCmd)
+	s.AddConsistency(listCmd)
 	s.AddDatacenterOption(oldListCmd)
 
 	cmd.AddCommand(listCmd)

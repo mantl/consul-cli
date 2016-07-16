@@ -27,6 +27,7 @@ func (s *Session) AddInfoSub(cmd *cobra.Command) {
 
 	s.AddDatacenterOption(infoCmd)
 	s.AddTemplateOption(infoCmd)
+	s.AddConsistency(infoCmd)
 	s.AddDatacenterOption(oldInfoCmd)
 
 	cmd.AddCommand(infoCmd)

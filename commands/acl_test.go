@@ -12,29 +12,29 @@ func newTestAcl() *Acl {
 }
 
 func Test_ParseRuleConfig(t *testing.T) {
-	cases := []struct{
-		Value string
+	cases := []struct {
+		Value        string
 		ExpectedRule *ConfigRule
-		ExpectedErr error
+		ExpectedErr  error
 	}{
 		{
 			"key::write",
-			&ConfigRule{"key","","write"},
+			&ConfigRule{"key", "", "write"},
 			nil,
 		},
 		{
 			"service:",
-			&ConfigRule{"service","","read"},
+			&ConfigRule{"service", "", "read"},
 			nil,
 		},
 		{
 			"query:foo-:deny",
-			&ConfigRule{"query","foo-","deny"},
+			&ConfigRule{"query", "foo-", "deny"},
 			nil,
 		},
 		{
 			"event:destroy-:write",
-			&ConfigRule{"event","destroy-","write"},
+			&ConfigRule{"event", "destroy-", "write"},
 			nil,
 		},
 		{
@@ -70,52 +70,52 @@ func Test_ParseRuleConfig(t *testing.T) {
 }
 
 func Test_GetRulesString(t *testing.T) {
-	cases := []struct{
-		Value []*ConfigRule
+	cases := []struct {
+		Value          []*ConfigRule
 		ExpectedString string
-		ExpectedErr error
+		ExpectedErr    error
 	}{
 		{
 			Value: []*ConfigRule{
-				&ConfigRule{"key","","write"},
+				&ConfigRule{"key", "", "write"},
 			},
 			ExpectedString: `{"key":{"":{"Policy":"write"}}}`,
-			ExpectedErr: nil,
+			ExpectedErr:    nil,
 		},
 		{
 			Value: []*ConfigRule{
-				&ConfigRule{"service","","read"},
+				&ConfigRule{"service", "", "read"},
 			},
 			ExpectedString: `{"service":{"":{"Policy":"read"}}}`,
-			ExpectedErr: nil,
+			ExpectedErr:    nil,
 		},
 		{
 			Value: []*ConfigRule{
-				&ConfigRule{"query","foo-","deny"},
+				&ConfigRule{"query", "foo-", "deny"},
 			},
 			ExpectedString: `{"query":{"foo-":{"Policy":"deny"}}}`,
-			ExpectedErr: nil,
+			ExpectedErr:    nil,
 		},
 		{
 			Value: []*ConfigRule{
-				&ConfigRule{"event","destroy-","write"},
+				&ConfigRule{"event", "destroy-", "write"},
 			},
 			ExpectedString: `{"event":{"destroy-":{"Policy":"write"}}}`,
-			ExpectedErr: nil,
+			ExpectedErr:    nil,
 		},
 		{
 			Value: []*ConfigRule{
-				&ConfigRule{"foo","destroy-","write"},
+				&ConfigRule{"foo", "destroy-", "write"},
 			},
 			ExpectedString: "",
-			ExpectedErr: errors.New("error"),
+			ExpectedErr:    errors.New("error"),
 		},
 		{
 			Value: []*ConfigRule{
-				&ConfigRule{"key","destroy-","invalid"},
+				&ConfigRule{"key", "destroy-", "invalid"},
 			},
 			ExpectedString: "",
-			ExpectedErr: errors.New("error"),
+			ExpectedErr:    errors.New("error"),
 		},
 	}
 

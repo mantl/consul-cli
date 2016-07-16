@@ -38,6 +38,7 @@ func (h *Health) AddServiceSub(cmd *cobra.Command) {
 	serviceCmd.Flags().BoolVar(&hso.PassingOnly, "passing", false, "Only return passing checks")
 	h.AddDatacenterOption(serviceCmd)
 	h.AddTemplateOption(serviceCmd)
+	h.AddConsistency(serviceCmd)
 
 	oldServiceCmd.Flags().StringVar(&hso.Tag, "tag", "", "Service tag to filter on")
 	oldServiceCmd.Flags().BoolVar(&hso.PassingOnly, "passing", false, "Only return passing checks")

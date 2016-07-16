@@ -38,6 +38,7 @@ func (k *Kv) AddWatchSub(cmd *cobra.Command) {
 	watchCmd.Flags().StringVar(&kwo.Format.Type, "format", "", "Output format. Supported options: text, json, prettyjson")
 	watchCmd.Flags().StringVar(&kwo.Format.Delimiter, "delimited", "", "Output field delimiter")
 	watchCmd.Flags().BoolVar(&kwo.Format.Header, "header", false, "Output a header row for text format")
+	k.AddConsistency(watchCmd)
 	k.AddDatacenterOption(watchCmd)
 	k.AddWaitIndexOption(watchCmd)
 	k.AddTemplateOption(watchCmd)

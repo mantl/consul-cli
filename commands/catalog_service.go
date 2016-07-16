@@ -40,6 +40,7 @@ func (c *Catalog) AddServiceSub(cmd *cobra.Command) {
 	c.AddDatacenterOption(oldServiceCmd)
 
 	c.AddTemplateOption(serviceCmd)
+	c.AddConsistency(serviceCmd)
 	cmd.AddCommand(serviceCmd)
 
 	c.AddCommand(oldServiceCmd)

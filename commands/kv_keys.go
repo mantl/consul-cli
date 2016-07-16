@@ -23,6 +23,7 @@ func (k *Kv) AddKeysSub(cmd *cobra.Command) {
 	}
 
 	keysCmd.Flags().StringVar(&kko.Separator, "separator", "", "List keys only up to a given separator")
+	k.AddConsistency(keysCmd)
 	k.AddDatacenterOption(keysCmd)
 
 	cmd.AddCommand(keysCmd)
