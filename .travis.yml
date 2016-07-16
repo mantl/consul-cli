@@ -10,4 +10,4 @@ install:
   - glide up
 
 script: 
-  - go test -v $$(glide nv)
+  - go test -v $(glide nv)
