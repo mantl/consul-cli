@@ -16,7 +16,7 @@ func (root *Cmd) initHealth() {
 		Short: "Consul /health endpoint interface",
 		Long:  "Consul /health endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+			cmd.HelpFunc()(cmd, []string{})
 		},
 	}
 
