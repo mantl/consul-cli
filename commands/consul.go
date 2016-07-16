@@ -26,8 +26,10 @@ type consul struct {
 	tlsConfig  *tls.Config
 	quiet      bool
 
-	dc        string
-	waitIndex uint64
+	dc         string
+	waitIndex  uint64
+	consistent bool
+	stale      bool
 }
 
 func (c *Cmd) ACL() (*consulapi.ACL, error) {
@@ -214,6 +216,14 @@ func (c *Cmd) QueryOptions() *consulapi.QueryOptions {
 		queryOpts.WaitIndex = csl.waitIndex
 	}
 
+	if csl.consistent {
+		queryOpts.RequireConsistent = csl.consistent
+	}
+
+	if csl.stale {
+		queryOpts.AllowStale = csl.stale
+	}
+
 	return queryOpts
 }
 
@@ -223,6 +233,11 @@ func (c *Cmd) AddDatacenterOption(cmd *cobra.Command) {
 
 func (c *Cmd) AddWaitIndexOption(cmd *cobra.Command) {
 	cmd.Flags().Uint64Var(&c.consul.waitIndex, "wait-index", 0, "Only return if ModifyIndex is greater than <index>")
+}
+
+func (c *Cmd) AddConsistency(cmd *cobra.Command) {
+	cmd.Flags().BoolVar(&c.consul.consistent, "consistent", false, "Enable strong consistency")
+	cmd.Flags().BoolVar(&c.consul.stale, "stale", false, "Allow any agent to service the request")
 }
 
 func NewConsul() *consul {

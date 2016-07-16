@@ -31,6 +31,7 @@ func (c *Catalog) AddNodeSub(cmd *cobra.Command) {
 	c.AddDatacenterOption(oldNodeCmd)
 
 	c.AddTemplateOption(nodeCmd)
+	c.AddConsistency(nodeCmd)
 	cmd.AddCommand(nodeCmd)
 
 	c.AddCommand(oldNodeCmd)

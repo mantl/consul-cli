@@ -43,6 +43,7 @@ func (k *Kv) AddLockSub(cmd *cobra.Command) {
 	lockCmd.Flags().StringVar(&klo.Ttl, "ttl", "", "Lock time to live")
 	lockCmd.Flags().DurationVar(&klo.LockDelay, "lock-delay", 15*time.Second, "Lock delay")
 	lockCmd.Flags().StringVar(&klo.Session, "session", "", "Previously created session to use for lock")
+	k.AddConsistency(lockCmd)
 	k.AddDatacenterOption(lockCmd)
 
 	oldLockCmd.Flags().StringVar(&klo.Behavior, "behavior", "release", "Lock behavior. One of 'release' or 'delete'")

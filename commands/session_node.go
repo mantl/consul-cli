@@ -29,6 +29,7 @@ func (s *Session) AddNodeSub(cmd *cobra.Command) {
 
 	s.AddDatacenterOption(nodeCmd)
 	s.AddTemplateOption(nodeCmd)
+	s.AddConsistency(nodeCmd)
 	s.AddDatacenterOption(oldNodeCmd)
 
 	cmd.AddCommand(nodeCmd)

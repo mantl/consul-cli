@@ -31,6 +31,7 @@ func (h *Health) AddStateSub(cmd *cobra.Command) {
 	h.AddDatacenterOption(stateCmd)
 	h.AddTemplateOption(stateCmd)
 	h.AddDatacenterOption(oldStateCmd)
+	h.AddConsistency(stateCmd)
 
 	cmd.AddCommand(stateCmd)
 

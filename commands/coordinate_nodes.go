@@ -16,6 +16,7 @@ func (c *Coordinate) AddNodesSub(cmd *cobra.Command) {
 
 	c.AddDatacenterOption(nodesCmd)
 	c.AddTemplateOption(nodesCmd)
+	c.AddConsistency(nodesCmd)
 
 	cmd.AddCommand(nodesCmd)
 }

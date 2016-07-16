@@ -30,6 +30,7 @@ func (h *Health) AddChecksSub(cmd *cobra.Command) {
 	h.AddDatacenterOption(checksCmd)
 	h.AddTemplateOption(checksCmd)
 	h.AddDatacenterOption(oldChecksCmd)
+	h.AddConsistency(checksCmd)
 
 	cmd.AddCommand(checksCmd)
 

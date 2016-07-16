@@ -30,6 +30,7 @@ func (h *Health) AddNodeSub(cmd *cobra.Command) {
 	h.AddDatacenterOption(nodeCmd)
 	h.AddDatacenterOption(oldNodeCmd)
 	h.AddTemplateOption(nodeCmd)
+	h.AddConsistency(nodeCmd)
 
 	cmd.AddCommand(nodeCmd)
 

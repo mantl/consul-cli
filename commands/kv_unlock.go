@@ -36,6 +36,7 @@ func (k *Kv) AddUnlockSub(cmd *cobra.Command) {
 
 	unlockCmd.Flags().StringVar(&kuo.Session, "session", "", "Session ID of the lock holder. Required")
 	unlockCmd.Flags().BoolVar(&kuo.NoDestroy, "no-destroy", false, "Do not destroy the session when complete")
+	k.AddConsistency(unlockCmd)
 	k.AddDatacenterOption(unlockCmd)
 
 	oldUnlockCmd.Flags().StringVar(&kuo.Session, "session", "", "Session ID of the lock holder. Required")
