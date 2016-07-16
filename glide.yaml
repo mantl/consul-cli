@@ -1,0 +1,6 @@
+package: github.com/CiscoCloud/consul-cli
+import:
+- package: github.com/hashicorp/consul
+  subpackages:
+  - api
+- package: github.com/spf13/cobra

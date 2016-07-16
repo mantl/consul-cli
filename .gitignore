@@ -6,6 +6,7 @@
 # Folders
 _obj
 _test
+vendor
 
 # Architecture specific extensions/prefixes
 *.[568vq]
@@ -28,3 +29,4 @@ consul-cli
 bin/
 build/
 .vagrant/
+glide.lock
