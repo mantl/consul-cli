@@ -5,6 +5,9 @@ go:
   - 1.6
   - tip
 
-install: go get -v -t ./...
+install: 
+  - go get -u github.com/Masterminds/glide
+  - glide up
 
-script: go test -v ./...
+script: 
+  - go test -v $$(glide nv)
