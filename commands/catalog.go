@@ -1,8 +1,6 @@
 package commands
 
-import (
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 type Catalog struct {
 	*Cmd
@@ -25,6 +23,7 @@ func (root *Cmd) initCatalog() {
 	c.AddNodesSub(catalogCmd)
 	c.AddServiceSub(catalogCmd)
 	c.AddServicesSub(catalogCmd)
+	c.AddDeregisterSub(catalogCmd)
 
 	c.AddCommand(catalogCmd)
 }
