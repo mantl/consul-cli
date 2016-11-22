@@ -29,6 +29,13 @@ xcompile: test
 		-os="windows" \
 		-output="build/{{.Dir}}_$(VERSION)_{{.OS}}_{{.Arch}}/$(NAME)" 
 
+vendor:
+	glide install --strip-vendor
+	glide update --strip-vendor
+
+vendor-clean:
+	-rm -rf vendor/
+
 package: xcompile
 	$(eval FILES := $(shell ls build))
 	@mkdir -p build/tgz
@@ -37,4 +44,7 @@ package: xcompile
 		echo $$f; \
 	done
 
-.PHONY: all deps updatedeps build test xcompile package
+package-clean:
+	-rm -rf build/
+
+.PHONY: all deps updatedeps build test xcompile package package-clean vendor vendor-clean
