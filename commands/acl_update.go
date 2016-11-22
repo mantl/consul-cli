@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
 )
@@ -9,6 +11,7 @@ type AclUpdateOptions struct {
 	IsManagement bool
 	Name         string
 	ConfigRules  []*ConfigRule
+	Raw          string
 }
 
 func (a *Acl) AddUpdateSub(c *cobra.Command) {
@@ -49,6 +52,7 @@ func (a *Acl) AddUpdateSub(c *cobra.Command) {
 		auo.ConfigRules = append(auo.ConfigRules, t)
 		return nil
 	}), "rule", "")
+	updateCmd.Flags().StringVar(&auo.Raw, "raw", "", "Raw ACL rule definition")
 
 	oldUpdateCmd.Flags().BoolVar(&auo.IsManagement, "management", false, "Create a management token")
 	oldUpdateCmd.Flags().StringVar(&auo.Name, "name", "", "Name of the ACL")
@@ -72,8 +76,8 @@ func (a *Acl) AddUpdateSub(c *cobra.Command) {
 }
 
 func (a *Acl) Update(args []string, auo *AclUpdateOptions) error {
-	if err := a.CheckIdArg(args); err != nil {
-		return err
+	if !a.CheckIdArg(args) {
+		return fmt.Errorf("An ACL id must be specified")
 	}
 	id := args[0]
 
@@ -82,27 +86,29 @@ func (a *Acl) Update(args []string, auo *AclUpdateOptions) error {
 		return err
 	}
 
-	var entry *consulapi.ACLEntry
+	entry := new(consulapi.ACLEntry)
+	entry.Name = auo.Name
+	entry.ID = id
 
 	if auo.IsManagement {
-		entry = &consulapi.ACLEntry{
-			ID:   id,
-			Name: auo.Name,
-			Type: consulapi.ACLManagementType,
+		entry.Type = consulapi.ACLManagementType
+	} else {
+		entry.Type = consulapi.ACLClientType
+	}
+
+	if auo.Raw != "" {
+		rules, err := a.ReadRawAcl(auo.Raw)
+		if err != nil {
+			return err
 		}
+		entry.Rules = rules
 	} else {
 		rules, err := a.GetRulesString(auo.ConfigRules)
 		if err != nil {
 			return err
 		}
 
-		entry = &consulapi.ACLEntry{
-			ID:    id,
-			Name:  auo.Name,
-			Type:  consulapi.ACLClientType,
-			Rules: rules,
-		}
-
+		entry.Rules = rules
 	}
 
 	writeOpts := a.WriteOptions()

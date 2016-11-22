@@ -34,8 +34,8 @@ func (a *Acl) AddCloneSub(c *cobra.Command) {
 }
 
 func (a *Acl) Clone(args []string) error {
-	if err := a.CheckIdArg(args); err != nil {
-		return err
+	if a.CheckIdArg(args) {
+		return fmt.Errorf("An ACL id must be specified")
 	}
 
 	client, err := a.ACL()

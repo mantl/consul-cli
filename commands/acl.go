@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -35,15 +37,15 @@ func (root *Cmd) initAcl() {
 	a.AddCommand(aclCmd)
 }
 
-func (a *Acl) CheckIdArg(args []string) error {
+func (a *Acl) CheckIdArg(args []string) bool {
 	switch {
 	case len(args) == 0:
-		return fmt.Errorf("ACL id must be specified")
+		return false
 	case len(args) > 1:
-		return fmt.Errorf("Only one id allowed")
+		return false
 	}
 
-	return nil
+	return true
 }
 
 type ConfigRule struct {
@@ -91,6 +93,23 @@ func NewAclRule() *aclRule {
 		Event:   make(map[string]*rulePath),
 		Query:   make(map[string]*rulePath),
 	}
+}
+
+func (a *Acl) ReadRawAcl(raw string) (string, error) {
+	if raw == "-" {
+		rules, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			return "", err
+		}
+		return string(rules), nil
+	}
+
+	rules, err := ioutil.ReadFile(raw)
+	if err != nil {
+		return "", err
+	}
+
+	return string(rules), nil
 }
 
 // Convert a list of Rules to a JSON string

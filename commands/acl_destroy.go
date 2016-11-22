@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -31,8 +33,8 @@ func (a *Acl) AddDestroySub(c *cobra.Command) {
 }
 
 func (a *Acl) Destroy(args []string) error {
-	if err := a.CheckIdArg(args); err != nil {
-		return err
+	if !a.CheckIdArg(args) {
+		return fmt.Errorf("An ACL id must be specified")
 	}
 	id := args[0]
 

@@ -11,13 +11,14 @@ type AclCreateOptions struct {
 	IsManagement bool
 	Name         string
 	ConfigRules  []*ConfigRule
+	Raw          string
 }
 
 func (a *Acl) AddCreateSub(c *cobra.Command) {
 	aco := &AclCreateOptions{}
 
 	createCmd := &cobra.Command{
-		Use:   "create",
+		Use:   "create [<id>]",
 		Short: "Create an ACL. Requires a management token.",
 		Long:  "Create an ACL. Requires a management token.",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -51,6 +52,7 @@ func (a *Acl) AddCreateSub(c *cobra.Command) {
 		aco.ConfigRules = append(aco.ConfigRules, t)
 		return nil
 	}), "rule", "Rule to create. Can be multiple rules on a command line. Format is type:path:policy")
+	createCmd.Flags().StringVar(&aco.Raw, "raw", "", "Raw ACL rule definition")
 
 	oldCreateCmd.Flags().BoolVar(&aco.IsManagement, "management", false, "Create a management token")
 	oldCreateCmd.Flags().StringVar(&aco.Name, "name", "", "Name of the ACL")
@@ -79,25 +81,31 @@ func (a *Acl) Create(args []string, aco *AclCreateOptions) error {
 		return err
 	}
 
-	var entry *consulapi.ACLEntry
+	entry := new(consulapi.ACLEntry)
+	entry.Name = aco.Name
+
+	if a.CheckIdArg(args) {
+		entry.ID = args[0]
+	}
 
 	if aco.IsManagement {
-		entry = &consulapi.ACLEntry{
-			Name: aco.Name,
-			Type: consulapi.ACLManagementType,
+		entry.Type = consulapi.ACLManagementType
+	} else {
+		entry.Type = consulapi.ACLClientType
+	}
+
+	if aco.Raw != "" {
+		rules, err := a.ReadRawAcl(aco.Raw)
+		if err != nil {
+			return err
 		}
+		entry.Rules = rules
 	} else {
 		rules, err := a.GetRulesString(aco.ConfigRules)
 		if err != nil {
 			return err
 		}
-
-		entry = &consulapi.ACLEntry{
-			Name:  aco.Name,
-			Type:  consulapi.ACLClientType,
-			Rules: rules,
-		}
-
+		entry.Rules = rules
 	}
 
 	writeOpts := a.WriteOptions()

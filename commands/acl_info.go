@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -32,8 +34,8 @@ func (a *Acl) AddInfoSub(c *cobra.Command) {
 }
 
 func (a *Acl) Info(args []string) error {
-	if err := a.CheckIdArg(args); err != nil {
-		return err
+	if !a.CheckIdArg(args) {
+		return fmt.Errorf("An ACL id must be specified")
 	}
 	id := args[0]
 
