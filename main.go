@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/CiscoCloud/consul-cli/commands"
+	"github.com/ChrisAubuchon/consul-cli/commands"
 )
 
 const Name = "consul-cli"
