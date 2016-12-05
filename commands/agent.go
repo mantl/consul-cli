@@ -20,9 +20,10 @@ func newAgentCommand() *cobra.Command {
 	cmd.AddCommand(newAgentChecksCommand())
 	cmd.AddCommand(newAgentForceLeaveCommand())
 	cmd.AddCommand(newAgentJoinCommand())
+	cmd.AddCommand(newAgentLeaveCommand())
 	cmd.AddCommand(newAgentMaintenanceCommand())
 	cmd.AddCommand(newAgentMembersCommand())
-//	cmd.AddCommand(newAgentReloadCommand())
+	cmd.AddCommand(newAgentReloadCommand())
 	cmd.AddCommand(newAgentSelfCommand())
 	cmd.AddCommand(newAgentServicesCommand())
 
@@ -124,6 +125,30 @@ func agentJoin(cmd *cobra.Command, args []string) error {
 	return client.Join(args[0], viper.GetBool("wan"))
 }
 
+// Leave functions
+
+func newAgentLeaveCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "leave",
+		Short: "Cause the agent to gracefully shutdown and leave the cluster",
+		Long: "Cause the agent to gracefully shutdown and leave the cluster",
+		RunE:  agentLeave,
+	}
+
+	return cmd
+}
+
+func agentLeave(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	return client.Leave()
+}
+
 // Maintenance functions
 
 func newAgentMaintenanceCommand() *cobra.Command {
@@ -186,6 +211,30 @@ func agentMembers(cmd *cobra.Command, args []string) error {
 	}
 
 	return output(ms)
+}
+
+// Reload functions
+
+func newAgentReloadCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "reload",
+		Short: "Tell the Consul agent to reload its configuration",
+		Long: "Tell the Consul agent to reload its configuration",
+		RunE: agentReload,
+	}
+
+	return cmd
+}
+
+func agentReload(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	return client.Reload()
 }
 
 // Self functions
