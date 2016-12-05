@@ -10,14 +10,14 @@ import (
 )
 
 const Name = "consul-cli"
-const Version = "0.3.1"
+const Version = "0.4.0"
 
 func main() {
 	log.SetOutput(ioutil.Discard)
 
 	root := commands.Init(Name, Version)
 	if err := root.Execute(); err != nil {
-		fmt.Fprintln(root.Err, err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 

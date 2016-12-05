@@ -11,29 +11,11 @@ import (
 
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-type consul struct {
-	address    string
-	sslEnabled bool
-	sslVerify  bool
-	sslCert    string
-	sslKey     string
-	sslCaCert  string
-	token      string
-	tokenFile  string
-	auth       *auth
-	tlsConfig  *tls.Config
-	quiet      bool
-
-	dc         string
-	waitIndex  uint64
-	consistent bool
-	stale      bool
-}
-
-func (c *Cmd) ACL() (*consulapi.ACL, error) {
-	consul, err := c.Client()
+func newACL() (*consulapi.ACL, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +23,8 @@ func (c *Cmd) ACL() (*consulapi.ACL, error) {
 	return consul.ACL(), nil
 }
 
-func (c *Cmd) Agent() (*consulapi.Agent, error) {
-	consul, err := c.Client()
+func newAgent() (*consulapi.Agent, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +32,8 @@ func (c *Cmd) Agent() (*consulapi.Agent, error) {
 	return consul.Agent(), nil
 }
 
-func (c *Cmd) Catalog() (*consulapi.Catalog, error) {
-	consul, err := c.Client()
+func newCatalog() (*consulapi.Catalog, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +41,8 @@ func (c *Cmd) Catalog() (*consulapi.Catalog, error) {
 	return consul.Catalog(), nil
 }
 
-func (c *Cmd) Coordinate() (*consulapi.Coordinate, error) {
-	consul, err := c.Client()
+func newCoordinate() (*consulapi.Coordinate, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +50,8 @@ func (c *Cmd) Coordinate() (*consulapi.Coordinate, error) {
 	return consul.Coordinate(), nil
 }
 
-func (c *Cmd) Health() (*consulapi.Health, error) {
-	consul, err := c.Client()
+func newHealth() (*consulapi.Health, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -77,8 +59,8 @@ func (c *Cmd) Health() (*consulapi.Health, error) {
 	return consul.Health(), nil
 }
 
-func (c *Cmd) KV() (*consulapi.KV, error) {
-	consul, err := c.Client()
+func newKv() (*consulapi.KV, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +68,8 @@ func (c *Cmd) KV() (*consulapi.KV, error) {
 	return consul.KV(), nil
 }
 
-func (c *Cmd) Session() (*consulapi.Session, error) {
-	consul, err := c.Client()
+func newSession() (*consulapi.Session, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +77,8 @@ func (c *Cmd) Session() (*consulapi.Session, error) {
 	return consul.Session(), nil
 }
 
-func (c *Cmd) Status() (*consulapi.Status, error) {
-	consul, err := c.Client()
+func newStatus() (*consulapi.Status, error) {
+	consul, err := newClient()
 	if err != nil {
 		return nil, err
 	}
@@ -104,77 +86,99 @@ func (c *Cmd) Status() (*consulapi.Status, error) {
 	return consul.Status(), nil
 }
 
-func (c *Cmd) Client() (*consulapi.Client, error) {
+func newClient() (*consulapi.Client, error) {
 	config := consulapi.DefaultConfig()
-	csl := c.consul
-	csl.tlsConfig = new(tls.Config)
 
-	if csl.address != "" {
-		config.Address = c.consul.address
+	// Consul address handling
+
+	address := viper.GetString("consul")
+	if address != "" {
+		config.Address = address
 	}
 
-	if csl.token != "" && csl.tokenFile != "" {
+	// ACL token handling
+
+	token := viper.GetString("token")
+	tokenFile := viper.GetString("token-file")
+
+	if token != "" && tokenFile != "" {
 		return nil, errors.New("--token and --token-file can not both be provided")
 	}
 
-	if csl.tokenFile != "" {
-		b, err := ioutil.ReadFile(csl.tokenFile)
+	if tokenFile != "" {
+		b, err := ioutil.ReadFile(tokenFile)
 		if err != nil {
 			return nil, fmt.Errorf("Error reading token file: %s", err)
 		}
-
 		config.Token = strings.TrimSpace(string(b))
 	}
 
-	if csl.token != "" {
-		config.Token = csl.token
+	if token != "" {
+		config.Token = token
 	}
 
-	if csl.sslEnabled {
+	// SSL handling
+
+	sslEnabled := viper.GetBool("ssl")
+	if sslEnabled {
 		config.Scheme = "https"
 
-		if csl.sslCert != "" {
-			if csl.sslKey == "" {
+		tlsConfig := new(tls.Config)
+		transport := new(http.Transport)
+
+		sslCert := viper.GetString("ssl-cert")
+		sslKey := viper.GetString("ssl-key")
+		sslCaCert := viper.GetString("ssl-ca-cert")
+		sslVerify := viper.GetBool("ssl-verify")
+
+		if sslCert != "" {
+			if sslKey != "" {
 				return nil, errors.New("--ssl-key must be provided in order to use certificates for authentication")
 			}
-			clientCert, err := tls.LoadX509KeyPair(csl.sslCert, csl.sslKey)
+			clientCert, err := tls.LoadX509KeyPair(sslCert, sslKey)
 			if err != nil {
 				return nil, err
 			}
 
-			csl.tlsConfig.Certificates = []tls.Certificate{clientCert}
-			csl.tlsConfig.BuildNameToCertificate()
+			tlsConfig.Certificates = []tls.Certificate{clientCert}
+			tlsConfig.BuildNameToCertificate()
 		}
 
-		if csl.sslVerify {
-			if csl.sslCaCert == "" {
+		if sslVerify {
+			if sslCaCert == "" {
 				return nil, errors.New("--ssl-ca-cert must be provided in order to use certificates for verification")
 			}
 
-			caCert, err := ioutil.ReadFile(csl.sslCaCert)
+			caCert, err := ioutil.ReadFile(sslCaCert)
 			if err != nil {
 				return nil, err
 			}
 
 			caCertPool := x509.NewCertPool()
 			caCertPool.AppendCertsFromPEM(caCert)
-			csl.tlsConfig.RootCAs = caCertPool
+			tlsConfig.RootCAs = caCertPool
+		} else {
+			tlsConfig.InsecureSkipVerify = true
 		}
+
+		transport.TLSClientConfig = tlsConfig
+		config.HttpClient.Transport = transport
 	}
 
-	transport := new(http.Transport)
-	transport.TLSClientConfig = csl.tlsConfig
+	// Auth handling
 
-	if !csl.sslVerify {
-		transport.TLSClientConfig.InsecureSkipVerify = true
-	}
-	config.HttpClient.Transport = transport
+	authString := viper.GetString("auth")
 
-	if csl.auth.Enabled {
-		config.HttpAuth = &consulapi.HttpBasicAuth{
-			Username: csl.auth.Username,
-			Password: csl.auth.Password,
+	if authString != "" {
+		auth := new(consulapi.HttpBasicAuth)
+		if strings.Contains(authString, ":") {
+			split := strings.SplitN(authString, ":", 2)
+			auth.Username = split[0]
+			auth.Password = split[1]
+		} else {
+			auth.Username = authString
 		}
+		config.HttpAuth = auth
 	}
 
 	client, err := consulapi.NewClient(config)
@@ -182,98 +186,55 @@ func (c *Cmd) Client() (*consulapi.Client, error) {
 		return nil, err
 	}
 
-	return client, nil
+	return client, err
 }
 
-func (c *Cmd) WriteOptions() *consulapi.WriteOptions {
-	csl := c.consul
-
+func writeOptions() *consulapi.WriteOptions {
 	writeOpts := new(consulapi.WriteOptions)
-	if csl.token != "" {
-		writeOpts.Token = csl.token
+
+	token := viper.GetString("token")
+	if token != "" {
+		writeOpts.Token = token
 	}
 
-	if csl.dc != "" {
-		writeOpts.Datacenter = csl.dc
+	dc := viper.GetString("datacenter")
+	if dc != "" {
+		writeOpts.Datacenter = dc
 	}
 
 	return writeOpts
 }
 
-func (c *Cmd) QueryOptions() *consulapi.QueryOptions {
-	csl := c.consul
-
+func queryOptions() *consulapi.QueryOptions {
 	queryOpts := new(consulapi.QueryOptions)
-	if csl.token != "" {
-		queryOpts.Token = csl.token
+
+	if token := viper.GetString("token"); token != "" {
+		queryOpts.Token = token
 	}
 
-	if csl.dc != "" {
-		queryOpts.Datacenter = csl.dc
+	if dc := viper.GetString("datacenter"); dc != "" {
+		queryOpts.Datacenter = dc
 	}
 
-	if csl.waitIndex != 0 {
-		queryOpts.WaitIndex = csl.waitIndex
+	if wi := viper.Get("wait-index"); wi != nil {
+		queryOpts.WaitIndex = wi.(uint64)
 	}
 
-	if csl.consistent {
-		queryOpts.RequireConsistent = csl.consistent
-	}
-
-	if csl.stale {
-		queryOpts.AllowStale = csl.stale
-	}
+	queryOpts.RequireConsistent = viper.GetBool("consistent")
+	queryOpts.AllowStale = viper.GetBool("stale")
 
 	return queryOpts
 }
 
-func (c *Cmd) AddDatacenterOption(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&c.consul.dc, "datacenter", "", "Consul data center")
+func addDatacenterOption(cmd *cobra.Command) {
+	cmd.Flags().String("datacenter", "", "Consul data center")
 }
 
-func (c *Cmd) AddWaitIndexOption(cmd *cobra.Command) {
-	cmd.Flags().Uint64Var(&c.consul.waitIndex, "wait-index", 0, "Only return if ModifyIndex is greater than <index>")
+func addWaitIndexOption(cmd *cobra.Command) {
+	cmd.Flags().Uint64("wait-index", 0, "Only return if ModifyIndex is greater than <index>")
 }
 
-func (c *Cmd) AddConsistency(cmd *cobra.Command) {
-	cmd.Flags().BoolVar(&c.consul.consistent, "consistent", false, "Enable strong consistency")
-	cmd.Flags().BoolVar(&c.consul.stale, "stale", false, "Allow any agent to service the request")
-}
-
-func NewConsul() *consul {
-	return &consul{
-		auth: new(auth),
-	}
-}
-
-type auth struct {
-	Enabled  bool
-	Username string
-	Password string
-}
-
-func (a *auth) Set(value string) error {
-	a.Enabled = true
-
-	if strings.Contains(value, ":") {
-		split := strings.SplitN(value, ":", 2)
-		a.Username = split[0]
-		a.Password = split[1]
-	} else {
-		a.Username = value
-	}
-
-	return nil
-}
-
-func (a *auth) String() string {
-	if a.Password == "" {
-		return a.Username
-	}
-
-	return fmt.Sprintf("%s:%s", a.Username, a.Password)
-}
-
-func (a *auth) Type() string {
-	return "auth"
+func addConsistencyOptions(cmd *cobra.Command) {
+	cmd.Flags().Bool("consistent", false, "Enable strong consistency")
+	cmd.Flags().Bool("stale", false, "Allow any agent to service the request")
 }

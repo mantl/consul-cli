@@ -1,17 +1,14 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-type Agent struct {
-	*Cmd
-}
-
-func (root *Cmd) initAgent() {
-	a := Agent{Cmd: root}
-
-	agentCmd := &cobra.Command{
+func newAgentCommand() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "agent",
 		Short: "Consul /agent endpoint interface",
 		Long:  "Consul /agent endpoint interface",
@@ -20,12 +17,235 @@ func (root *Cmd) initAgent() {
 		},
 	}
 
-	a.AddChecksSub(agentCmd)
-	a.AddForceLeaveSub(agentCmd)
-	a.AddJoinSub(agentCmd)
-	a.AddMaintenanceSub(agentCmd)
-	a.AddMembersSub(agentCmd)
-	a.AddSelfSub(agentCmd)
-	a.AddServicesSub(agentCmd)
-	a.AddCommand(agentCmd)
+	cmd.AddCommand(newAgentChecksCommand())
+	cmd.AddCommand(newAgentForceLeaveCommand())
+	cmd.AddCommand(newAgentJoinCommand())
+	cmd.AddCommand(newAgentMaintenanceCommand())
+	cmd.AddCommand(newAgentMembersCommand())
+//	cmd.AddCommand(newAgentReloadCommand())
+	cmd.AddCommand(newAgentSelfCommand())
+	cmd.AddCommand(newAgentServicesCommand())
+
+	return cmd
+}
+
+// Checks functions
+
+func newAgentChecksCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "checks",
+		Short: "Get the checks the agent is managing",
+		Long:  "Get the checks the agent is managing",
+		RunE:  agentChecks,
+	}
+
+	addTemplateOption(cmd)
+
+	return cmd
+}
+
+func agentChecks(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	config, err := client.Checks()
+	if err != nil {
+		return err
+	}
+
+	return output(config)
+}
+
+// Force Leave functions
+
+func newAgentForceLeaveCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "force-leave <node name>",
+		Short: "Force the removal of a node",
+		Long:  "Force the removal of a node",
+		RunE:  agentForceLeave,
+	}
+
+	return cmd
+}
+
+func agentForceLeave(cmd *cobra.Command, args []string) error {
+	switch {
+	case len(args) == 0:
+		return fmt.Errorf("Name not provided")
+	case len(args) > 1:
+		return fmt.Errorf("Only one node allowed")
+	}
+
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	return client.ForceLeave(args[0])
+}
+
+// Join functions
+
+func newAgentJoinCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "join",
+		Short: "Trigger the local agent to join a node",
+		Long:  "Trigger the local agent to join a node",
+		RunE:  agentJoin,
+	}
+
+	cmd.Flags().Bool("wan", false, "Get list of WAN join instead of LAN")
+
+	return cmd
+}
+
+func agentJoin(cmd *cobra.Command, args []string) error {
+	switch {
+	case len(args) == 0:
+		return fmt.Errorf("Node name must be specified")
+	case len(args) > 1:
+		return fmt.Errorf("Only one name allowed")
+	}
+
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	return client.Join(args[0], viper.GetBool("wan"))
+}
+
+// Maintenance functions
+
+func newAgentMaintenanceCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "maintenance",
+		Short: "Manage node maintenance mode",
+		Long:  "Manage node maintenance mode",
+		RunE:  agentMaintenance,
+	}
+
+	cmd.Flags().Bool("enabled", true, "Boolean value for maintenance mode")
+	cmd.Flags().String("reason", "", "Reason for entering maintenance mode")
+
+	return cmd
+}
+
+func agentMaintenance(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	if viper.GetBool("enabled") {
+		return client.EnableNodeMaintenance(viper.GetString("reason"))
+	} else {
+		return client.DisableNodeMaintenance()
+	}
+}
+
+// Members functions
+
+func newAgentMembersCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "members",
+		Short: "Get the members as seen by the serf agent",
+		Long:  "Get the members as seen by the serf agent",
+		RunE:  agentMembers,
+	}
+
+	cmd.Flags().Bool("wan", false, "Get list of WAN members instead of LAN")
+
+	addTemplateOption(cmd)
+
+	return cmd
+}
+
+func agentMembers(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	ms, err := client.Members(viper.GetBool("wan"))
+	if err != nil {
+		return err
+	}
+
+	return output(ms)
+}
+
+// Self functions
+
+func newAgentSelfCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "self",
+		Short: "Get agent configuration",
+		Long:  "Get agent configuration",
+		RunE:  agentSelf,
+	}
+
+	addTemplateOption(cmd)
+
+	return cmd
+}
+
+func agentSelf(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	config, err := client.Self()
+	if err != nil {
+		return err
+	}
+
+	return output(config)
+}
+
+// Services functions
+
+func newAgentServicesCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "services",
+		Short: "Get the services the agent is managing",
+		Long:  "Get the services the agent is managing",
+		RunE:  agentServices,
+	}
+
+	addTemplateOption(cmd)
+
+	return cmd
+}
+
+func agentServices(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newAgent()
+	if err != nil {
+		return err
+	}
+
+	config, err := client.Services()
+	if err != nil {
+		return err
+	}
+
+	return output(config)
 }

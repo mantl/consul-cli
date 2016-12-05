@@ -8,17 +8,13 @@ import (
 	"os"
 	"strings"
 
+	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-type Acl struct {
-	*Cmd
-}
-
-func (root *Cmd) initAcl() {
-	a := Acl{Cmd: root}
-
-	aclCmd := &cobra.Command{
+func newAclCommand() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "acl",
 		Short: "Consul /acl endpoint interface",
 		Long:  "Consul /acl endpoint interface",
@@ -27,25 +23,15 @@ func (root *Cmd) initAcl() {
 		},
 	}
 
-	a.AddCloneSub(aclCmd)
-	a.AddCreateSub(aclCmd)
-	a.AddDestroySub(aclCmd)
-	a.AddInfoSub(aclCmd)
-	a.AddListSub(aclCmd)
-	a.AddUpdateSub(aclCmd)
+	cmd.AddCommand(newAclCloneCommand())
+	cmd.AddCommand(newAclCreateCommand())
+	cmd.AddCommand(newAclDestroyCommand())
+	cmd.AddCommand(newAclInfoCommand())
+	cmd.AddCommand(newAclListCommand())
+	cmd.AddCommand(newAclReplicationCommand())
+	cmd.AddCommand(newAclUpdateCommand())
 
-	a.AddCommand(aclCmd)
-}
-
-func (a *Acl) CheckIdArg(args []string) bool {
-	switch {
-	case len(args) == 0:
-		return false
-	case len(args) > 1:
-		return false
-	}
-
-	return true
+	return cmd
 }
 
 type ConfigRule struct {
@@ -54,25 +40,31 @@ type ConfigRule struct {
 	Policy   string
 }
 
-func (a *Acl) ParseRuleConfig(s string) (*ConfigRule, error) {
-	if len(strings.TrimSpace(s)) < 1 {
-		return nil, errors.New("cannot specify empty rule declaration")
+func parseRules(rules []string) ([]*ConfigRule, error) {
+	rval := make([]*ConfigRule, len(rules))
+
+	for i, rule := range rules {
+		if len(strings.TrimSpace(rule)) < 1 {
+			return nil, errors.New("cannot specify empty rule declaration")
+		}
+
+		var pathType, path, policy string
+		parts := strings.Split(rule, ":")
+
+		switch len(parts) {
+		case 2:
+			pathType, path = parts[0], parts[1]
+			policy = "read"
+		case 3:
+			pathType, path, policy = parts[0], parts[1], parts[2]
+		default:
+			return nil, fmt.Errorf("invalid rule declaration '%s'", rule)
+		}
+
+		rval[i] = &ConfigRule{pathType, path, policy}
 	}
 
-	var pathType, path, policy string
-	parts := strings.Split(s, ":")
-
-	switch len(parts) {
-	case 2:
-		pathType, path = parts[0], parts[1]
-		policy = "read"
-	case 3:
-		pathType, path, policy = parts[0], parts[1], parts[2]
-	default:
-		return nil, fmt.Errorf("invalid rule declaration '%s'", s)
-	}
-
-	return &ConfigRule{pathType, path, policy}, nil
+	return rval, nil
 }
 
 type rulePath struct {
@@ -86,7 +78,7 @@ type aclRule struct {
 	Query   map[string]*rulePath `json:"query,omitempty"`
 }
 
-func NewAclRule() *aclRule {
+func newAclRule() *aclRule {
 	return &aclRule{
 		Key:     make(map[string]*rulePath),
 		Service: make(map[string]*rulePath),
@@ -95,7 +87,7 @@ func NewAclRule() *aclRule {
 	}
 }
 
-func (a *Acl) ReadRawAcl(raw string) (string, error) {
+func readRawAcl(raw string) (string, error) {
 	if raw == "-" {
 		rules, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
@@ -113,8 +105,8 @@ func (a *Acl) ReadRawAcl(raw string) (string, error) {
 }
 
 // Convert a list of Rules to a JSON string
-func (a *Acl) GetRulesString(rs []*ConfigRule) (string, error) {
-	rules := NewAclRule()
+func getRulesString(rs []*ConfigRule) (string, error) {
+	rules := newAclRule()
 
 	for _, r := range rs {
 		// Verify policy is one of "read", "write", or "deny"
@@ -145,4 +137,313 @@ func (a *Acl) GetRulesString(rs []*ConfigRule) (string, error) {
 	}
 
 	return string(ruleBytes), nil
+}
+
+// Clone functions
+
+func newAclCloneCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "clone <token>",
+		Short: "Create a new token from an existing one",
+		Long:  "Create a new token from an existing one",
+		RunE:  aclClone,
+	}
+
+	return cmd
+}
+
+func aclClone(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("A single ACL id must be specified")
+	}
+
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newACL()
+	if err != nil {
+		return err
+	}
+
+	writeOpts := writeOptions()
+
+	newid, _, err := client.Clone(args[0], writeOpts)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(newid)
+
+	return nil
+}
+
+// Create functions
+
+func newAclCreateCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create [<id>]",
+		Short: "Create an ACL. Requires a management token.",
+		Long:  "Create an ACL. Requires a management token.",
+		RunE:  aclCreate,
+	}
+
+	cmd.Flags().Bool("management", false, "Create a management token")
+	cmd.Flags().String("name", "", "Name of the ACL")
+	cmd.Flags().StringSlice("rule", nil, "Rule to create. Can be multiple rules on a command line. Format is type:path:policy")
+	cmd.Flags().String("raw", "", "Raw ACL rule definition")
+
+	return cmd
+}
+
+func aclCreate(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newACL()
+	if err != nil {
+		return err
+	}
+
+	entry := new(consulapi.ACLEntry)
+	entry.Name = viper.GetString("name")
+
+	switch {
+	case len(args) == 1:
+		entry.ID = args[0]
+	case len(args) > 1:
+		return fmt.Errorf("Only one ACL identified can be specified")
+	}
+
+	if viper.GetBool("management") {
+		entry.Type = consulapi.ACLManagementType
+	} else {
+		entry.Type = consulapi.ACLClientType
+	}
+
+	if raw := viper.GetString("raw"); raw != "" {
+		rules, err := readRawAcl(raw)
+		if err != nil {
+			return err
+		}
+		entry.Rules = rules
+	} else {
+		ruleList, err := parseRules(viper.GetStringSlice("rule"))
+		if err != nil {
+			return err
+		}
+
+		rules, err := getRulesString(ruleList)
+		if err != nil {
+			return err
+		}
+		entry.Rules = rules
+	}
+
+	writeOpts := writeOptions()
+	id, _, err := client.Create(entry, writeOpts)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(id)
+
+	return nil
+}
+
+// Destroy functions
+
+func newAclDestroyCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "destroy <token>",
+		Short: "Destroy an ACL",
+		Long:  "Destroy an ACL",
+		RunE:  aclDestroy,
+	}
+
+	return cmd
+}
+
+func aclDestroy(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("A single ACL id must be specified")
+	}
+	id := args[0]
+
+	client, err := newACL()
+	if err != nil {
+		return err
+	}
+
+	writeOpts := writeOptions()
+	_, err = client.Destroy(id, writeOpts)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Info functions
+
+func newAclInfoCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "info <token>",
+		Short: "Query information about an ACL token",
+		Long:  "Query information about an ACL token",
+		RunE:  aclInfo,
+	}
+
+	addTemplateOption(cmd)
+
+	return cmd
+}
+
+func aclInfo(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("An ACL id must be specified")
+	}
+	id := args[0]
+
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newACL()
+	if err != nil {
+		return err
+	}
+
+	queryOpts := queryOptions()
+	acl, _, err := client.Info(id, queryOpts)
+	if err != nil {
+		return err
+	}
+
+	return output(acl)
+}
+
+// List functions
+
+func newAclListCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "list",
+		Short: "List all active ACL tokens",
+		Long:  "List all active ACL tokens",
+		RunE:  aclList,
+	}
+
+	addTemplateOption(cmd)
+
+	return cmd
+}
+
+func aclList(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newACL()
+	if err != nil {
+		return err
+	}
+
+	queryOpts := queryOptions()
+	acls, _, err := client.List(queryOpts)
+	if err != nil {
+		return err
+	}
+
+	return output(acls)
+}
+
+// Replication functions
+
+func newAclReplicationCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "replication",
+		Short: "Get the status of the ACL replication process",
+		Long: "Get the status of the ACL replication process",
+		RunE: aclReplication,
+		Hidden: true,
+	}
+
+	addDatacenterOption(cmd)
+	addTemplateOption(cmd)
+
+	return cmd
+}
+
+func aclReplication(cmd *cobra.Command, args []string) error {
+	return fmt.Errorf("ACL replication status not available in Consul API")
+
+//	viper.BindPFlags(cmd.Flags())
+//
+//	client, err := newACL()
+//	if err != nil {
+//		return err
+//	}
+}
+
+// Update functions
+
+func newAclUpdateCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update <token>",
+		Short: "Update an ACL. Will be created if it doesn't exist",
+		Long:  "Update an ACL. Will be created if it doesn't exist",
+		RunE:  aclUpdate,
+	}
+
+	cmd.Flags().Bool("management", false, "Create a management token")
+	cmd.Flags().String("name", "", "Name of the ACL")
+	cmd.Flags().StringSlice("rule", nil, "Rule to update. Can be multiple rules on a command line. Format is type:path:policy")
+	cmd.Flags().String("raw", "", "Raw ACL rule definition")
+
+	return cmd
+}
+
+func aclUpdate(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("An ACL id must be specified")
+	}
+	id := args[0]
+
+	viper.BindPFlags(cmd.Flags())
+
+	client, err := newACL()
+	if err != nil {
+		return err
+	}
+
+	entry := new(consulapi.ACLEntry)
+	entry.Name = viper.GetString("name")
+	entry.ID = id
+
+	if viper.GetBool("management") {
+		entry.Type = consulapi.ACLManagementType
+	} else {
+		entry.Type = consulapi.ACLClientType
+	}
+
+	if raw := viper.GetString("raw"); raw != "" {
+		rules, err := readRawAcl(raw)
+		if err != nil {
+			return err
+		}
+		entry.Rules = rules
+	} else {
+		ruleList, err := parseRules(viper.GetStringSlice("rule"))
+		if err != nil {
+			return err
+		}
+
+		rules, err := getRulesString(ruleList)
+		if err != nil {
+			return err
+		}
+
+		entry.Rules = rules
+	}
+
+	writeOpts := writeOptions()
+	_, err = client.Update(entry, writeOpts)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -4,19 +4,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"text/template"
+
+	"github.com/spf13/viper"
 )
 
-func (c *Cmd) Output(v interface{}) error {
-	if c.Template == "" {
-		return c.OutputJSON(v, true)
+func output(v interface{}) error {
+	if viper.GetString("template") == "" {
+		return outputJSON(v, true)
 	} else {
-		return c.OutputTemplate(v)
+		return outputTemplate(v)
 	}
 }
 
-func (c *Cmd) OutputJSON(v interface{}, prettyFlag bool) error {
+func outputJSON(v interface{}, prettyFlag bool) error {
 	var err error
 	var jsonRaw []byte
 
@@ -32,31 +35,32 @@ func (c *Cmd) OutputJSON(v interface{}, prettyFlag bool) error {
 
 	jsonStr := string(jsonRaw)
 	if strings.HasSuffix(jsonStr, "\n") {
-		fmt.Fprintf(c.Out, jsonStr)
+		fmt.Printf(jsonStr)
 	} else {
-		fmt.Fprintf(c.Out, jsonStr+"\n")
+		fmt.Printf(jsonStr + "\n")
 	}
 
 	return nil
 }
 
-func (c *Cmd) OutputTemplate(v interface{}) error {
-	if c.Template == "" {
+func outputTemplate(v interface{}) error {
+	tmpl := viper.GetString("template")
+	if tmpl == "" {
 		return fmt.Errorf("Empty output template")
 	}
 
-	if strings.HasPrefix(c.Template, "@") {
-		v, err := ioutil.ReadFile(c.Template[1:])
+	if strings.HasPrefix(tmpl, "@") {
+		v, err := ioutil.ReadFile(tmpl[1:])
 		if err != nil {
 			return err
 		}
-		c.Template = string(v)
+		tmpl = string(v)
 	}
 
-	template, err := template.New("").Parse(c.Template)
+	template, err := template.New("").Parse(tmpl)
 	if err != nil {
 		return err
 	}
 
-	return template.Execute(c.Out, v)
+	return template.Execute(os.Stdout, v)
 }

@@ -2,36 +2,16 @@ package commands
 
 import (
 	"fmt"
-	"io"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
-type Cmd struct {
-	root *cobra.Command
-
-	Err io.Writer
-	Out io.Writer
-
-	consul *consul
-
-	Template string
-}
-
-func Init(name, version string) *Cmd {
-	c := Cmd{
-		Err: os.Stderr,
-		Out: os.Stdout,
-		consul: &consul{
-			auth: new(auth),
-		},
-	}
-
-	c.root = &cobra.Command{
-		Use:   "consul-cli",
-		Short: "Command line interface for Consul HTTP API",
-		Long:  "Command line interface for Consul HTTP API",
+func Init(name, version string) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:           "consul-cli",
+		Short:         "Command line interface for Consul HTTP API",
+		Long:          "Command line interface for Consul HTTP API",
+		SilenceErrors: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -40,27 +20,27 @@ func Init(name, version string) *Cmd {
 		},
 	}
 
-	c.root.PersistentFlags().StringVar(&c.consul.address, "consul", "", "Consul address:port")
-	c.root.PersistentFlags().BoolVar(&c.consul.sslEnabled, "ssl", false, "Use HTTPS when talking to Consul")
-	c.root.PersistentFlags().BoolVar(&c.consul.sslVerify, "ssl-verify", true, "Verify certificates when connecting via SSL")
-	c.root.PersistentFlags().StringVar(&c.consul.sslCert, "ssl-cert", "", "Path to an SSL client certificate for authentication")
-	c.root.PersistentFlags().StringVar(&c.consul.sslKey, "ssl-key", "", "Path to an SSL client certificate key for authentication")
-	c.root.PersistentFlags().StringVar(&c.consul.sslCaCert, "ssl-ca-cert", "", "Path to a CA certificate file to validate the Consul server")
-	c.root.PersistentFlags().Var((*auth)(c.consul.auth), "auth", "The HTTP basic authentication username (and optional password) separated by a colon")
-	c.root.PersistentFlags().StringVar(&c.consul.token, "token", "", "The Consul ACL token")
-	c.root.PersistentFlags().StringVar(&c.consul.tokenFile, "token-file", "", "Path to file containing Consul ACL token")
-	c.root.PersistentFlags().BoolVarP(&c.root.SilenceUsage, "quiet", "q", true, "Don't show usage on error")
+	cmd.PersistentFlags().String("consul", "", "Consul address:port")
+	cmd.PersistentFlags().Bool("ssl", false, "Use HTTPS when talking to Consul")
+	cmd.PersistentFlags().Bool("ssl-verify", true, "Verify certificates when connecting via SSL")
+	cmd.PersistentFlags().String("ssl-cert", "", "Path to an SSL client certificate for authentication")
+	cmd.PersistentFlags().String("ssl-key", "", "Path to an SSL client certificate key for authentication")
+	cmd.PersistentFlags().String("ssl-ca-cert", "", "Path to a CA certificate file to validate the Consul server")
+	cmd.PersistentFlags().String("auth", "", "The HTTP basic authentication username (and optional password) separated by a colon")
+	cmd.PersistentFlags().String("token", "", "The Consul ACL token")
+	cmd.PersistentFlags().String("token-file", "", "Path to file containing Consul ACL token")
+	cmd.PersistentFlags().BoolVarP(&cmd.SilenceUsage, "quiet", "q", true, "Don't show usage on error")
 
-	c.initAcl()
-	c.initAgent()
-	c.initCatalog()
-	c.initCheck()
-	c.initCoordinate()
-	c.initHealth()
-	c.initKv()
-	c.initService()
-	c.initSession()
-	c.initStatus()
+	cmd.AddCommand(newAclCommand())
+	cmd.AddCommand(newAgentCommand())
+	cmd.AddCommand(newCatalogCommand())
+	cmd.AddCommand(newCheckCommand())
+	cmd.AddCommand(newCoordinateCommand())
+	cmd.AddCommand(newKvCommand())
+	cmd.AddCommand(newHealthCommand())
+	cmd.AddCommand(newServiceCommand())
+	cmd.AddCommand(newSessionCommand())
+	cmd.AddCommand(newStatusCommand())
 
 	versionCmd := &cobra.Command{
 		Use:   "version",
@@ -71,26 +51,11 @@ func Init(name, version string) *Cmd {
 			return nil
 		},
 	}
-	c.root.AddCommand(versionCmd)
+	cmd.AddCommand(versionCmd)
 
-	return &c
+	return cmd
 }
 
-func (c *Cmd) Execute() error {
-	return c.root.Execute()
+func addTemplateOption(cmd *cobra.Command) {
+	cmd.Flags().String("template", "", "Output template. Use @filename to read template from a file")
 }
-
-func (c *Cmd) AddCommand(cmd *cobra.Command) {
-	c.root.AddCommand(cmd)
-}
-
-func (c *Cmd) AddTemplateOption(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&c.Template, "template", "", "Output template. Use @filename to read template from a file")
-}
-
-type funcVar func(s string) error
-
-func (f funcVar) Set(s string) error { return f(s) }
-func (f funcVar) String() string     { return "" }
-func (f funcVar) IsBoolFlag() bool   { return false }
-func (f funcVar) Type() string       { return "funcVar" }
