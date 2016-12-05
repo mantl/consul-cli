@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"strconv"
 
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
@@ -205,7 +204,7 @@ func checkRegister(cmd *cobra.Command, args []string) error {
 			HTTP:              viper.GetString("http"),
 			Interval:          viper.GetString("interval"),
 			TTL:               viper.GetString("ttl"),
-			TLSSkipVerify:     strconv.FormatBool(viper.GetBool("skip-verify")),
+			TLSSkipVerify:     viper.GetBool("skip-verify"),
 			DockerContainerID: viper.GetString("docker-id"),
 			Shell:             viper.GetString("shell"),
 			Notes:             viper.GetString("notes"),

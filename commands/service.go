@@ -206,7 +206,7 @@ func parseChecks(checks []string) ([]*consulapi.AgentServiceCheck, error) {
 				rval[i] = &consulapi.AgentServiceCheck{
 					HTTP:          parts[2],
 					Interval:      parts[1],
-					TLSSkipVerify: parts[3],
+					//TLSSkipVerify: parts[3],
 				}
 			}
 		case "script":
