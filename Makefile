@@ -36,11 +36,12 @@ vendor:
 vendor-clean:
 	-rm -rf vendor/
 
-package: xcompile
+#package: xcompile
+package: 
 	$(eval FILES := $(shell ls build))
-	@mkdir -p build/tgz
+	@mkdir -p build/zip
 	for f in $(FILES); do \
-		(cd $(shell pwd)/build && tar -zcvf tgz/$$f.tar.gz $$f); \
+		(cd $(shell pwd)/build/$$f && zip ../zip/$$f.zip consul-cli*); \
 		echo $$f; \
 	done
 
