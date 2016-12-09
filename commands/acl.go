@@ -89,8 +89,6 @@ func getRulesString(rs []string) (string, error) {
 		return "", errors.New("No ACL rules specified")
 	}
 
-	fmt.Println(rs)
-
 	rules := &aclRule{
 		Key: make(map[string]*rulePath),
 		Service: make(map[string]*rulePath),
