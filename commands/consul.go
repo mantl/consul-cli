@@ -68,6 +68,15 @@ func newKv() (*consulapi.KV, error) {
 	return consul.KV(), nil
 }
 
+func newOperator() (*consulapi.Operator, error) {
+	consul, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Operator(), nil
+}
+
 func newSession() (*consulapi.Session, error) {
 	consul, err := newClient()
 	if err != nil {

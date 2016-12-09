@@ -38,6 +38,7 @@ func Init(name, version string) *cobra.Command {
 	cmd.AddCommand(newCoordinateCommand())
 	cmd.AddCommand(newKvCommand())
 	cmd.AddCommand(newHealthCommand())
+	cmd.AddCommand(newOperatorCommand())
 	cmd.AddCommand(newServiceCommand())
 	cmd.AddCommand(newSessionCommand())
 	cmd.AddCommand(newStatusCommand())
