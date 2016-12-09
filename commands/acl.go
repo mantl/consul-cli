@@ -34,39 +34,6 @@ func newAclCommand() *cobra.Command {
 	return cmd
 }
 
-type ConfigRule struct {
-	PathType string
-	Path     string
-	Policy   string
-}
-
-func parseRules(rules []string) ([]*ConfigRule, error) {
-	rval := make([]*ConfigRule, len(rules))
-
-	for i, rule := range rules {
-		if len(strings.TrimSpace(rule)) < 1 {
-			return nil, errors.New("cannot specify empty rule declaration")
-		}
-
-		var pathType, path, policy string
-		parts := strings.Split(rule, ":")
-
-		switch len(parts) {
-		case 2:
-			pathType, path = parts[0], parts[1]
-			policy = "read"
-		case 3:
-			pathType, path, policy = parts[0], parts[1], parts[2]
-		default:
-			return nil, fmt.Errorf("invalid rule declaration '%s'", rule)
-		}
-
-		rval[i] = &ConfigRule{pathType, path, policy}
-	}
-
-	return rval, nil
-}
-
 type rulePath struct {
 	Policy string
 }
@@ -76,15 +43,8 @@ type aclRule struct {
 	Service map[string]*rulePath `json:"service,omitempty"`
 	Event   map[string]*rulePath `json:"event,omitempty"`
 	Query   map[string]*rulePath `json:"query,omitempty"`
-}
-
-func newAclRule() *aclRule {
-	return &aclRule{
-		Key:     make(map[string]*rulePath),
-		Service: make(map[string]*rulePath),
-		Event:   make(map[string]*rulePath),
-		Query:   make(map[string]*rulePath),
-	}
+	Keyring string `json:"keyring,omitempty"`
+        Operator string `json:"operator,omitempty"`
 }
 
 func readRawAcl(raw string) (string, error) {
@@ -104,30 +64,57 @@ func readRawAcl(raw string) (string, error) {
 	return string(rules), nil
 }
 
+// getPolicy return "read" if the index i is not set in the
+// rs array.
+func getPolicy(rs []string, i int) string {
+	if i >= len(rs) {
+		return "read"
+	}
+
+	return rs[i]
+}
+
+// getPath returns "" if the inde i is not set in the rs array
+func getPath(rs []string, i int) string {
+	if i >= len(rs) {
+		return ""
+	}
+
+	return rs[i]
+}
+
 // Convert a list of Rules to a JSON string
-func getRulesString(rs []*ConfigRule) (string, error) {
-	rules := newAclRule()
+func getRulesString(rs []string) (string, error) {
+	if len(rs) <= 0 {
+		return "", errors.New("No ACL rules specified")
+	}
+
+	rules := &aclRule{
+		Key: make(map[string]*rulePath),
+		Service: make(map[string]*rulePath),
+		Event: make(map[string]*rulePath),
+		Query: make(map[string]*rulePath),
+	}
 
 	for _, r := range rs {
-		// Verify policy is one of "read", "write", or "deny"
-		policy := strings.ToLower(r.Policy)
-		switch policy {
-		case "read", "write", "deny":
-		default:
-			return "", fmt.Errorf("Invalid rule policy: '%s'", r.Policy)
+		if len(strings.TrimSpace(r)) < 1 {
+			return "", errors.New("cannot specify empty rule declaration")
 		}
 
-		switch strings.ToLower(r.PathType) {
+		parts := strings.Split(r, ":")
+		switch strings.ToLower(parts[0]) {
+		case "operator":
+			rules.Operator = getPolicy(parts, 1)
+		case "keyring":
+			rules.Keyring = getPolicy(parts, 1)
 		case "key":
-			rules.Key[r.Path] = &rulePath{r.Policy}
+			rules.Key[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
 		case "service":
-			rules.Service[r.Path] = &rulePath{r.Policy}
+			rules.Service[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
 		case "event":
-			rules.Event[r.Path] = &rulePath{r.Policy}
+			rules.Event[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
 		case "query":
-			rules.Query[r.Path] = &rulePath{r.Policy}
-		default:
-			return "", fmt.Errorf("Invalid path type: '%s'", r.PathType)
+			rules.Query[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
 		}
 	}
 
@@ -225,12 +212,7 @@ func aclCreate(cmd *cobra.Command, args []string) error {
 		}
 		entry.Rules = rules
 	} else {
-		ruleList, err := parseRules(viper.GetStringSlice("rule"))
-		if err != nil {
-			return err
-		}
-
-		rules, err := getRulesString(ruleList)
+		rules, err := getRulesString(viper.GetStringSlice("rule"))
 		if err != nil {
 			return err
 		}
@@ -266,6 +248,8 @@ func aclDestroy(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("A single ACL id must be specified")
 	}
 	id := args[0]
+
+	viper.BindPFlags(cmd.Flags())
 
 	client, err := newACL()
 	if err != nil {
@@ -426,12 +410,7 @@ func aclUpdate(cmd *cobra.Command, args []string) error {
 		}
 		entry.Rules = rules
 	} else {
-		ruleList, err := parseRules(viper.GetStringSlice("rule"))
-		if err != nil {
-			return err
-		}
-
-		rules, err := getRulesString(ruleList)
+		rules, err := getRulesString(viper.GetStringSlice("rule"))
 		if err != nil {
 			return err
 		}
