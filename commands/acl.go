@@ -89,6 +89,8 @@ func getRulesString(rs []string) (string, error) {
 		return "", errors.New("No ACL rules specified")
 	}
 
+	fmt.Println(rs)
+
 	rules := &aclRule{
 		Key: make(map[string]*rulePath),
 		Service: make(map[string]*rulePath),
@@ -212,7 +214,7 @@ func aclCreate(cmd *cobra.Command, args []string) error {
 		}
 		entry.Rules = rules
 	} else {
-		rules, err := getRulesString(viper.GetStringSlice("rule"))
+		rules, err := getRulesString(getStringSlice(cmd, "rule"))
 		if err != nil {
 			return err
 		}
@@ -410,11 +412,10 @@ func aclUpdate(cmd *cobra.Command, args []string) error {
 		}
 		entry.Rules = rules
 	} else {
-		rules, err := getRulesString(viper.GetStringSlice("rule"))
+		rules, err := getRulesString(getStringSlice(cmd, "rule"))
 		if err != nil {
 			return err
 		}
-
 		entry.Rules = rules
 	}
 
