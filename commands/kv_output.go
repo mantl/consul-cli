@@ -53,6 +53,7 @@ func NewKVOutput(out, err io.Writer, fields string) *KVOutput {
 		f := strings.ToLower(field)
 
 		switch {
+		case f == "":
 		case f == "all":
 			kvo.All = true
 		case f == "key":
