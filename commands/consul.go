@@ -50,6 +50,15 @@ func newCoordinate() (*consulapi.Coordinate, error) {
 	return consul.Coordinate(), nil
 }
 
+func newEvent() (*consulapi.Event, error) {
+	consul, err := newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Event(), nil
+}
+
 func newHealth() (*consulapi.Health, error) {
 	consul, err := newClient()
 	if err != nil {
@@ -226,7 +235,7 @@ func queryOptions() *consulapi.QueryOptions {
 	}
 
 	if wi := viper.Get("wait-index"); wi != nil {
-		queryOpts.WaitIndex = wi.(uint64)
+		queryOpts.WaitIndex = getUint64("wait-index")
 	}
 
 	queryOpts.RequireConsistent = viper.GetBool("consistent")
