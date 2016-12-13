@@ -375,7 +375,6 @@ HELD:
 // Destroy the session on error. Only performed when
 // __clean_session == true
 //
-
 func destroySession(s *consulapi.Session) error {
 	if viper.GetBool("__clean_session") {
 		session := viper.GetString("session")
@@ -557,8 +556,8 @@ func newKvWatchCommand() *cobra.Command {
 		RunE:  kvWatch,
 	}
 
-	cmd.Flags().String("fields", "", "Comma separated list of fields to return.")
-	cmd.Flags().String("format", "", "Output format. Supported options: text, json, prettyjson")
+	cmd.Flags().String("fields", "all", "Comma separated list of fields to return.")
+	cmd.Flags().String("format", "prettyjson", "Output format. Supported options: text, json, prettyjson")
 	cmd.Flags().String("delimited", "", "Output field delimiter")
 	cmd.Flags().Bool("header", false, "Output a header row for text format")
 
