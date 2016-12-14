@@ -264,3 +264,16 @@ func addAgentServiceOptions(cmd *cobra.Command) {
 	cmd.Flags().Int("port", 0, "Service port")
 	cmd.Flags().Bool("override-tag", false, "Disable anti-entropy for this service's tags")
 }
+
+func addCheckOptions(cmd *cobra.Command) {
+	cmd.Flags().String("id", "", "Service id")
+        cmd.Flags().String("http", "", "A URL to GET every interval")
+        cmd.Flags().String("script", "", "A script to run every interval")
+        cmd.Flags().String("ttl", "", "Fail if TTL expires before service checks in")
+        cmd.Flags().String("interval", "", "Interval between checks")
+        cmd.Flags().String("notes", "", "Description of the check")
+        cmd.Flags().String("docker-id", "", "Docker container ID")
+        cmd.Flags().String("shell", "", "Shell to use inside docker container")
+        cmd.Flags().String("deregister-crit", "", "Deregister critical service after this interval")
+        cmd.Flags().Bool("skip-verify", false, "Skip TLS verification for HTTP checks")
+}

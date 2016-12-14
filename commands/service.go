@@ -156,24 +156,19 @@ func serviceRegister(cmd *cobra.Command, args []string) error {
 		}
 		serviceName := args[0]
 
-		id := viper.GetString("id")
-		tags := viper.GetStringSlice("tag")
-		address := viper.GetString("address")
-		port := viper.GetInt("port")
-		checkStrings := viper.GetStringSlice("check")
-
-		checks, err := parseChecks(checkStrings)
-		if err != nil {
-			return err
-		}
+		//checkStrings := viper.GetStringSlice("check")
+		//checks, err := parseChecks(checkStrings)
+		//if err != nil {
+		//	return err
+		//}
 
 		service = consulapi.AgentServiceRegistration{
-			ID:                id,
+			ID:                viper.GetString("id"),
 			Name:              serviceName,
-			Tags:              tags,
-			Port:              port,
-			Address:           address,
-			Checks:            checks,
+			Tags:              getStringSlice(cmd, "tag"),
+			Port:              viper.GetInt("port"),
+			Address:           viper.GetString("address"),
+//			Checks:            checks,
 			EnableTagOverride: viper.GetBool("override-tag"),
 		}
 	}

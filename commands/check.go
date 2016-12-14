@@ -151,19 +151,10 @@ func newCheckRegisterCommand() *cobra.Command {
 		RunE:  checkRegister,
 	}
 
-	cmd.Flags().String("id", "", "Service Id")
-	cmd.Flags().String("http", "", "A URL to GET every interval")
-	cmd.Flags().String("script", "", "A script to run every interval")
-	cmd.Flags().String("ttl", "", "Fail if TTL expires before service checks in")
-	cmd.Flags().String("interval", "", "Interval between checks")
-	cmd.Flags().String("service-id", "", "Service ID to associate check")
-	cmd.Flags().String("notes", "", "Description of the check")
-	cmd.Flags().String("docker-id", "", "Docker container ID")
-	cmd.Flags().String("shell", "", "Shell to use inside docker container")
-	cmd.Flags().String("deregister-crit", "", "Deregister critical service after this interval")
-	cmd.Flags().Bool("skip-verify", false, "Skip TLS verification for HTTP checks")
-
+	addCheckOptions(cmd)
 	addRawOption(cmd)
+
+	cmd.Flags().String("service-id", "", "Service ID to associate check")
 
 	return cmd
 }
