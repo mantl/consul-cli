@@ -10,7 +10,7 @@ import (
 )
 
 // Output structure
-type KVOutput struct {
+type kvOutput struct {
 	Out io.Writer
 	Err io.Writer
 
@@ -26,14 +26,14 @@ type KVOutput struct {
 
 // Output format structure
 //
-type OutputFormat struct {
+type outputFormat struct {
 	Type      string
 	Delimiter string
 	Header    bool
 }
 
 // Conveninece structure for JSON
-type KVJson struct {
+type kvJson struct {
 	Key         string
 	CreateIndex uint64
 	ModifyIndex uint64
@@ -43,8 +43,8 @@ type KVJson struct {
 	Session     string
 }
 
-func NewKVOutput(out, err io.Writer, fields string) *KVOutput {
-	kvo := new(KVOutput)
+func newKvOutput(out, err io.Writer, fields string) *kvOutput {
+	kvo := new(kvOutput)
 
 	kvo.Out = out
 	kvo.Err = err
@@ -78,15 +78,15 @@ func NewKVOutput(out, err io.Writer, fields string) *KVOutput {
 	return kvo
 }
 
-func (kvo *KVOutput) Output(kv *consulapi.KVPair, of OutputFormat) error {
+func (kvo *kvOutput) output(kv *consulapi.KVPair, of outputFormat) error {
 	f := strings.ToLower(of.Type)
 	switch {
 	case f == "json":
-		return kvo.OutputJSON(kv, false)
+		return kvo.outputJSON(kv, false)
 	case f == "prettyjson":
-		return kvo.OutputJSON(kv, true)
+		return kvo.outputJSON(kv, true)
 	case f == "text":
-		return kvo.OutputText(kv, of)
+		return kvo.outputText(kv, of)
 	default:
 		fmt.Fprintf(kvo.Err, "Invalid output format: '%s'\n", of.Type)
 	}
@@ -94,15 +94,15 @@ func (kvo *KVOutput) Output(kv *consulapi.KVPair, of OutputFormat) error {
 	return nil
 }
 
-func (kvo *KVOutput) OutputList(kvs *consulapi.KVPairs, of OutputFormat) error {
+func (kvo *kvOutput) outputList(kvs *consulapi.KVPairs, of outputFormat) error {
 	f := strings.ToLower(of.Type)
 	switch {
 	case f == "json":
-		return kvo.OutputJSONList(kvs, false)
+		return kvo.outputJSONList(kvs, false)
 	case f == "prettyjson":
-		return kvo.OutputJSONList(kvs, true)
+		return kvo.outputJSONList(kvs, true)
 	case f == "text":
-		return kvo.OutputTextList(kvs, of)
+		return kvo.outputTextList(kvs, of)
 	default:
 		fmt.Fprintf(kvo.Err, "Invalid output format: '%s'\n", of.Type)
 	}
@@ -110,11 +110,11 @@ func (kvo *KVOutput) OutputList(kvs *consulapi.KVPairs, of OutputFormat) error {
 	return nil
 }
 
-func (kvo *KVOutput) OutputJSONList(kvs *consulapi.KVPairs, prettyFlag bool) error {
+func (kvo *kvOutput) outputJSONList(kvs *consulapi.KVPairs, prettyFlag bool) error {
 	var err error
 	var jsonRaw []byte
 
-	kvjs := make([]*KVJson, len(*kvs))
+	kvjs := make([]*kvJson, len(*kvs))
 	for i, kv := range *kvs {
 		kvjs[i] = convertJSON(kv)
 	}
@@ -134,7 +134,7 @@ func (kvo *KVOutput) OutputJSONList(kvs *consulapi.KVPairs, prettyFlag bool) err
 	return nil
 }
 
-func (kvo *KVOutput) OutputJSON(kv *consulapi.KVPair, prettyFlag bool) error {
+func (kvo *kvOutput) outputJSON(kv *consulapi.KVPair, prettyFlag bool) error {
 	var err error
 	var jsonRaw []byte
 
@@ -155,8 +155,8 @@ func (kvo *KVOutput) OutputJSON(kv *consulapi.KVPair, prettyFlag bool) error {
 	return nil
 }
 
-func convertJSON(kv *consulapi.KVPair) *KVJson {
-	return &KVJson{
+func convertJSON(kv *consulapi.KVPair) *kvJson {
+	return &kvJson{
 		Key:         kv.Key,
 		CreateIndex: kv.CreateIndex,
 		ModifyIndex: kv.ModifyIndex,
@@ -167,11 +167,11 @@ func convertJSON(kv *consulapi.KVPair) *KVJson {
 	}
 }
 
-func (kvo *KVOutput) OutputText(kv *consulapi.KVPair, of OutputFormat) error {
+func (kvo *kvOutput) outputText(kv *consulapi.KVPair, of outputFormat) error {
 	s := kvo.makeTextArray(kv)
 
 	if of.Header {
-		kvo.OutputHeader(of)
+		kvo.outputHeader(of)
 	}
 
 	fmt.Fprintln(kvo.Out, strings.Join(s, of.Delimiter))
@@ -179,9 +179,9 @@ func (kvo *KVOutput) OutputText(kv *consulapi.KVPair, of OutputFormat) error {
 	return nil
 }
 
-func (kvo *KVOutput) OutputTextList(kvs *consulapi.KVPairs, of OutputFormat) error {
+func (kvo *kvOutput) outputTextList(kvs *consulapi.KVPairs, of outputFormat) error {
 	if of.Header {
-		kvo.OutputHeader(of)
+		kvo.outputHeader(of)
 	}
 
 	for _, kv := range *kvs {
@@ -192,7 +192,7 @@ func (kvo *KVOutput) OutputTextList(kvs *consulapi.KVPairs, of OutputFormat) err
 	return nil
 }
 
-func (kvo *KVOutput) makeTextArray(kv *consulapi.KVPair) []string {
+func (kvo *kvOutput) makeTextArray(kv *consulapi.KVPair) []string {
 	s := []string{}
 	if kvo.Key || kvo.All {
 		s = append(s, kv.Key)
@@ -219,7 +219,7 @@ func (kvo *KVOutput) makeTextArray(kv *consulapi.KVPair) []string {
 	return s
 }
 
-func (kvo *KVOutput) OutputHeader(of OutputFormat) {
+func (kvo *kvOutput) outputHeader(of outputFormat) {
 	s := []string{}
 
 	if kvo.Key || kvo.All {

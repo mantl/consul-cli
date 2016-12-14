@@ -234,7 +234,7 @@ func parseChecks(checks []string) ([]*consulapi.AgentServiceCheck, error) {
 
 	return rval, nil
 }
-func ParseCheckConfig(s string) (*consulapi.AgentServiceCheck, error) {
+func parseCheckConfig(s string) (*consulapi.AgentServiceCheck, error) {
 	if len(strings.TrimSpace(s)) < 1 {
 		return nil, errors.New("Cannot specify empty check")
 	}

@@ -6,7 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Init(name, version string) *cobra.Command {
+// NewConsulCliCommand Create the cobra command for consul-cli
+func NewConsulCliCommand(name, version string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "consul-cli",
 		Short:         "Command line interface for Consul HTTP API",

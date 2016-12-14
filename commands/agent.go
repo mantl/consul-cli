@@ -176,9 +176,9 @@ func agentMaintenance(cmd *cobra.Command, args []string) error {
 
 	if viper.GetBool("enabled") {
 		return client.EnableNodeMaintenance(viper.GetString("reason"))
-	} else {
-		return client.DisableNodeMaintenance()
-	}
+	} 
+
+	return client.DisableNodeMaintenance()
 }
 
 // Members functions

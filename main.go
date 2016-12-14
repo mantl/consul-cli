@@ -15,7 +15,7 @@ const Version = "0.4.0"
 func main() {
 	log.SetOutput(ioutil.Discard)
 
-	root := commands.Init(Name, Version)
+	root := commands.NewConsulCliCommand(Name, Version)
 	if err := root.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

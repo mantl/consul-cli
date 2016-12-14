@@ -426,7 +426,7 @@ func kvRead(cmd *cobra.Command, args []string) error {
 
 	queryOpts := queryOptions()
 
-	kvo := NewKVOutput(os.Stdout, os.Stderr, viper.GetString("fields"))
+	kvo := newKvOutput(os.Stdout, os.Stderr, viper.GetString("fields"))
 
 	if viper.GetBool("recurse") {
 		kvlist, _, err := client.List(path, queryOpts)
@@ -440,13 +440,13 @@ func kvRead(cmd *cobra.Command, args []string) error {
 
 		if viper.GetString("template") != "" {
 			return output(kvlist)
-		} else {
-			return kvo.OutputList(&kvlist, OutputFormat{
-				Type:      viper.GetString("format"),
-				Delimiter: viper.GetString("delimiter"),
-				Header:    viper.GetBool("header"),
-			})
-		}
+		} 
+
+		return kvo.outputList(&kvlist, outputFormat{
+			Type:      viper.GetString("format"),
+			Delimiter: viper.GetString("delimiter"),
+			Header:    viper.GetBool("header"),
+		})
 	} else {
 		kv, _, err := client.Get(path, queryOpts)
 		if err != nil {
@@ -459,13 +459,13 @@ func kvRead(cmd *cobra.Command, args []string) error {
 
 		if viper.GetString("template") != "" {
 			return output(kv)
-		} else {
-			return kvo.Output(kv, OutputFormat{
-				Type:      viper.GetString("format"),
-				Delimiter: viper.GetString("delimiter"),
-				Header:    viper.GetBool("header"),
-			})
 		}
+
+		return kvo.output(kv, outputFormat{
+			Type:      viper.GetString("format"),
+			Delimiter: viper.GetString("delimiter"),
+			Header:    viper.GetBool("header"),
+		})
 	}
 }
 
@@ -584,7 +584,7 @@ func kvWatch(cmd *cobra.Command, args []string) error {
 
 	queryOpts := queryOptions()
 
-	kvo := NewKVOutput(os.Stdout, os.Stderr, viper.GetString("fields"))
+	kvo := newKvOutput(os.Stdout, os.Stderr, viper.GetString("fields"))
 
 RETRY:
 	kv, meta, err := client.Get(path, queryOpts)
@@ -600,7 +600,7 @@ RETRY:
 	if viper.GetString("template") != "" {
 		return output(kv)
 	} else {
-		return kvo.Output(kv, OutputFormat{
+		return kvo.output(kv, outputFormat{
 			Type:      viper.GetString("format"),
 			Delimiter: viper.GetString("delimiter"),
 			Header:    viper.GetBool("header"),
