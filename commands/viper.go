@@ -21,7 +21,7 @@ import (
 func getStringSlice(cmd *cobra.Command, flag string) []string {
 	ss, err := cmd.Flags().GetStringSlice(flag)
 	if err != nil {
-		return []string{}
+		return nil
 	}
 
 	return ss
