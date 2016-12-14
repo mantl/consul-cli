@@ -256,3 +256,11 @@ func addConsistencyOptions(cmd *cobra.Command) {
 	cmd.Flags().Bool("consistent", false, "Enable strong consistency")
 	cmd.Flags().Bool("stale", false, "Allow any agent to service the request")
 }
+
+func addAgentServiceOptions(cmd *cobra.Command) {
+	cmd.Flags().String("id", "", "Service id")
+	cmd.Flags().StringSlice("tag", nil, "Service tag. Multiple tags are allowed")
+	cmd.Flags().String("address", "", "Service address")
+	cmd.Flags().Int("port", 0, "Service port")
+	cmd.Flags().Bool("override-tag", false, "Disable anti-entropy for this service's tags")
+}

@@ -163,30 +163,58 @@ func newCheckRegisterCommand() *cobra.Command {
 	cmd.Flags().String("deregister-crit", "", "Deregister critical service after this interval")
 	cmd.Flags().Bool("skip-verify", false, "Skip TLS verification for HTTP checks")
 
+	addRawOption(cmd)
+
 	return cmd
 }
 
 func checkRegister(cmd *cobra.Command, args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("A single check id must be specified")
-	}
-	checkName := args[0]
-
 	viper.BindPFlags(cmd.Flags())
 
-	checkCount := 0
-	if viper.GetString("http") != "" {
-		checkCount = checkCount + 1
-	}
-	if viper.GetString("script") != "" {
-		checkCount = checkCount + 1
-	}
-	if viper.GetString("ttl") != "" {
-		checkCount = checkCount + 1
-	}
+	var check consulapi.AgentCheckRegistration
 
-	if checkCount > 1 {
-		return fmt.Errorf("Only one of --http, --script or --ttl can be specified")
+	if raw := viper.GetString("raw"); raw != "" {
+		if err := readRawJSON(raw, &check); err != nil {
+			return err
+		}
+	} else {
+		if len(args) != 1 {
+			return fmt.Errorf("A single check id must be specified")
+		}
+		checkName := args[0]
+
+		checkCount := 0
+		if viper.GetString("http") != "" {
+			checkCount = checkCount + 1
+		}
+		if viper.GetString("script") != "" {
+			checkCount = checkCount + 1
+		}
+		if viper.GetString("ttl") != "" {
+			checkCount = checkCount + 1
+		}
+
+		if checkCount > 1 {
+			return fmt.Errorf("Only one of --http, --script or --ttl can be specified")
+		}
+
+		check = consulapi.AgentCheckRegistration{
+			ID:        viper.GetString("id"),
+			Name:      checkName,
+			ServiceID: viper.GetString("service-id"),
+			Notes:     viper.GetString("notes"),
+			AgentServiceCheck: consulapi.AgentServiceCheck{
+				Script:            viper.GetString("script"),
+				HTTP:              viper.GetString("http"),
+				Interval:          viper.GetString("interval"),
+				TTL:               viper.GetString("ttl"),
+				TLSSkipVerify:     viper.GetBool("skip-verify"),
+				DockerContainerID: viper.GetString("docker-id"),
+				Shell:             viper.GetString("shell"),
+				Notes:             viper.GetString("notes"),
+				DeregisterCriticalServiceAfter: viper.GetString("deregister-crit"),
+			},
+		}
 	}
 
 	client, err := newAgent()
@@ -194,25 +222,7 @@ func checkRegister(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	check := &consulapi.AgentCheckRegistration{
-		ID:        viper.GetString("id"),
-		Name:      checkName,
-		ServiceID: viper.GetString("service-id"),
-		Notes:     viper.GetString("notes"),
-		AgentServiceCheck: consulapi.AgentServiceCheck{
-			Script:            viper.GetString("script"),
-			HTTP:              viper.GetString("http"),
-			Interval:          viper.GetString("interval"),
-			TTL:               viper.GetString("ttl"),
-			TLSSkipVerify:     viper.GetBool("skip-verify"),
-			DockerContainerID: viper.GetString("docker-id"),
-			Shell:             viper.GetString("shell"),
-			Notes:             viper.GetString("notes"),
-			DeregisterCriticalServiceAfter: viper.GetString("deregister-crit"),
-		},
-	}
-
-	err = client.CheckRegister(check)
+	err = client.CheckRegister(&check)
 	if err != nil {
 		return err
 	}

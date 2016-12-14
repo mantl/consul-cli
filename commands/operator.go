@@ -28,10 +28,10 @@ func newOperatorCommand() *cobra.Command {
 
 func newOperatorKeyringCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Hidden: true,		// Hide subcommand Consul official release
-		Use: "keyring",
-		Short: "Consul /operator/keyring interface",
-		Long: "Consul /operator/keyring interface",
+		Hidden: true, // Hide subcommand Consul official release
+		Use:    "keyring",
+		Short:  "Consul /operator/keyring interface",
+		Long:   "Consul /operator/keyring interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.HelpFunc()(cmd, []string{})
 		},
@@ -49,10 +49,10 @@ func newOperatorKeyringCommand() *cobra.Command {
 
 func newOperatorKeyringInstallCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "install <key> [<key>]",
+		Use:   "install <key> [<key>]",
 		Short: "Install a new gossip key into the cluster",
-		Long: "Install a new gossip key into the cluster",
-		RunE: operatorKeyringInstall,
+		Long:  "Install a new gossip key into the cluster",
+		RunE:  operatorKeyringInstall,
 	}
 
 	return cmd
@@ -87,10 +87,10 @@ func operatorKeyringInstall(cmd *cobra.Command, args []string) error {
 
 func newOperatorKeyringListCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "list",
+		Use:   "list",
 		Short: "List gossip keys installed",
-		Long: "List gossip keys installed",
-		RunE: operatorKeyringList,
+		Long:  "List gossip keys installed",
+		RunE:  operatorKeyringList,
 	}
 
 	return cmd
@@ -117,10 +117,10 @@ func operatorKeyringList(cmd *cobra.Command, args []string) error {
 
 func newOperatorKeyringRemoveCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "install <key> [<key>]",
+		Use:   "install <key> [<key>]",
 		Short: "Remove gossip keys from the cluster",
-		Long: "Remove gossip keys from the cluster",
-		RunE: operatorKeyringRemove,
+		Long:  "Remove gossip keys from the cluster",
+		RunE:  operatorKeyringRemove,
 	}
 
 	return cmd
@@ -155,10 +155,10 @@ func operatorKeyringRemove(cmd *cobra.Command, args []string) error {
 
 func newOperatorKeyringUseCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "use <key>",
+		Use:   "use <key>",
 		Short: "Change the primary gossip encryption key",
-		Long: "Change the primary gossip encryption key",
-		RunE: operatorKeyringUse,
+		Long:  "Change the primary gossip encryption key",
+		RunE:  operatorKeyringUse,
 	}
 
 	return cmd
@@ -180,14 +180,14 @@ func operatorKeyringUse(cmd *cobra.Command, args []string) error {
 
 	return client.KeyringUse(args[0], writeOpts)
 }
-	
+
 // raft command
 
 func newOperatorRaftCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "raft",
+		Use:   "raft",
 		Short: "Consul /operator/raft endpoint interface",
-		Long: "Consul /operator/raft endpoint interface",
+		Long:  "Consul /operator/raft endpoint interface",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.HelpFunc()(cmd, []string{})
 		},
@@ -203,10 +203,10 @@ func newOperatorRaftCommand() *cobra.Command {
 
 func newOperatorRaftConfigCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "config",
+		Use:   "config",
 		Short: "Inspect the Raft configuration",
-		Long: "Inspect the Raft configuration",
-		RunE: operatorRaftConfig,
+		Long:  "Inspect the Raft configuration",
+		RunE:  operatorRaftConfig,
 	}
 
 	addTemplateOption(cmd)
@@ -245,10 +245,10 @@ to remove. The port number is 8300 unless configured otherwise`
 
 func newOperatorRaftDeleteCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "delete <address>",
+		Use:   "delete <address>",
 		Short: "Remove a Consul server from the Raft configuration",
-		Long: raftDeleteLongHelp,
-		RunE: operatorRaftDelete,
+		Long:  raftDeleteLongHelp,
+		RunE:  operatorRaftDelete,
 	}
 
 	addDatacenterOption(cmd)

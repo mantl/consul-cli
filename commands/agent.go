@@ -132,7 +132,7 @@ func newAgentLeaveCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "leave",
 		Short: "Cause the agent to gracefully shutdown and leave the cluster",
-		Long: "Cause the agent to gracefully shutdown and leave the cluster",
+		Long:  "Cause the agent to gracefully shutdown and leave the cluster",
 		RunE:  agentLeave,
 	}
 
@@ -218,10 +218,10 @@ func agentMembers(cmd *cobra.Command, args []string) error {
 
 func newAgentMonitorCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "monitor",
+		Use:   "monitor",
 		Short: "Streams logs from the agent",
-		Long: "Streams logs from the agent",
-		RunE: agentMonitor,
+		Long:  "Streams logs from the agent",
+		RunE:  agentMonitor,
 	}
 
 	cmd.Flags().String("loglevel", "", "Log level to filter on. Default is info")
@@ -229,14 +229,13 @@ func newAgentMonitorCommand() *cobra.Command {
 	return cmd
 }
 
-func agentMonitor(cmd *cobra.Command, args[]string) error {
+func agentMonitor(cmd *cobra.Command, args []string) error {
 	viper.BindPFlags(cmd.Flags())
 
 	client, err := newAgent()
 	if err != nil {
 		return err
 	}
-
 
 	outputChan, err := client.Monitor(
 		viper.GetString("loglevel"),
@@ -252,16 +251,16 @@ func agentMonitor(cmd *cobra.Command, args[]string) error {
 	}
 
 	return nil
-}		
+}
 
 // Reload functions
 
 func newAgentReloadCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "reload",
+		Use:   "reload",
 		Short: "Tell the Consul agent to reload its configuration",
-		Long: "Tell the Consul agent to reload its configuration",
-		RunE: agentReload,
+		Long:  "Tell the Consul agent to reload its configuration",
+		RunE:  agentReload,
 	}
 
 	return cmd

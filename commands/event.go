@@ -28,14 +28,15 @@ func newEventCommand() *cobra.Command {
 
 func newEventFireCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "fire <name>",
+		Use:   "fire <name>",
 		Short: "Fires a new user event",
-		Long: "Fires a new user event",
-		RunE: eventFire,
+		Long:  "Fires a new user event",
+		RunE:  eventFire,
 	}
 
 	addDatacenterOption(cmd)
 	addTemplateOption(cmd)
+	addRawOption(cmd)
 
 	cmd.Flags().String("node", "", "Filter by node name")
 	cmd.Flags().String("payload", "", "Event payload")
@@ -48,8 +49,31 @@ func newEventFireCommand() *cobra.Command {
 func eventFire(cmd *cobra.Command, args []string) error {
 	viper.BindPFlags(cmd.Flags())
 
-	if len(args) != 1 {
-		return fmt.Errorf("An event name must be specified")
+	var event consulapi.UserEvent
+
+	if raw := viper.GetString("raw"); raw != "" {
+		if err := readRawJSON(raw, &event); err != nil {
+			return err
+		}
+	} else {
+		if len(args) != 1 {
+			return fmt.Errorf("An event name must be specified")
+		}
+		eventName := args[0]
+
+		var payload []byte
+
+		if ps := viper.GetString("payload"); ps != "" {
+			payload = []byte(ps)
+		}
+
+		event = consulapi.UserEvent{
+			Name:          eventName,
+			NodeFilter:    viper.GetString("node"),
+			ServiceFilter: viper.GetString("service"),
+			TagFilter:     viper.GetString("tag"),
+			Payload:       payload,
+		}
 	}
 
 	client, err := newEvent()
@@ -58,23 +82,7 @@ func eventFire(cmd *cobra.Command, args []string) error {
 	}
 
 	writeOpts := writeOptions()
-
-	var payload []byte
-
-	if ps := viper.GetString("payload"); ps != "" {
-		payload = []byte(ps)
-	}
-
-	rval, _, err := client.Fire(
-		&consulapi.UserEvent{
-			Name: args[0],
-			NodeFilter: viper.GetString("node"),
-			ServiceFilter: viper.GetString("service"),
-			TagFilter: viper.GetString("tag"),
-			Payload: payload,
-		},
-		writeOpts,
-		)
+	rval, _, err := client.Fire(&event, writeOpts)
 	if err != nil {
 		return err
 	}
@@ -88,7 +96,7 @@ func newEventListCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "Lists the most recent events the agent has seen",
-		Long: "Lists the most recent events the agent has seen",
+		Long:  "Lists the most recent events the agent has seen",
 		RunE:  eventList,
 	}
 

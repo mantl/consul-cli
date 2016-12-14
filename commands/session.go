@@ -47,6 +47,7 @@ func newSessionCreateCommand() *cobra.Command {
 	cmd.Flags().Duration("ttl", 15*time.Second, "Session Time To Live as a duration string")
 
 	addDatacenterOption(cmd)
+	addRawOption(cmd)
 
 	return cmd
 }
@@ -54,28 +55,35 @@ func newSessionCreateCommand() *cobra.Command {
 func sessionCreate(cmd *cobra.Command, args []string) error {
 	viper.BindPFlags(cmd.Flags())
 
-	// Work around Consul API bug that drops LockDelay == 0
-	if viper.GetDuration("lock-delay") == 0 {
-		viper.Set("lock-delay", time.Nanosecond)
-	}
+	var se consulapi.SessionEntry
 
+	if raw := viper.GetString("raw"); raw != "" {
+		if err := readRawJSON(raw, &se); err != nil {
+			return err
+		}
+	} else {
+
+		// Work around Consul API bug that drops LockDelay == 0
+		if viper.GetDuration("lock-delay") == 0 {
+			viper.Set("lock-delay", time.Nanosecond)
+		}
+
+		se = consulapi.SessionEntry{
+			Name:      viper.GetString("name"),
+			Node:      viper.GetString("node"),
+			Checks:    viper.GetStringSlice("checks"),
+			LockDelay: viper.GetDuration("lock-delay"),
+			Behavior:  viper.GetString("behavior"),
+			TTL:       viper.GetDuration("ttl").String(),
+		}
+	}
+	writeOpts := writeOptions()
 	client, err := newSession()
 	if err != nil {
 		return err
 	}
 
-	writeOpts := writeOptions()
-
-	se := &consulapi.SessionEntry{
-		Name:      viper.GetString("name"),
-		Node:      viper.GetString("node"),
-		Checks:    viper.GetStringSlice("checks"),
-		LockDelay: viper.GetDuration("lock-delay"),
-		Behavior:  viper.GetString("behavior"),
-		TTL:       viper.GetDuration("ttl").String(),
-	}
-
-	session, _, err := client.Create(se, writeOpts)
+	session, _, err := client.Create(&se, writeOpts)
 	if err != nil {
 		return err
 	}

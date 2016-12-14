@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"strings"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -39,29 +37,12 @@ type rulePath struct {
 }
 
 type aclRule struct {
-	Key     map[string]*rulePath `json:"key,omitempty"`
-	Service map[string]*rulePath `json:"service,omitempty"`
-	Event   map[string]*rulePath `json:"event,omitempty"`
-	Query   map[string]*rulePath `json:"query,omitempty"`
-	Keyring string `json:"keyring,omitempty"`
-        Operator string `json:"operator,omitempty"`
-}
-
-func readRawAcl(raw string) (string, error) {
-	if raw == "-" {
-		rules, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			return "", err
-		}
-		return string(rules), nil
-	}
-
-	rules, err := ioutil.ReadFile(raw)
-	if err != nil {
-		return "", err
-	}
-
-	return string(rules), nil
+	Key      map[string]*rulePath `json:"key,omitempty"`
+	Service  map[string]*rulePath `json:"service,omitempty"`
+	Event    map[string]*rulePath `json:"event,omitempty"`
+	Query    map[string]*rulePath `json:"query,omitempty"`
+	Keyring  string               `json:"keyring,omitempty"`
+	Operator string               `json:"operator,omitempty"`
 }
 
 // getPolicy return "read" if the index i is not set in the
@@ -90,10 +71,10 @@ func getRulesString(rs []string) (string, error) {
 	}
 
 	rules := &aclRule{
-		Key: make(map[string]*rulePath),
+		Key:     make(map[string]*rulePath),
 		Service: make(map[string]*rulePath),
-		Event: make(map[string]*rulePath),
-		Query: make(map[string]*rulePath),
+		Event:   make(map[string]*rulePath),
+		Query:   make(map[string]*rulePath),
 	}
 
 	for _, r := range rs {
@@ -108,13 +89,13 @@ func getRulesString(rs []string) (string, error) {
 		case "keyring":
 			rules.Keyring = getPolicy(parts, 1)
 		case "key":
-			rules.Key[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
+			rules.Key[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
 		case "service":
-			rules.Service[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
+			rules.Service[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
 		case "event":
-			rules.Event[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
+			rules.Event[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
 		case "query":
-			rules.Query[getPath(parts, 1)] = &rulePath{ Policy: getPolicy(parts, 2) }
+			rules.Query[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
 		}
 	}
 
@@ -176,7 +157,8 @@ func newAclCreateCommand() *cobra.Command {
 	cmd.Flags().Bool("management", false, "Create a management token")
 	cmd.Flags().String("name", "", "Name of the ACL")
 	cmd.Flags().StringSlice("rule", nil, "Rule to create. Can be multiple rules on a command line. Format is type:path:policy")
-	cmd.Flags().String("raw", "", "Raw ACL rule definition")
+
+	addRawOption(cmd)
 
 	return cmd
 }
@@ -206,7 +188,7 @@ func aclCreate(cmd *cobra.Command, args []string) error {
 	}
 
 	if raw := viper.GetString("raw"); raw != "" {
-		rules, err := readRawAcl(raw)
+		rules, err := readRawString(raw)
 		if err != nil {
 			return err
 		}
@@ -338,10 +320,10 @@ func aclList(cmd *cobra.Command, args []string) error {
 
 func newAclReplicationCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "replication",
-		Short: "Get the status of the ACL replication process",
-		Long: "Get the status of the ACL replication process",
-		RunE: aclReplication,
+		Use:    "replication",
+		Short:  "Get the status of the ACL replication process",
+		Long:   "Get the status of the ACL replication process",
+		RunE:   aclReplication,
 		Hidden: true,
 	}
 
@@ -354,12 +336,12 @@ func newAclReplicationCommand() *cobra.Command {
 func aclReplication(cmd *cobra.Command, args []string) error {
 	return fmt.Errorf("ACL replication status not available in Consul API")
 
-//	viper.BindPFlags(cmd.Flags())
-//
-//	client, err := newACL()
-//	if err != nil {
-//		return err
-//	}
+	//	viper.BindPFlags(cmd.Flags())
+	//
+	//	client, err := newACL()
+	//	if err != nil {
+	//		return err
+	//	}
 }
 
 // Update functions
@@ -375,7 +357,8 @@ func newAclUpdateCommand() *cobra.Command {
 	cmd.Flags().Bool("management", false, "Create a management token")
 	cmd.Flags().String("name", "", "Name of the ACL")
 	cmd.Flags().StringSlice("rule", nil, "Rule to update. Can be multiple rules on a command line. Format is type:path:policy")
-	cmd.Flags().String("raw", "", "Raw ACL rule definition")
+
+	addRawOption(cmd)
 
 	return cmd
 }
@@ -404,7 +387,7 @@ func aclUpdate(cmd *cobra.Command, args []string) error {
 	}
 
 	if raw := viper.GetString("raw"); raw != "" {
-		rules, err := readRawAcl(raw)
+		rules, err := readRawString(raw)
 		if err != nil {
 			return err
 		}

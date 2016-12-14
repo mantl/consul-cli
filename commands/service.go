@@ -132,52 +132,58 @@ func newServiceRegisterCommand() *cobra.Command {
 		RunE:  serviceRegister,
 	}
 
-	cmd.Flags().String("id", "", "Service id")
-	cmd.Flags().StringSlice("tag", nil, "Service tag. Multiple tags are allowed")
-	cmd.Flags().String("address", "", "Service address")
-	cmd.Flags().Int("port", 0, "Service port")
-	cmd.Flags().StringSlice("check", nil, "Check to create. Multiple checks are allowed")
+	addAgentServiceOptions(cmd)
+	addRawOption(cmd)
 
 	return cmd
 }
 
 func serviceRegister(cmd *cobra.Command, args []string) error {
-	switch {
-	case len(args) == 0:
-		return fmt.Errorf("Service name must be specified")
-	case len(args) > 1:
-		return fmt.Errorf("Only on service name allowed")
-	}
-	serviceName := args[0]
-
 	viper.BindPFlags(cmd.Flags())
+
+	var service consulapi.AgentServiceRegistration
+
+	if raw := viper.GetString("raw"); raw != "" {
+		if err := readRawJSON(raw, &service); err != nil {
+			return err
+		}
+	} else {
+		switch {
+		case len(args) == 0:
+			return fmt.Errorf("Service name must be specified")
+		case len(args) > 1:
+			return fmt.Errorf("Only one service name allowed")
+		}
+		serviceName := args[0]
+
+		id := viper.GetString("id")
+		tags := viper.GetStringSlice("tag")
+		address := viper.GetString("address")
+		port := viper.GetInt("port")
+		checkStrings := viper.GetStringSlice("check")
+
+		checks, err := parseChecks(checkStrings)
+		if err != nil {
+			return err
+		}
+
+		service = consulapi.AgentServiceRegistration{
+			ID:                id,
+			Name:              serviceName,
+			Tags:              tags,
+			Port:              port,
+			Address:           address,
+			Checks:            checks,
+			EnableTagOverride: viper.GetBool("override-tag"),
+		}
+	}
 
 	agent, err := newAgent()
 	if err != nil {
 		return err
 	}
 
-	id := viper.GetString("id")
-	tags := viper.GetStringSlice("tag")
-	address := viper.GetString("address")
-	port := viper.GetInt("port")
-	checkStrings := viper.GetStringSlice("check")
-
-	checks, err := parseChecks(checkStrings)
-	if err != nil {
-		return err
-	}
-
-	service := &consulapi.AgentServiceRegistration{
-		ID:      id,
-		Name:    serviceName,
-		Tags:    tags,
-		Port:    port,
-		Address: address,
-		Checks:  checks,
-	}
-
-	if err := agent.ServiceRegister(service); err != nil {
+	if err := agent.ServiceRegister(&service); err != nil {
 		return err
 	}
 
@@ -204,8 +210,8 @@ func parseChecks(checks []string) ([]*consulapi.AgentServiceCheck, error) {
 				}
 			case numParts == 4:
 				rval[i] = &consulapi.AgentServiceCheck{
-					HTTP:          parts[2],
-					Interval:      parts[1],
+					HTTP:     parts[2],
+					Interval: parts[1],
 					//TLSSkipVerify: parts[3],
 				}
 			}
