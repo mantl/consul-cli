@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path"
 	"reflect"
 	"strconv"
@@ -426,8 +425,6 @@ func kvRead(cmd *cobra.Command, args []string) error {
 
 	queryOpts := queryOptions()
 
-	kvo := newKvOutput(os.Stdout, os.Stderr, viper.GetString("fields"))
-
 	if viper.GetBool("recurse") {
 		kvlist, _, err := client.List(path, queryOpts)
 		if err != nil {
@@ -442,11 +439,7 @@ func kvRead(cmd *cobra.Command, args []string) error {
 			return output(kvlist)
 		} 
 
-		return kvo.outputList(&kvlist, outputFormat{
-			Type:      viper.GetString("format"),
-			Delimiter: viper.GetString("delimiter"),
-			Header:    viper.GetBool("header"),
-		})
+		return outputKv(&kvlist)
 	} else {
 		kv, _, err := client.Get(path, queryOpts)
 		if err != nil {
@@ -461,11 +454,7 @@ func kvRead(cmd *cobra.Command, args []string) error {
 			return output(kv)
 		}
 
-		return kvo.output(kv, outputFormat{
-			Type:      viper.GetString("format"),
-			Delimiter: viper.GetString("delimiter"),
-			Header:    viper.GetBool("header"),
-		})
+		return outputKv(kv)
 	}
 }
 
@@ -584,8 +573,6 @@ func kvWatch(cmd *cobra.Command, args []string) error {
 
 	queryOpts := queryOptions()
 
-	kvo := newKvOutput(os.Stdout, os.Stderr, viper.GetString("fields"))
-
 RETRY:
 	kv, meta, err := client.Get(path, queryOpts)
 	if err != nil {
@@ -600,11 +587,7 @@ RETRY:
 	if viper.GetString("template") != "" {
 		return output(kv)
 	} else {
-		return kvo.output(kv, outputFormat{
-			Type:      viper.GetString("format"),
-			Delimiter: viper.GetString("delimiter"),
-			Header:    viper.GetBool("header"),
-		})
+		return outputKv(&kv)
 	}
 }
 
