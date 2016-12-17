@@ -11,6 +11,7 @@ import (
 	"time"
 
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -50,6 +51,7 @@ func newKvBulkloadCommand() *cobra.Command {
 	cmd.Flags().String("json", "", "Path to a JSON file to import")
 	cmd.Flags().String("prefix", "", "Base K/V prefix")
 	addDatacenterOption(cmd)
+	addRawOption(cmd)
 
 	return cmd
 }
@@ -604,19 +606,25 @@ func newKvWriteCommand() *cobra.Command {
 	cmd.Flags().String("modifyindex", "", "Perform a Check-and-Set write")
 	cmd.Flags().String("flags", "", "Integer value between 0 and 2^64 - 1")
 	addDatacenterOption(cmd)
+	addRawOption(cmd)
 
 	return cmd
 }
 
 func kvWrite(cmd *cobra.Command, args []string) error {
+	viper.BindPFlags(cmd.Flags())
+
+	// Handle raw write
+	if raw := viper.GetString("raw"); raw != "" {
+		return kvWriteRaw(raw)
+	}
+
 	if len(args) < 2 {
 		return fmt.Errorf("Key path and value must be specified")
 	}
 
 	path := args[0]
 	value := strings.Join(args[1:], " ")
-
-	viper.BindPFlags(cmd.Flags())
 
 	kv := new(consulapi.KVPair)
 
@@ -641,11 +649,40 @@ func kvWrite(cmd *cobra.Command, args []string) error {
 		kv.Flags = f
 	}
 
-	client, err := newKv()
+	return kvDoWrite(kv)
+}
+
+func kvWriteRaw(raw string) error {
+	data, err := readRawData(raw)
 	if err != nil {
 		return err
 	}
 
+	var kvp consulapi.KVPair
+	if err := json.Unmarshal(data, &kvp); err == nil {
+		return kvDoWrite(&kvp)
+	}
+
+	var kvps consulapi.KVPairs
+	if err := json.Unmarshal(data, &kvps); err == nil {
+		var result error
+		for _, kvp := range kvps {
+			if err := kvDoWrite(kvp); err != nil {
+				result = multierror.Append(result, err)
+			}
+		}
+
+		return result
+	}
+
+	return fmt.Errorf("Unable to unmarshal raw data to KVPair or KVPairs")
+}
+
+func kvDoWrite(kv *consulapi.KVPair) error {
+	client, err := newKv()
+	if err != nil {
+		return err
+	}
 	writeOpts := writeOptions()
 
 	if viper.GetString("modifyindex") == "" {
@@ -673,3 +710,5 @@ func kvWrite(cmd *cobra.Command, args []string) error {
 
 	return nil
 }
+
+
