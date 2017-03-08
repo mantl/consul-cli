@@ -32,8 +32,6 @@ func outputKv(v interface{}) error {
 	default:
 		return fmt.Errorf("Invalid output format: '%s'\n", t)
 	}
-
-	return nil
 }
 
 func outputJSON(v interface{}, prettyFlag bool) error {

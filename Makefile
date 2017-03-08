@@ -36,8 +36,7 @@ vendor:
 vendor-clean:
 	-rm -rf vendor/
 
-#package: xcompile
-package: 
+package: xcompile
 	$(eval FILES := $(shell ls build))
 	@mkdir -p build/zip
 	for f in $(FILES); do \
