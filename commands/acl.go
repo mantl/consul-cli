@@ -1,11 +1,9 @@
 package commands
 
 import (
-	"encoding/json"
-	"errors"
-	"strings"
-
 	"github.com/spf13/cobra"
+
+	"github.com/ChrisAubuchon/consul-cli/action"
 )
 
 func newAclCommand() *cobra.Command {
@@ -29,77 +27,122 @@ func newAclCommand() *cobra.Command {
 	return cmd
 }
 
-type rulePath struct {
-	Policy string
+func newAclCloneCommand() *cobra.Command {
+	ac := action.AclCloneAction()
+
+	cmd := &cobra.Command{
+		Use:   "clone",
+		Short: "Create a new token from an existing one",
+		Long:  "Create a new token from an existing one",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return ac.Run(args)
+		},
+	}
+
+	cmd.Flags().AddGoFlagSet(ac.CommandFlags())
+
+	return cmd
 }
 
-type aclRule struct {
-	Key      map[string]*rulePath `json:"key,omitempty"`
-	Service  map[string]*rulePath `json:"service,omitempty"`
-	Event    map[string]*rulePath `json:"event,omitempty"`
-	Query    map[string]*rulePath `json:"query,omitempty"`
-	Keyring  string               `json:"keyring,omitempty"`
-	Operator string               `json:"operator,omitempty"`
+func newAclCreateCommand() *cobra.Command {
+	ac := action.AclCreateAction()
+
+	cmd := &cobra.Command{
+		Use:   "create [<id>]",
+		Short: "Create an ACL. Requires a management token.",
+		Long:  "Create an ACL. Requires a management token.",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return ac.Run(args)
+		},
+	}
+
+	cmd.Flags().AddGoFlagSet(ac.CommandFlags())
+
+	return cmd
 }
 
-// getPolicy return "read" if the index i is not set in the
-// rs array.
-func getPolicy(rs []string, i int) string {
-	if i >= len(rs) {
-		return "read"
+func newAclDestroyCommand() *cobra.Command {
+	ac := action.AclDestroyAction()
+
+	cmd := &cobra.Command{
+                Use:   "destroy <token>",
+                Short: "Destroy an ACL",
+                Long:  "Destroy an ACL",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return ac.Run(args)
+		},
 	}
 
-	return rs[i]
+	cmd.Flags().AddGoFlagSet(ac.CommandFlags())
+
+	return cmd
 }
 
-// getPath returns "" if the inde i is not set in the rs array
-func getPath(rs []string, i int) string {
-	if i >= len(rs) {
-		return ""
+func newAclInfoCommand() *cobra.Command {
+	ac := action.AclInfoAction()
+
+	cmd := &cobra.Command{
+                Use:   "info <token>",
+                Short: "Query information about an ACL token",
+                Long:  "Query information about an ACL token",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return ac.Run(args)
+		},
 	}
 
-	return rs[i]
+	cmd.Flags().AddGoFlagSet(ac.CommandFlags())
+
+	return cmd
 }
 
-// Convert a list of Rules to a JSON string
-func getRulesString(rs []string) (string, error) {
-	if len(rs) <= 0 {
-		return "", errors.New("No ACL rules specified")
+func newAclListCommand() *cobra.Command {
+	ac := action.AclListAction()
+
+	cmd := &cobra.Command{
+                Use:   "list",
+                Short: "List all active ACL tokens",
+                Long:  "List all active ACL tokens",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return ac.Run(args)
+		},
 	}
 
-	rules := &aclRule{
-		Key:     make(map[string]*rulePath),
-		Service: make(map[string]*rulePath),
-		Event:   make(map[string]*rulePath),
-		Query:   make(map[string]*rulePath),
-	}
+	cmd.Flags().AddGoFlagSet(ac.CommandFlags())
 
-	for _, r := range rs {
-		if len(strings.TrimSpace(r)) < 1 {
-			return "", errors.New("cannot specify empty rule declaration")
-		}
-
-		parts := strings.Split(r, ":")
-		switch strings.ToLower(parts[0]) {
-		case "operator":
-			rules.Operator = getPolicy(parts, 1)
-		case "keyring":
-			rules.Keyring = getPolicy(parts, 1)
-		case "key":
-			rules.Key[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
-		case "service":
-			rules.Service[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
-		case "event":
-			rules.Event[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
-		case "query":
-			rules.Query[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
-		}
-	}
-
-	ruleBytes, err := json.Marshal(rules)
-	if err != nil {
-		return "", err
-	}
-
-	return string(ruleBytes), nil
+	return cmd
 }
+
+func newAclReplicationCommand() *cobra.Command {
+	ac := action.AclReplicationAction()
+
+	cmd := &cobra.Command{
+                Use:    "replication",
+                Short:  "Get the status of the ACL replication process",
+                Long:   "Get the status of the ACL replication process",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return ac.Run(args)
+		},
+	}
+
+	cmd.Flags().AddGoFlagSet(ac.CommandFlags())
+
+	return cmd
+}
+
+func newAclUpdateCommand() *cobra.Command {
+	ac := action.AclUpdateAction()
+
+	cmd := &cobra.Command{
+                Use:   "update <token>",
+                Short: "Update an ACL. Will be created if it doesn't exist",
+                Long:  "Update an ACL. Will be created if it doesn't exist",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return ac.Run(args)
+		},
+	}
+
+	cmd.Flags().AddGoFlagSet(ac.CommandFlags())
+
+	return cmd
+}
+

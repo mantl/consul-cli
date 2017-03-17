@@ -2,6 +2,8 @@ package commands
 
 import (
 	"github.com/spf13/cobra"
+
+	"github.com/ChrisAubuchon/consul-cli/action"
 )
 
 func newEventCommand() *cobra.Command {
@@ -20,3 +22,36 @@ func newEventCommand() *cobra.Command {
 	return cmd
 }
 
+func newEventFireCommand() *cobra.Command {
+	e := action.EventFireAction()
+
+        cmd := &cobra.Command{
+                Use:   "fire <name>",
+                Short: "Fires a new user event",
+                Long:  "Fires a new user event",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return e.Run(args)
+		},
+	}
+
+	cmd.Flags().AddGoFlagSet(e.CommandFlags())
+
+	return cmd
+}
+
+func newEventListCommand() *cobra.Command {
+	e := action.EventListAction()
+
+        cmd := &cobra.Command{
+                Use:   "list",
+                Short: "Lists the most recent events the agent has seen",
+                Long:  "Lists the most recent events the agent has seen",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return e.Run(args)
+		},
+        }
+
+	cmd.Flags().AddGoFlagSet(e.CommandFlags())
+
+	return cmd
+}
