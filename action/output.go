@@ -26,8 +26,8 @@ func (o *output) addOutputFlags(f *flag.FlagSet, kvFlag bool) {
 	f.StringVar(&o.template, "template", "", "Output template. Use @filename to read template from a file")
 
 	if kvFlag {
-		f.StringVar(&o.fields, "fields", "all", "Comma separated list of fields to return.")
-		f.StringVar(&o.format, "format", "prettyjson", "Output format. Supported options: text, json, prettyjson")
+		f.StringVar(&o.fields, "fields", "value", "Comma separated list of fields to return.")
+		f.StringVar(&o.format, "format", "text", "Output format. Supported options: text, json, prettyjson")
 		f.StringVar(&o.delimiter, "delimiter", "", "Output field delimiter")
 		f.BoolVar(&o.header, "header", false, "Output a header row for text format")
 	}
@@ -158,7 +158,7 @@ func (o *output) addFields(b *bytes.Buffer) error {
 		fieldList = "key,value,flags,createindex,modifyindex,lockindex,session"
 	}
 
-	delimiter := o.fields
+	delimiter := o.delimiter
 	for i, field := range strings.Split(fieldList, ",") {
 		if i >= 1 {
 			if _, err := b.WriteString(delimiter); err != nil {
