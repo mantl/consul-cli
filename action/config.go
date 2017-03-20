@@ -49,6 +49,11 @@ func init() {
 	gFlags.StringVar(&gConfig.tokenFile, "token-file", "", "Path to file containing Consul ACL token")
 }
 
+func (c *config) addStaleFlag(f *flag.FlagSet) {
+	f.BoolVar(&c.stale, "stale", false, "Allow any agent to service the request")
+}
+
+
 func (c *config) addOutputFlags(f *flag.FlagSet, kvFlag bool) {
 	c.output.addOutputFlags(f, kvFlag)
 }
@@ -85,3 +90,4 @@ func (c *config) Output(v interface{}) error {
 func (c *config) OutputKv(v interface{}) error {
 	return c.output.outputKv(v)
 }
+

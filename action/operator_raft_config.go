@@ -5,8 +5,6 @@ import (
 )
 
 type operatorRaftConfig struct {
-	stale bool
-
 	*config
 }
 
@@ -19,10 +17,9 @@ func OperatorRaftConfigAction() Action {
 func (o *operatorRaftConfig) CommandFlags() *flag.FlagSet {
 	f := newFlagSet()
 
-	f.BoolVar(&o.stale, "stale", false, "Read the raft configuration from any Consul server")
-
 	o.addOutputFlags(f, false)
 	o.addDatacenterFlag(f)
+	o.addStaleFlag(f)
 
 	return f
 }

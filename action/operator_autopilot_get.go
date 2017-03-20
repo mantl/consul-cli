@@ -8,8 +8,6 @@ import (
 )
 
 type operatorAutopilotGet struct {
-	stale bool
-
 	*config
 }
 
@@ -22,10 +20,9 @@ func OperatorAutopilotGetAction() Action {
 func (o *operatorAutopilotGet) CommandFlags() *flag.FlagSet {
 	f := newFlagSet()
 
-	f.BoolVar(&o.stale, "stale", false, "Read the raft configuration from any Consul server")
-
 	o.addOutputFlags(f, false)
 	o.addDatacenterFlag(f)
+	o.addStaleFlag(f)
 
 	return f
 }
