@@ -111,6 +111,15 @@ func (c *consul) newSession() (*consulapi.Session, error) {
 	return consul.Session(), nil
 }
 
+func (c *consul) newSnapshot() (*consulapi.Snapshot, error) {
+	consul, err := c.newClient()
+	if err != nil {
+		return nil, err
+	}
+
+	return consul.Snapshot(), nil
+}
+
 func (c *consul) newStatus() (*consulapi.Status, error) {
 	consul, err := c.newClient()
 	if err != nil {
