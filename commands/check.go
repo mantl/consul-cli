@@ -20,6 +20,7 @@ func newCheckCommand() *cobra.Command {
 	cmd.AddCommand(newCheckFailCommand())
 	cmd.AddCommand(newCheckPassCommand())
 	cmd.AddCommand(newCheckRegisterCommand())
+	cmd.AddCommand(newCheckUpdateCommand())
 	cmd.AddCommand(newCheckWarnCommand())
 
 	return cmd
@@ -91,6 +92,24 @@ func newCheckRegisterCommand() *cobra.Command {
                 Use:   "register <checkName>",
                 Short: "Register a new local check",
                 Long:  registerLongHelp,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return c.Run(args)
+		},
+
+	}
+
+	cmd.Flags().AddGoFlagSet(c.CommandFlags())
+
+	return cmd
+}
+
+func newCheckUpdateCommand() *cobra.Command {
+	c := action.CheckUpdateAction()
+
+        cmd := &cobra.Command{
+                Use:   "update <checkId>",
+                Short: "Set the status and output of a TTL check",
+                Long: "Set the status and output of a TTL check",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(args)
 		},
