@@ -49,6 +49,7 @@ func NewConsulCliCommand(name, version string) *cobra.Command {
 	cmd.AddCommand(newSessionCommand())
 	cmd.AddCommand(newSnapshotCommand())
 	cmd.AddCommand(newStatusCommand())
+	cmd.AddCommand(newTxnCommand())
 
 	return cmd
 }
