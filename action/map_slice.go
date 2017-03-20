@@ -59,6 +59,10 @@ func (mv *mapValue) Set(val string) error {
 		v, err := strconv.ParseBool(val)
 		mv.msv.current[mv.member] = v
 		return err
+	case "uint64":
+		v, err := strconv.ParseUint(val, 0, 64)
+		mv.msv.current[mv.member] = v
+		return err
 	}
 
 	return nil
