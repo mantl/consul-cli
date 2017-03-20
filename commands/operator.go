@@ -18,6 +18,7 @@ func newOperatorCommand() *cobra.Command {
 
 	cmd.AddCommand(newOperatorKeyringCommand())
 	cmd.AddCommand(newOperatorRaftCommand())
+//	cmd.AddCommand(newOperatorAutopilotCommand())
 
 	return cmd
 }
@@ -164,3 +165,53 @@ func newOperatorRaftDeleteCommand() *cobra.Command {
 
         return cmd
 }
+
+//func newOperatorAutopilotCommand() *cobra.Command {
+//        cmd := &cobra.Command{
+//                Use:   "autopilot",
+//                Short: "Consul /operator/autopilot endpoint interface",
+//                Long:  "Consul /operator/autopilot endpoint interface",
+//                Run: func(cmd *cobra.Command, args []string) {
+//                        cmd.HelpFunc()(cmd, []string{})
+//                },
+//        }
+//
+//        cmd.AddCommand(newOperatorAutopilotGetCommand())
+//        cmd.AddCommand(newOperatorAutopilotSetCommand())
+//
+//        return cmd
+//}
+//
+//func newOperatorAutopilotGetCommand() *cobra.Command {
+//	o := action.OperatorAutopilotGetAction()
+//
+//        cmd := &cobra.Command{
+//                Use:   "get",
+//                Short: "Retrieve the latest autopilot configuration",
+//                Long: "Retrieve the latest autopilot configuration",
+//                RunE:  func (cmd *cobra.Command, args []string) error {
+//			return o.Run(args)
+//		},
+//        }
+//
+//	cmd.Flags().AddGoFlagSet(o.CommandFlags())
+//
+//        return cmd
+//}
+//
+//func newOperatorAutopilotSetCommand() *cobra.Command {
+//	o := action.OperatorAutopilotSetAction()
+//
+//        cmd := &cobra.Command{
+//                Use:   "set",
+//                Short: "Update the autopilot configuration",
+//                Long: "Update the autopilot configuration",
+//                RunE:  func (cmd *cobra.Command, args []string) error {
+//			return o.Run(args)
+//		},
+//        }
+//
+//	cmd.Flags().AddGoFlagSet(o.CommandFlags())
+//
+//        return cmd
+//}
