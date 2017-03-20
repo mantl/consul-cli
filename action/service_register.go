@@ -1,21 +1,22 @@
 package action
 
 import (
-	"errors"
 	"flag"
 	"fmt"
-	"strings"
 
 	consulapi "github.com/hashicorp/consul/api"
 )
 
 type serviceRegister struct {
+	checks []map[string]interface{}
+
 	*config
 }
 
 func ServiceRegisterAction() Action {
 	return &serviceRegister{
 		config: &gConfig,
+		checks: []map[string]interface{}{},
 	}
 }
 
@@ -24,6 +25,19 @@ func (s *serviceRegister) CommandFlags() *flag.FlagSet {
 
 	s.addServiceFlags(f)
 	s.addRawFlag(f)
+
+	msv := newMapSliceValue(&s.checks)
+
+	f.Var(msv, "check", "Begin a new check definition")
+	f.Var(newMapValue(msv, "http", "string"), "http", "A URL to GET every interval")
+	f.Var(newMapValue(msv, "script", "string"), "script", "A script to run every interval")
+	f.Var(newMapValue(msv, "ttl", "string"), "ttl", "Fail if TTL expires before service checks in")
+	f.Var(newMapValue(msv, "interval", "string"), "interval", "Interval between checks")
+	f.Var(newMapValue(msv, "notes", "string"), "notes", "Description of the check")
+	f.Var(newMapValue(msv, "docker-id", "string"), "docker-id", "Docker container ID")
+	f.Var(newMapValue(msv, "shell", "string"), "shell", "Shell to use inside docker container")
+	f.Var(newMapValue(msv, "dereg", "string"), "deregister-crit", "Deregister critical service after this interval")
+	f.Var(newMapValue(msv, "skip-verify", "bool"), "skip-verify", "Skip TLS verification for HTTP checks")
 
 	return f
 }
@@ -44,11 +58,10 @@ func (s *serviceRegister) Run(args []string) error {
 		}
 		serviceName := args[0]
 
-		//checkStrings := viper.GetStringSlice("check")
-		//checks, err := parseChecks(checkStrings)
-		//if err != nil {
-		//	return err
-		//}
+		checks, err := s.parseChecks()
+		if err != nil {
+			return err
+		}
 
 		service = consulapi.AgentServiceRegistration{
 			ID:                s.service.id,
@@ -56,7 +69,7 @@ func (s *serviceRegister) Run(args []string) error {
 			Tags:              s.service.tags,
 			Port:              s.service.port,
 			Address:           s.service.address,
-//			Checks:            checks,
+			Checks:            checks,
 			EnableTagOverride: s.service.overrideTag,
 		}
 	}
@@ -73,97 +86,25 @@ func (s *serviceRegister) Run(args []string) error {
 	return nil
 }
 
-func parseChecks(checks []string) ([]*consulapi.AgentServiceCheck, error) {
-	rval := make([]*consulapi.AgentServiceCheck, len(checks))
+func (s *serviceRegister) parseChecks() ([]*consulapi.AgentServiceCheck, error) {
+	rval := make([]*consulapi.AgentServiceCheck, len(s.checks))
 
-	for i, s := range checks {
-		parts := strings.Split(s, ":")
-		numParts := len(parts)
+	for i, cs := range s.checks {
+		c := new(consulapi.AgentServiceCheck)
 
-		switch parts[0] {
-		case "http":
-			// Order is http:interval:url:[tlsskip]
-			switch {
-			case numParts < 3 || numParts > 4:
-				return nil, fmt.Errorf("HTTP check format is http:interval:url:[tlsskipverify]")
-			case numParts == 3:
-				rval[i] = &consulapi.AgentServiceCheck{
-					HTTP:     parts[2],
-					Interval: parts[1],
-				}
-			case numParts == 4:
-				rval[i] = &consulapi.AgentServiceCheck{
-					HTTP:     parts[2],
-					Interval: parts[1],
-					//TLSSkipVerify: parts[3],
-				}
-			}
-		case "script":
-			// Order is script:interval:command
-			if numParts != 3 {
-				return nil, fmt.Errorf("Script check format is script:interval:command_path")
-			}
+		
+		if v, ok := cs["script"]; ok { c.Script = v.(string) }
+		if v, ok := cs["http"]; ok { c.HTTP = v.(string) }
+		if v, ok := cs["ttl"]; ok { c.TTL = v.(string) }
+		if v, ok := cs["interval"]; ok { c.Interval = v.(string) }
+		if v, ok := cs["notes"]; ok { c.Notes = v.(string) }
+		if v, ok := cs["docker-id"]; ok { c.DockerContainerID = v.(string) }
+		if v, ok := cs["shell"]; ok { c.Shell = v.(string) }
+		if v, ok := cs["dereg"]; ok { c.DeregisterCriticalServiceAfter = v.(string) }
+		if v, ok := cs["skip-verify"]; ok { c.TLSSkipVerify = v.(bool) }
 
-			rval[i] = &consulapi.AgentServiceCheck{
-				Script:   parts[2],
-				Interval: parts[1],
-			}
-		case "ttl":
-			// Order is ttl:interval
-			if numParts != 2 {
-				return nil, fmt.Errorf("TTL check format is ttl:interval")
-			}
-
-			rval[i] = &consulapi.AgentServiceCheck{
-				TTL: parts[1],
-			}
-		}
+		rval[i] = c
 	}
 
 	return rval, nil
-}
-func parseCheckConfig(s string) (*consulapi.AgentServiceCheck, error) {
-	if len(strings.TrimSpace(s)) < 1 {
-		return nil, errors.New("Cannot specify empty check")
-	}
-
-	var checkType, checkInterval, checkString string
-	parts := strings.Split(s, ":")
-	partLen := len(parts)
-	switch {
-	case partLen == 2:
-		checkType, checkInterval = parts[0], parts[1]
-		checkString = ""
-	case partLen >= 3:
-		checkType, checkInterval, checkString = parts[0], parts[1], strings.Join(parts[2:], ":")
-	default:
-		return nil, fmt.Errorf("Invalid check definition '%s'", s)
-	}
-
-	switch strings.ToLower(checkType) {
-	case "http":
-		if checkString == "" {
-			return nil, errors.New("Must provide URL with HTTP check")
-		}
-
-		return &consulapi.AgentServiceCheck{
-			HTTP:     checkString,
-			Interval: checkInterval,
-		}, nil
-	case "script":
-		if checkString == "" {
-			return nil, errors.New("Must provide command path with script check")
-		}
-
-		return &consulapi.AgentServiceCheck{
-			Script:   checkString,
-			Interval: checkInterval,
-		}, nil
-	case "ttl":
-		return &consulapi.AgentServiceCheck{
-			TTL: checkInterval,
-		}, nil
-	}
-
-	return nil, fmt.Errorf("Invalid check type '%s'", checkType)
 }

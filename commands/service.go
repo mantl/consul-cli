@@ -65,6 +65,16 @@ be duplicate service IDs per agent however.
 
   If --address is not specified, the IP address of the local agent
 is used.
+
+  Checks are defined with the --check flag. The flags specified after
+the --check flag are specific to that check. To define multiple checks,
+multiple --check flags can be used:
+
+  --check --http=http://localhost:8500/v1/agent/self --interval 30m \
+  --check --http=http://localhost:8500/v1/status/leader --interval 5m --notes "Leader check"
+
+The above example defines two checks. The first queries the /v1/agent/self endpoint
+every 30 minutes. The second queries /v1/status/leader every five minutes.
 `
 
 func newServiceRegisterCommand() *cobra.Command {
