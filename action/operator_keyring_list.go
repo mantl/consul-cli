@@ -15,7 +15,11 @@ func OperatorKeyringListAction() Action {
 }
 
 func (o *operatorKeyringList) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	f := newFlagSet()
+
+	o.addOutputFlags(f, false)
+
+	return f
 }
 
 func (o *operatorKeyringList) Run(args []string) error {
