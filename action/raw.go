@@ -2,8 +2,11 @@ package action
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/hashicorp/hcl"
 )
 
 type raw struct {
@@ -33,7 +36,17 @@ func (r *raw) readJSON(v interface{}) error {
 		return err
 	}
 
-	return json.Unmarshal(data, v)
+	// Try JSON first
+	if err := json.Unmarshal(data, v); err == nil {
+		return nil
+	}
+
+	// HCL next
+	if err := hcl.Unmarshal(data, v); err == nil {
+		return nil
+	}
+
+	return fmt.Errorf("Unable to unmarshal raw file")
 }
 
 // Read the data from a given path. Read from stdin

@@ -5,3 +5,4 @@ import:
   subpackages:
   - api
 - package: github.com/spf13/cobra
+- package: github.com/hashicorp/hcl
