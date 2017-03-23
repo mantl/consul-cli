@@ -31,7 +31,7 @@ func newAclCloneCommand() *cobra.Command {
 	ac := action.AclCloneAction()
 
 	cmd := &cobra.Command{
-		Use:   "clone",
+		Use:   "clone <id>",
 		Short: "Create a new token from an existing one",
 		Long:  "Create a new token from an existing one",
 		RunE: func(cmd *cobra.Command, args []string) error {
