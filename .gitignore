@@ -29,4 +29,3 @@ consul-cli
 bin/
 build/
 .vagrant/
-glide.lock
