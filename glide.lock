@@ -1,0 +1,35 @@
+hash: 547f4f9f03682bf528ab5c7534621a518a671baa59dfae3957bbf9cfe9b42ef0
+updated: 2017-04-04T15:23:58.989249757-05:00
+imports:
+- name: github.com/hashicorp/consul
+  version: 8471360c9edbb66215cf5dd10ab8d333ea937766
+  subpackages:
+  - api
+- name: github.com/hashicorp/errwrap
+  version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
+- name: github.com/hashicorp/go-cleanhttp
+  version: ad28ea4487f05916463e2423a55166280e8254b5
+- name: github.com/hashicorp/go-multierror
+  version: 8484912a3b9987857bac52e0c5fec2b95f419628
+- name: github.com/hashicorp/hcl
+  version: 7cb7455c285ca3bf3362aa4ba6a06a6d6f5c3ba0
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
+- name: github.com/hashicorp/serf
+  version: f679d7594a349263f6118db40d87122d3a474e7d
+  subpackages:
+  - coordinate
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/spf13/cobra
+  version: 9495bc009a56819bdb0ddbc1a373e29c140bc674
+- name: github.com/spf13/pflag
+  version: 5ccb023bc27df288a957c5e994cd44fd19619465
+testImports: []

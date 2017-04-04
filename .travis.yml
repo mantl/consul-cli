@@ -2,12 +2,15 @@
 language: go
 
 go:
-  - 1.6
+  - 1.7.x
   - tip
 
-install: 
-  - go get -u github.com/Masterminds/glide
-  - glide up
+go_import_path: github.com/mantl/consul-cli
 
-script: 
-  - go test -v $(glide nv)
+install: 
+  - go get -v github.com/Masterminds/glide
+  - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.12.3 && go install && cd -
+  - glide install
+  - make vendor
+
+script: make test
