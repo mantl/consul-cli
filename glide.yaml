@@ -1,4 +1,4 @@
-package: github.com/ChrisAubuchon/consul-cli
+package: github.com/mantl/consul-cli
 import:
 - package: github.com/hashicorp/consul
   version: master
