@@ -6,18 +6,18 @@ import (
 	"log"
 	"os"
 
-	"github.com/CiscoCloud/consul-cli/commands"
+	"github.com/ChrisAubuchon/consul-cli/commands"
 )
 
 const Name = "consul-cli"
-const Version = "0.3.1"
+const Version = "0.5.0"
 
 func main() {
 	log.SetOutput(ioutil.Discard)
 
-	root := commands.Init(Name, Version)
+	root := commands.NewConsulCliCommand(Name, Version)
 	if err := root.Execute(); err != nil {
-		fmt.Fprintln(root.Err, err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 

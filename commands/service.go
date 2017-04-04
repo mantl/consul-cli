@@ -1,41 +1,95 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+
+	"github.com/ChrisAubuchon/consul-cli/action"
 )
 
-type Service struct {
-	*Cmd
-}
-
-func (root *Cmd) initService() {
-	s := Service{Cmd: root}
-
-	serviceCmd := &cobra.Command{
+func newServiceCommand() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "service",
 		Short: "Consul /agent/service endpoint interface",
 		Long:  "Consul /agent/service endpoint interface",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.HelpFunc()(cmd, []string{})
+			return nil
 		},
 	}
 
-	s.AddDeregisterSub(serviceCmd)
-	s.AddMaintenanceSub(serviceCmd)
-	s.AddRegisterSub(serviceCmd)
+	cmd.AddCommand(newServiceDeregisterCommand())
+	cmd.AddCommand(newServiceMaintenanceCommand())
+	cmd.AddCommand(newServiceRegisterCommand())
 
-	s.AddCommand(serviceCmd)
+	return cmd
 }
 
-func (s *Service) CheckIdArg(args []string) error {
-	switch {
-	case len(args) == 0:
-		return fmt.Errorf("No service id specified")
-	case len(args) > 1:
-		return fmt.Errorf("Only one service id allowed")
-	}
+func newServiceDeregisterCommand() *cobra.Command {
+	s := action.ServiceDeregisterAction()
 
-	return nil
+        cmd := &cobra.Command{
+                Use:   "deregister <serviceId>",
+                Short: "Remove a service from the agent",
+                Long:  "Remove a service from the agent",
+                RunE:  func (cmd *cobra.Command, args []string) error {
+			return s.Run(args)
+		},
+        }
+
+	cmd.Flags().AddGoFlagSet(s.CommandFlags())
+
+        return cmd
+}
+
+func newServiceMaintenanceCommand() *cobra.Command {
+	s := action.ServiceMaintenanceAction()
+
+        cmd := &cobra.Command{
+                Use:   "maintenance",
+                Short: "Manage maintenance mode of a service",
+                Long:  "Manage maintenance mode of a service",
+                RunE:  func (cmd *cobra.Command, args []string) error {
+			return s.Run(args)
+		},
+        }
+
+	cmd.Flags().AddGoFlagSet(s.CommandFlags())
+
+        return cmd
+}
+
+var srLongHelp = `Register a new local service
+
+  If --id is not specified, the serviceName is used. There cannot
+be duplicate service IDs per agent however.
+
+  If --address is not specified, the IP address of the local agent
+is used.
+
+  Checks are defined with the --check flag. The flags specified after
+the --check flag are specific to that check. To define multiple checks,
+multiple --check flags can be used:
+
+  --check --http=http://localhost:8500/v1/agent/self --interval 30m \
+  --check --http=http://localhost:8500/v1/status/leader --interval 5m --notes "Leader check"
+
+The above example defines two checks. The first queries the /v1/agent/self endpoint
+every 30 minutes. The second queries /v1/status/leader every five minutes.
+`
+
+func newServiceRegisterCommand() *cobra.Command {
+	s := action.ServiceRegisterAction()
+
+        cmd := &cobra.Command{
+                Use:   "register <serviceName>",
+                Short: "Register a new local service",
+                Long:  srLongHelp,
+                RunE:  func (cmd *cobra.Command, args []string) error {
+			return s.Run(args)
+		},
+        }
+
+	cmd.Flags().AddGoFlagSet(s.CommandFlags())
+
+        return cmd
 }
