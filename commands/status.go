@@ -3,7 +3,7 @@ package commands
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/ChrisAubuchon/consul-cli/action"
+	"github.com/mantl/consul-cli/action"
 )
 
 func newStatusCommand() *cobra.Command {
