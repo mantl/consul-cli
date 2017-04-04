@@ -51,7 +51,7 @@ func (o *output) outputKv(v interface{}) error {
 		case "text":
 			return o.outputKvText(v)
 		default:
-			return fmt.Errorf("Invalid output format: '%s'\n", o)
+			return fmt.Errorf("Invalid output format: '%s'\n", o.format)
 		}
 	} else {
 		return o.outputTemplate(v)
