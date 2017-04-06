@@ -127,8 +127,8 @@ func newCatalogServiceCommand() *cobra.Command {
 
         cmd := &cobra.Command{
                 Use:   "service",
-                Short: "Get the services provided by a service",
-                Long:  "Get the services provided by a service",
+                Short: "Get the services provided by a node",
+                Long:  "Get the services provided by a node",
                 RunE: func(cmd *cobra.Command, args []string) error {
                        return c.Run(args)
                 },
