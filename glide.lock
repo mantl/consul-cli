@@ -1,5 +1,5 @@
-hash: 547f4f9f03682bf528ab5c7534621a518a671baa59dfae3957bbf9cfe9b42ef0
-updated: 2017-04-04T15:23:58.989249757-05:00
+hash: e50b4f41db9304f7dcf8e7848ca52a13d412d99f29e5db7effa6ad93d660024e
+updated: 2017-04-06T17:17:45.030596245-05:00
 imports:
 - name: github.com/hashicorp/consul
   version: 8471360c9edbb66215cf5dd10ab8d333ea937766
@@ -32,4 +32,16 @@ imports:
   version: 9495bc009a56819bdb0ddbc1a373e29c140bc674
 - name: github.com/spf13/pflag
   version: 5ccb023bc27df288a957c5e994cd44fd19619465
-testImports: []
+- name: github.com/stretchr/testify
+  version: 4d4bfba8f1d1027c4fdbe371823030df51419987
+  subpackages:
+  - assert
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
