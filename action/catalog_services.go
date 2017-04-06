@@ -15,12 +15,14 @@ func CatalogServicesAction() Action {
 }
 
 func (c *catalogServices) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
-}
+	f := newFlagSet()
 
-//	addDatacenterOption(cmd)
-//	addTemplateOption(cmd)
-//	addConsistencyOptions(cmd)
+	c.addDatacenterFlag(f)
+	c.addOutputFlags(f, false)
+	c.addConsistencyFlags(f)
+
+	return f
+}
 
 func (c *catalogServices) Run(args []string) error {
 	client, err := c.newCatalog()
