@@ -10,7 +10,7 @@ import (
 
 type kvDelete struct {
 	modifyIndex string
-	recurse bool
+	recurse     bool
 
 	*config
 }
@@ -22,12 +22,10 @@ func KvDeleteAction() Action {
 }
 
 func (k *kvDelete) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := k.newFlagSet(FLAG_DATACENTER)
 
 	f.StringVar(&k.modifyIndex, "modifyindex", "", "Perform a Check-and-Set delete")
 	f.BoolVar(&k.recurse, "recurse", false, "Perform a recursive delete")
-
-	k.addDatacenterFlag(f)
 
 	return f
 }
@@ -78,4 +76,3 @@ func (k *kvDelete) Run(args []string) error {
 
 	return nil
 }
-

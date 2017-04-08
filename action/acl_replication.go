@@ -16,12 +16,7 @@ func AclReplicationAction() Action {
 }
 
 func (a *aclReplication) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	a.addDatacenterFlag(f)
-	a.addOutputFlags(f, false)
-
-	return f
+	return a.newFlagSet(FLAG_OUTPUT, FLAG_DATACENTER)
 }
 
 func (a *aclReplication) Run(args []string) error {

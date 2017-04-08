@@ -16,7 +16,7 @@ func AclCloneAction() Action {
 }
 
 func (a *aclClone) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return a.newFlagSet(FLAG_NONE)
 }
 
 func (a *aclClone) Run(args []string) error {

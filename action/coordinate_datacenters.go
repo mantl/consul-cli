@@ -15,11 +15,7 @@ func CoordDatacentersAction() Action {
 }
 
 func (c *coordDatacenters) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	c.addOutputFlags(f, false)
-
-	return f
+	return c.newFlagSet(FLAG_OUTPUT)
 }
 
 func (c *coordDatacenters) Run(args []string) error {

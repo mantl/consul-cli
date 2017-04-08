@@ -6,7 +6,7 @@ import (
 )
 
 type kvUnlock struct {
-	session string
+	session   string
 	noDestroy bool
 
 	*config
@@ -19,13 +19,10 @@ func KvUnlockAction() Action {
 }
 
 func (k *kvUnlock) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := k.newFlagSet(FLAG_DATACENTER, FLAG_CONSISTENCY)
 
 	f.StringVar(&k.session, "session", "", "Session ID of the lock holder. Required")
 	f.BoolVar(&k.noDestroy, "no-destroy", false, "Do not destroy the session when complete")
-
-	k.addConsistencyFlags(f)
-	k.addDatacenterFlag(f)
 
 	return f
 }
@@ -85,4 +82,3 @@ func (k *kvUnlock) Run(args []string) error {
 
 	return nil
 }
-

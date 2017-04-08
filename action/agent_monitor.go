@@ -17,7 +17,7 @@ func AgentMonitorAction() Action {
 }
 
 func (a *agentMonitor) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := a.newFlagSet(FLAG_NONE)
 
 	f.StringVar(&a.loglevel, "loglevel", "", "Log level to filter on. Default is info")
 

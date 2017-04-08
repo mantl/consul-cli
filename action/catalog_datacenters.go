@@ -15,11 +15,7 @@ func CatalogDatacentersAction() Action {
 }
 
 func (c *catalogDatacenters) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	c.addOutputFlags(f, false)
-
-	return f
+	return c.newFlagSet(FLAG_OUTPUT)
 }
 
 func (c *catalogDatacenters) Run(args []string) error {

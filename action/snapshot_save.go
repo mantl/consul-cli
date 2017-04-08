@@ -18,12 +18,7 @@ func SnapshotSaveAction() Action {
 }
 
 func (s *snapshotSave) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addDatacenterFlag(f)
-	s.addStaleFlag(f)
-
-	return f
+	return s.newFlagSet(FLAG_DATACENTER, FLAG_STALE)
 }
 
 func (s *snapshotSave) Run(args []string) error {
@@ -48,7 +43,7 @@ func (s *snapshotSave) Run(args []string) error {
 	}
 	defer reader.Close()
 
-	f, err  := os.Create(filePath)
+	f, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}

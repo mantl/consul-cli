@@ -9,7 +9,7 @@ import (
 
 type serviceMaintenance struct {
 	enabled bool
-	reason string
+	reason  string
 
 	*config
 }
@@ -21,7 +21,7 @@ func ServiceMaintenanceAction() Action {
 }
 
 func (s *serviceMaintenance) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := s.newFlagSet(FLAG_NONE)
 
 	f.BoolVar(&s.enabled, "enabled", true, "Boolean value for maintenance mode")
 	f.StringVar(&s.reason, "reason", "", "Reason for entering maintenance mode")

@@ -17,7 +17,7 @@ func AgentMaintenanceAction() Action {
 }
 
 func (a *agentMaintenance) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := a.newFlagSet(FLAG_NONE)
 
 	f.BoolVar(&a.enabled, "enabled", true, "Boolean value for maintenance mode")
 	f.StringVar(&a.reason, "reason", "", "Reason for entering maintenance mode")

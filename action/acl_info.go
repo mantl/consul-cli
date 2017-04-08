@@ -16,10 +16,7 @@ func AclInfoAction() Action {
 }
 
 func (a *aclInfo) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-	a.addOutputFlags(f, false)
-
-	return f
+	return a.newFlagSet(FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (a aclInfo) Run(args []string) error {

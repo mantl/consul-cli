@@ -21,10 +21,9 @@ func ServiceRegisterAction() Action {
 }
 
 func (s *serviceRegister) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := s.newFlagSet(FLAG_RAW)
 
 	s.addServiceFlags(f)
-	s.addRawFlag(f)
 
 	msv := newMapSliceValue(&s.checks)
 
@@ -92,16 +91,33 @@ func (s *serviceRegister) parseChecks() ([]*consulapi.AgentServiceCheck, error) 
 	for i, cs := range s.checks {
 		c := new(consulapi.AgentServiceCheck)
 
-		
-		if v, ok := cs["script"]; ok { c.Script = v.(string) }
-		if v, ok := cs["http"]; ok { c.HTTP = v.(string) }
-		if v, ok := cs["ttl"]; ok { c.TTL = v.(string) }
-		if v, ok := cs["interval"]; ok { c.Interval = v.(string) }
-		if v, ok := cs["notes"]; ok { c.Notes = v.(string) }
-		if v, ok := cs["docker-id"]; ok { c.DockerContainerID = v.(string) }
-		if v, ok := cs["shell"]; ok { c.Shell = v.(string) }
-		if v, ok := cs["dereg"]; ok { c.DeregisterCriticalServiceAfter = v.(string) }
-		if v, ok := cs["skip-verify"]; ok { c.TLSSkipVerify = v.(bool) }
+		if v, ok := cs["script"]; ok {
+			c.Script = v.(string)
+		}
+		if v, ok := cs["http"]; ok {
+			c.HTTP = v.(string)
+		}
+		if v, ok := cs["ttl"]; ok {
+			c.TTL = v.(string)
+		}
+		if v, ok := cs["interval"]; ok {
+			c.Interval = v.(string)
+		}
+		if v, ok := cs["notes"]; ok {
+			c.Notes = v.(string)
+		}
+		if v, ok := cs["docker-id"]; ok {
+			c.DockerContainerID = v.(string)
+		}
+		if v, ok := cs["shell"]; ok {
+			c.Shell = v.(string)
+		}
+		if v, ok := cs["dereg"]; ok {
+			c.DeregisterCriticalServiceAfter = v.(string)
+		}
+		if v, ok := cs["skip-verify"]; ok {
+			c.TLSSkipVerify = v.(bool)
+		}
 
 		rval[i] = c
 	}

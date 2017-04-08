@@ -16,10 +16,9 @@ func AgentMembersAction() Action {
 }
 
 func (a *agentMembers) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := a.newFlagSet(FLAG_OUTPUT)
 
 	f.BoolVar(&a.wan, "wan", false, "Get list of WAN members instead of LAN")
-	a.addOutputFlags(f, false)
 
 	return f
 }

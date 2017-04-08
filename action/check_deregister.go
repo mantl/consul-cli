@@ -16,7 +16,7 @@ func CheckDeregisterAction() Action {
 }
 
 func (c *checkDeregister) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return c.newFlagSet(FLAG_NONE)
 }
 
 func (c *checkDeregister) Run(args []string) error {

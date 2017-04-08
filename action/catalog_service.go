@@ -18,13 +18,9 @@ func CatalogServiceAction() Action {
 }
 
 func (c *catalogService) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := c.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY)
 
 	f.StringVar(&c.tag, "tag", "", "Service tag to filter on")
-
-	c.addDatacenterFlag(f)
-	c.addOutputFlags(f, false)
-	c.addConsistencyFlags(f)
 
 	return f
 }

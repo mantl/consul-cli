@@ -16,7 +16,7 @@ func AgentForceLeaveAction() Action {
 }
 
 func (a *agentForceLeave) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return a.newFlagSet(FLAG_NONE)
 }
 
 func (a *agentForceLeave) Run(args []string) error {

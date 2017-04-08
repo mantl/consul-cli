@@ -27,35 +27,35 @@ func newServiceCommand() *cobra.Command {
 func newServiceDeregisterCommand() *cobra.Command {
 	s := action.ServiceDeregisterAction()
 
-        cmd := &cobra.Command{
-                Use:   "deregister <serviceId>",
-                Short: "Remove a service from the agent",
-                Long:  "Remove a service from the agent",
-                RunE:  func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "deregister <serviceId>",
+		Short: "Remove a service from the agent",
+		Long:  "Remove a service from the agent",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
-        }
+	}
 
 	cmd.Flags().AddGoFlagSet(s.CommandFlags())
 
-        return cmd
+	return cmd
 }
 
 func newServiceMaintenanceCommand() *cobra.Command {
 	s := action.ServiceMaintenanceAction()
 
-        cmd := &cobra.Command{
-                Use:   "maintenance",
-                Short: "Manage maintenance mode of a service",
-                Long:  "Manage maintenance mode of a service",
-                RunE:  func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "maintenance",
+		Short: "Manage maintenance mode of a service",
+		Long:  "Manage maintenance mode of a service",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
-        }
+	}
 
 	cmd.Flags().AddGoFlagSet(s.CommandFlags())
 
-        return cmd
+	return cmd
 }
 
 var srLongHelp = `Register a new local service
@@ -80,16 +80,16 @@ every 30 minutes. The second queries /v1/status/leader every five minutes.
 func newServiceRegisterCommand() *cobra.Command {
 	s := action.ServiceRegisterAction()
 
-        cmd := &cobra.Command{
-                Use:   "register <serviceName>",
-                Short: "Register a new local service",
-                Long:  srLongHelp,
-                RunE:  func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "register <serviceName>",
+		Short: "Register a new local service",
+		Long:  srLongHelp,
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
-        }
+	}
 
 	cmd.Flags().AddGoFlagSet(s.CommandFlags())
 
-        return cmd
+	return cmd
 }

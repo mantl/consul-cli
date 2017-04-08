@@ -25,10 +25,10 @@ func newEventCommand() *cobra.Command {
 func newEventFireCommand() *cobra.Command {
 	e := action.EventFireAction()
 
-        cmd := &cobra.Command{
-                Use:   "fire <name>",
-                Short: "Fires a new user event",
-                Long:  "Fires a new user event",
+	cmd := &cobra.Command{
+		Use:   "fire <name>",
+		Short: "Fires a new user event",
+		Long:  "Fires a new user event",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return e.Run(args)
 		},
@@ -42,14 +42,14 @@ func newEventFireCommand() *cobra.Command {
 func newEventListCommand() *cobra.Command {
 	e := action.EventListAction()
 
-        cmd := &cobra.Command{
-                Use:   "list",
-                Short: "Lists the most recent events the agent has seen",
-                Long:  "Lists the most recent events the agent has seen",
+	cmd := &cobra.Command{
+		Use:   "list",
+		Short: "Lists the most recent events the agent has seen",
+		Long:  "Lists the most recent events the agent has seen",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return e.Run(args)
 		},
-        }
+	}
 
 	cmd.Flags().AddGoFlagSet(e.CommandFlags())
 

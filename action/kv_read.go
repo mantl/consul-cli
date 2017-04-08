@@ -18,13 +18,9 @@ func KvReadAction() Action {
 }
 
 func (k *kvRead) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := k.newFlagSet(FLAG_DATACENTER, FLAG_KVOUTPUT, FLAG_CONSISTENCY)
 
 	f.BoolVar(&k.recurse, "recurse", false, "Perform a recursive read")
-
-	k.addConsistencyFlags(f)
-	k.addDatacenterFlag(f)
-	k.addOutputFlags(f, true)
 
 	return f
 }
@@ -66,4 +62,3 @@ func (k *kvRead) Run(args []string) error {
 		return k.OutputKv(kv)
 	}
 }
-

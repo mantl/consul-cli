@@ -21,13 +21,11 @@ func AclCreateAction() Action {
 }
 
 func (a *aclCreate) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := a.newFlagSet(FLAG_RAW)
 
 	f.BoolVar(&a.management, "management", false, "Create a management token")
 	f.StringVar(&a.name, "name", "", "Name of the ACL")
 	f.Var(newStringSliceValue(&a.rules), "rule", "Rule to create. Can be multiple rules on a command line. Format is type:path:policy")
-
-	a.addRawFlag(f)
 
 	return f
 }

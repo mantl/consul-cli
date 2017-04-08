@@ -29,11 +29,11 @@ func newSessionCommand() *cobra.Command {
 func newSessionCreateCommand() *cobra.Command {
 	s := action.SessionCreateAction()
 
-        cmd := &cobra.Command{
-                Use:   "create",
-                Short: "Create a new session",
-                Long:  "Create a new session",
-		RunE: func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "create",
+		Short: "Create a new session",
+		Long:  "Create a new session",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}
@@ -46,11 +46,11 @@ func newSessionCreateCommand() *cobra.Command {
 func newSessionDestroyCommand() *cobra.Command {
 	s := action.SessionDestroyAction()
 
-        cmd := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "destroy <sessionId>",
 		Short: "Destroy a session",
 		Long:  "Destroy a session",
-		RunE: func (cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}
@@ -63,11 +63,11 @@ func newSessionDestroyCommand() *cobra.Command {
 func newSessionInfoCommand() *cobra.Command {
 	s := action.SessionInfoAction()
 
-        cmd := &cobra.Command{
-                Use:   "info <sessionId>",
-                Short: "Get information on a session",
-                Long:  "Get information on a session",
-		RunE: func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "info <sessionId>",
+		Short: "Get information on a session",
+		Long:  "Get information on a session",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}
@@ -80,11 +80,11 @@ func newSessionInfoCommand() *cobra.Command {
 func newSessionListCommand() *cobra.Command {
 	s := action.SessionListAction()
 
-        cmd := &cobra.Command{
-                Use:   "list",
-                Short: "List active sessions for a datacenter",
-                Long:  "List active sessions for a datacenter",
-		RunE: func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "list",
+		Short: "List active sessions for a datacenter",
+		Long:  "List active sessions for a datacenter",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}
@@ -97,11 +97,11 @@ func newSessionListCommand() *cobra.Command {
 func newSessionNodeCommand() *cobra.Command {
 	s := action.SessionNodeAction()
 
-        cmd := &cobra.Command{
-                Use:   "node <nodeName>",
-                Short: "Get active sessions for a node",
-                Long:  "Get active sessions for a node",
-		RunE: func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "node <nodeName>",
+		Short: "Get active sessions for a node",
+		Long:  "Get active sessions for a node",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}
@@ -114,11 +114,11 @@ func newSessionNodeCommand() *cobra.Command {
 func newSessionRenewCommand() *cobra.Command {
 	s := action.SessionRenewAction()
 
-        cmd := &cobra.Command{
-                Use:   "renew <sessionId>",
-                Short: "Renew the given session",
-                Long:  "Renew the given session",
-		RunE: func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "renew <sessionId>",
+		Short: "Renew the given session",
+		Long:  "Renew the given session",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}

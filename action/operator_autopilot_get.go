@@ -18,13 +18,7 @@ func OperatorAutopilotGetAction() Action {
 }
 
 func (o *operatorAutopilotGet) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	o.addOutputFlags(f, false)
-	o.addDatacenterFlag(f)
-	o.addStaleFlag(f)
-
-	return f
+	return o.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_STALE)
 }
 
 func (o *operatorAutopilotGet) Run(args []string) error {

@@ -15,7 +15,7 @@ func AgentReloadAction() Action {
 }
 
 func (a *agentReload) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return a.newFlagSet(FLAG_NONE)
 }
 
 func (a *agentReload) Run(args []string) error {

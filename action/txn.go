@@ -22,10 +22,7 @@ func TxnAction() Action {
 }
 
 func (t *txn) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	t.addDatacenterFlag(f)
-	t.addRawFlag(f)
+	f := t.newFlagSet(FLAG_DATACENTER, FLAG_RAW)
 
 	kmv := newMapSliceValue(&t.kv)
 
@@ -46,7 +43,7 @@ func (t *txn) Run(args []string) error {
 	if t.raw.isSet() {
 		// To match the documentation for the /v1/txn PUT operation, we read
 		// the raw JSON as a slice of TxnOps. We then copy the KV ops to a slice
-		// of KVTXnOp. 
+		// of KVTXnOp.
 		var txnops consulapi.TxnOps
 
 		if err := t.raw.readJSON(&txnops); err != nil {
@@ -73,31 +70,52 @@ func (t *txn) Run(args []string) error {
 			}
 
 			switch strings.ToLower(verb.(string)) {
-			case "set": kto.Verb = consulapi.KVSet
-			case "delete": kto.Verb = consulapi.KVDelete
-			case "delete-cas": kto.Verb = consulapi.KVDeleteCAS
-			case "delete-tree": kto.Verb = consulapi.KVDeleteTree
-			case "cas": kto.Verb = "KVCAS"
-			case "lock": kto.Verb = "KVLock"
-			case "unlock": kto.Verb = "KVUnlock"
-			case "get": kto.Verb = "KVGet"
-			case "get-tree": kto.Verb = "KVGetTree"
-			case "check-session": kto.Verb = "KVCheckSession"
-			case "check-index": kto.Verb = "KVCheckIndex"
+			case "set":
+				kto.Verb = consulapi.KVSet
+			case "delete":
+				kto.Verb = consulapi.KVDelete
+			case "delete-cas":
+				kto.Verb = consulapi.KVDeleteCAS
+			case "delete-tree":
+				kto.Verb = consulapi.KVDeleteTree
+			case "cas":
+				kto.Verb = "KVCAS"
+			case "lock":
+				kto.Verb = "KVLock"
+			case "unlock":
+				kto.Verb = "KVUnlock"
+			case "get":
+				kto.Verb = "KVGet"
+			case "get-tree":
+				kto.Verb = "KVGetTree"
+			case "check-session":
+				kto.Verb = "KVCheckSession"
+			case "check-index":
+				kto.Verb = "KVCheckIndex"
 			}
 
-			if v, ok := k["key"]; ok { kto.Key = v.(string) }
-			if v, ok := k["value"]; ok { kto.Value = []byte(v.(string)) }
-			if v, ok := k["flags"]; ok { kto.Flags = v.(uint64) }
-			if v, ok := k["index"]; ok { kto.Index = v.(uint64) }
-			if v, ok := k["session"]; ok { kto.Session = v.(string) }
+			if v, ok := k["key"]; ok {
+				kto.Key = v.(string)
+			}
+			if v, ok := k["value"]; ok {
+				kto.Value = []byte(v.(string))
+			}
+			if v, ok := k["flags"]; ok {
+				kto.Flags = v.(uint64)
+			}
+			if v, ok := k["index"]; ok {
+				kto.Index = v.(uint64)
+			}
+			if v, ok := k["session"]; ok {
+				kto.Session = v.(string)
+			}
 
 			ops[i] = kto
 		}
 	}
 
 	client, err := t.newKv()
-	if err != nil {	
+	if err != nil {
 		return err
 	}
 

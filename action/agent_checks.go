@@ -15,7 +15,7 @@ func AgentChecksAction() Action {
 }
 
 func (a *agentChecks) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return a.newFlagSet(FLAG_NONE)
 }
 
 func (a *agentChecks) Run(args []string) error {

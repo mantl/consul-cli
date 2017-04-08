@@ -17,10 +17,7 @@ func AclListAction() Action {
 }
 
 func (a *aclList) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-	a.addOutputFlags(f, false)
-
-	return f
+	return a.newFlagSet(FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (a *aclList) Run(args []string) error {

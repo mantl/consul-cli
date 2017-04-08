@@ -17,8 +17,8 @@ func OperatorKeyringInstallAction() Action {
 	}
 }
 
-func (o * operatorKeyringInstall) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+func (o *operatorKeyringInstall) CommandFlags() *flag.FlagSet {
+	return o.newFlagSet(FLAG_NONE)
 }
 
 func (o *operatorKeyringInstall) Run(args []string) error {

@@ -23,13 +23,13 @@ func testFlagSet(m *[]map[string]interface{}) *flag.FlagSet {
 
 type testCase struct {
 	args []string
-	res []result
+	res  []result
 }
 
 type result struct {
 	index int
 	field string
-	val interface{}
+	val   interface{}
 }
 
 func TestMapSlice(t *testing.T) {
@@ -39,17 +39,17 @@ func TestMapSlice(t *testing.T) {
 			[]result{{0, "stringField1", "testing"}},
 		},
 		{
-			[]string{ 
+			[]string{
 				"--key", "--string-field1", "testing",
 				"--key", "--string-field2", "another",
 			},
-			[]result{ 
+			[]result{
 				{0, "stringField1", "testing"},
 				{1, "stringField2", "another"},
 			},
 		},
 		{
-			[]string{ "--key", "--bool-field" },
+			[]string{"--key", "--bool-field"},
 			[]result{{0, "boolField", true}},
 		},
 		{

@@ -18,7 +18,7 @@ func ServiceDeregisterAction() Action {
 }
 
 func (s *serviceDeregister) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return s.newFlagSet(FLAG_NONE)
 }
 
 func (s *serviceDeregister) Run(args []string) error {

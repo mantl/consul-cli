@@ -18,7 +18,7 @@ func CheckWarnAction() Action {
 }
 
 func (c *checkWarn) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := c.newFlagSet(FLAG_NONE)
 
 	f.StringVar(&c.note, "note", "", "Message to associate with check status")
 

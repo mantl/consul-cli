@@ -9,10 +9,10 @@ import (
 )
 
 type kvLock struct {
-	behavior string
-	ttl string
-	lockDelay time.Duration
-	session string
+	behavior     string
+	ttl          string
+	lockDelay    time.Duration
+	session      string
 	cleanSession bool
 
 	*config
@@ -25,15 +25,12 @@ func KvLockAction() Action {
 }
 
 func (k *kvLock) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := k.newFlagSet(FLAG_DATACENTER, FLAG_CONSISTENCY)
 
 	f.StringVar(&k.behavior, "behavior", "release", "Lock behavior. One of 'release' or 'delete'")
 	f.StringVar(&k.ttl, "ttl", "", "Lock time to live")
 	f.DurationVar(&k.lockDelay, "lock-delay", 15*time.Second, "Lock delay")
 	f.StringVar(&k.session, "session", "", "Previously created session to use for lock")
-
-	k.addDatacenterFlag(f)
-	k.addConsistencyFlags(f)
 
 	return f
 }
@@ -155,4 +152,3 @@ func (k *kvLock) destroySession(s *consulapi.Session) error {
 
 	return nil
 }
-

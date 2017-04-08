@@ -8,7 +8,7 @@ import (
 type operatorKeyringUse struct {
 	*config
 }
-	
+
 func OperatorKeyringUseAction() Action {
 	return &operatorKeyringUse{
 		config: &gConfig,
@@ -16,7 +16,7 @@ func OperatorKeyringUseAction() Action {
 }
 
 func (o *operatorKeyringUse) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return o.newFlagSet(FLAG_NONE)
 }
 
 func (o *operatorKeyringUse) Run(args []string) error {

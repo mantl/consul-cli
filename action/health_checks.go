@@ -16,13 +16,7 @@ func HealthChecksAction() Action {
 }
 
 func (h *healthChecks) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	h.addDatacenterFlag(f)
-	h.addOutputFlags(f, false)
-	h.addConsistencyFlags(f)
-
-	return f
+	return h.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY)
 }
 
 func (h *healthChecks) Run(args []string) error {
