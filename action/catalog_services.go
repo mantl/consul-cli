@@ -5,6 +5,8 @@ import (
 )
 
 type catalogServices struct {
+	nodeMeta []string
+
 	*config
 }
 
@@ -15,7 +17,7 @@ func CatalogServicesAction() Action {
 }
 
 func (c *catalogServices) CommandFlags() *flag.FlagSet {
-	return c.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY)
+	return c.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_NODEMETA)
 }
 
 func (c *catalogServices) Run(args []string) error {

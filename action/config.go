@@ -13,6 +13,8 @@ const (
 	FLAG_OUTPUT
 	FLAG_KVOUTPUT
 	FLAG_RAW
+	FLAG_NODEMETA
+	FLAG_NEAR
 )
 
 type config struct {
@@ -113,6 +115,10 @@ func (c *config) newFlagSet(flags ...int) *flag.FlagSet {
 			f.BoolVar(&c.output.header, "header", false, "Output a header row for text format")
 		case FLAG_RAW:
 			f.StringVar(&c.raw.data, "raw", "", "Raw JSON data for upload")
+		case FLAG_NODEMETA:
+			f.Var(newStringSliceValue(&c.nodeMeta), "node-meta", "Specifies a desired node metadata key/value pair of the form node:value")
+		case FLAG_NEAR:
+			f.StringVar(&c.near, "near", "", "Node name to sort the node list based on the estimated round trip time from that node")
 		}
 	}
 

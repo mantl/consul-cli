@@ -15,7 +15,7 @@ func CoordNodesAction() Action {
 }
 
 func (c *coordNodes) CommandFlags() *flag.FlagSet {
-	return c.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY)
+	return c.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (c *coordNodes) Run(args []string) error {

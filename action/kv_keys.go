@@ -18,7 +18,7 @@ func KvKeysAction() Action {
 }
 
 func (k *kvKeys) CommandFlags() *flag.FlagSet {
-	f := k.newFlagSet(FLAG_DATACENTER, FLAG_CONSISTENCY)
+	f := k.newFlagSet(FLAG_DATACENTER, FLAG_CONSISTENCY, FLAG_BLOCKING)
 
 	f.StringVar(&k.separator, "separator", "", "List keys only up to a given separator")
 

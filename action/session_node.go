@@ -16,7 +16,7 @@ func SessionNodeAction() Action {
 }
 
 func (s *sessionNode) CommandFlags() *flag.FlagSet {
-	return s.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY)
+	return s.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (s *sessionNode) Run(args []string) error {

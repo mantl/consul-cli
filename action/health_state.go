@@ -17,7 +17,7 @@ func HealthStateAction() Action {
 }
 
 func (h *healthState) CommandFlags() *flag.FlagSet {
-	return h.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY)
+	return h.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (h *healthState) Run(args []string) error {

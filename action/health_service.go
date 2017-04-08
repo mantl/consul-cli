@@ -19,7 +19,7 @@ func HealthServiceAction() Action {
 }
 
 func (h *healthService) CommandFlags() *flag.FlagSet {
-	f := h.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY)
+	f := h.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 
 	f.StringVar(&h.tag, "tag", "", "Service tag to filter on")
 	f.BoolVar(&h.passing, "passing", false, "Only return passing checks")

@@ -27,6 +27,8 @@ type consul struct {
 	waitIndex  uint64
 	consistent bool
 	stale      bool
+	nodeMeta   []string
+	near       string
 }
 
 func (c *consul) newACL() (*consulapi.ACL, error) {
@@ -245,6 +247,19 @@ func (c *consul) queryOptions() *consulapi.QueryOptions {
 
 	if c.waitIndex != 0 {
 		queryOpts.WaitIndex = c.waitIndex
+	}
+
+	if len(c.nodeMeta) > 0 {
+		for _, kvp := range c.nodeMeta {
+			parts := strings.Split(kvp, ":")
+			if len(parts) == 2 {
+				queryOpts.NodeMeta[parts[0]] = parts[1]
+			}
+		}
+	}
+
+	if c.near != "" {
+		queryOpts.Near = c.near
 	}
 
 	queryOpts.RequireConsistent = c.consistent
