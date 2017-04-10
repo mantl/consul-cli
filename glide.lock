@@ -1,16 +1,36 @@
 hash: e50b4f41db9304f7dcf8e7848ca52a13d412d99f29e5db7effa6ad93d660024e
-updated: 2017-04-06T17:17:45.030596245-05:00
+updated: 2017-04-10T17:43:59.475007372-05:00
 imports:
+- name: github.com/armon/go-metrics
+  version: 93f237eba9b0602f3e73710416558854a81d9337
+- name: github.com/armon/go-radix
+  version: 4239b77079c7b5d1243b7b4736304ce8ddb6f0f2
 - name: github.com/hashicorp/consul
   version: 8471360c9edbb66215cf5dd10ab8d333ea937766
   subpackages:
+  - acl
   - api
+  - consul/structs
+  - testutil
+  - types
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/hashicorp/go-cleanhttp
   version: ad28ea4487f05916463e2423a55166280e8254b5
+- name: github.com/hashicorp/go-msgpack
+  version: fa3f63826f7c23912c15263591e65d54d080b458
+  subpackages:
+  - codec
 - name: github.com/hashicorp/go-multierror
   version: 8484912a3b9987857bac52e0c5fec2b95f419628
+- name: github.com/hashicorp/go-sockaddr
+  version: acd314c5781ea706c710d9ea70069fd2e110d61d
+- name: github.com/hashicorp/go-uuid
+  version: 64130c7a86d732268a38cb04cfbaf0cc987fda98
+- name: github.com/hashicorp/golang-lru
+  version: 0a025b7e63adc15a622f29b0b2c4c3848243bbf6
+  subpackages:
+  - simplelru
 - name: github.com/hashicorp/hcl
   version: 7cb7455c285ca3bf3362aa4ba6a06a6d6f5c3ba0
   subpackages:
@@ -22,12 +42,23 @@ imports:
   - json/parser
   - json/scanner
   - json/token
+- name: github.com/hashicorp/memberlist
+  version: 022f08198efdd4f4a5eb6645123ad88a20a0afc0
+- name: github.com/hashicorp/raft
+  version: 5f09c4ffdbcd2a53768e78c47717415de12b6728
 - name: github.com/hashicorp/serf
   version: f679d7594a349263f6118db40d87122d3a474e7d
   subpackages:
   - coordinate
+  - serf
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/miekg/dns
+  version: dcffd061aaeef4f0ab8369d0443146462b64ea6d
+- name: github.com/pkg/errors
+  version: ff09b135c25aae272398c51a07235b90a75aa4f0
+- name: github.com/sean-/seed
+  version: e2103e2c35297fb7e17febb81e49b312087a2372
 - name: github.com/spf13/cobra
   version: 9495bc009a56819bdb0ddbc1a373e29c140bc674
 - name: github.com/spf13/pflag

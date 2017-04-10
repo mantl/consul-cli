@@ -284,6 +284,24 @@ function test_acl_endpoint () {
 	test_acl_rules
 }
 
+function test_agent_members () {
+	doTest 'agent members' \
+		'curl -s ${url}/v1/agent/members' '' \
+		'./bin/consul-cli agent members' ''
+}
+
+function test_agent_self () {
+	doTest 'agent self' \
+		'curl -s ${url}/v1/agent/self' '' \
+		'./bin/consul-cli agent self' ''
+}
+
+function test_agent_endpoint () {
+	h1 '/v1/agent tests'
+	test_agent_members
+	test_agent_self
+}
+
 # Catalog endpoint
 
 function test_catalog_datacenters () {
@@ -392,6 +410,7 @@ function test_status_endpoint () {
 
 NORMALIZE=true
 test_acl_endpoint
+test_agent_endpoint
 test_catalog_endpoint
 test_coordinate_endpoint
 test_status_endpoint
