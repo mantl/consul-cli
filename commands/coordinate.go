@@ -25,34 +25,33 @@ func newCoordinateCommand() *cobra.Command {
 func newCoordDatacentersCommand() *cobra.Command {
 	c := action.CoordDatacentersAction()
 
-        cmd := &cobra.Command{
-                Use:   "datacenters",
-                Short: "Queries for WAN coordinates of Consul servers",
-                Long:  "Queries for WAN coordinates of Consul servers",
-                RunE: func(cmd *cobra.Command, args []string) error {
-                        return c.Run(args)
-                },
-        }
+	cmd := &cobra.Command{
+		Use:   "datacenters",
+		Short: "Queries for WAN coordinates of Consul servers",
+		Long:  "Queries for WAN coordinates of Consul servers",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return c.Run(args)
+		},
+	}
 
-        cmd.Flags().AddGoFlagSet(c.CommandFlags())
+	cmd.Flags().AddGoFlagSet(c.CommandFlags())
 
-        return cmd
+	return cmd
 }
 
 func newCoordNodesCommand() *cobra.Command {
 	c := action.CoordNodesAction()
 
-        cmd := &cobra.Command{
-                Use:   "nodes",
-                Short: "Queries for LAN coordinates of Consul servers",
-                Long:  "Queries for LAN coordinates of Consul servers",
-                RunE: func(cmd *cobra.Command, args []string) error {
-                        return c.Run(args)
-                },
-        }
+	cmd := &cobra.Command{
+		Use:   "nodes",
+		Short: "Queries for LAN coordinates of Consul servers",
+		Long:  "Queries for LAN coordinates of Consul servers",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return c.Run(args)
+		},
+	}
 
-        cmd.Flags().AddGoFlagSet(c.CommandFlags())
+	cmd.Flags().AddGoFlagSet(c.CommandFlags())
 
-        return cmd
+	return cmd
 }
-

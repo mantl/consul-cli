@@ -8,10 +8,10 @@ import (
 )
 
 type eventFire struct {
-	node string
+	node    string
 	payload string
 	service string
-	tag string
+	tag     string
 
 	*config
 }
@@ -23,11 +23,7 @@ func EventFireAction() Action {
 }
 
 func (e *eventFire) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	e.addDatacenterFlag(f)
-	e.addOutputFlags(f, false)
-	e.addRawFlag(f)
+	f := e.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_RAW)
 
 	f.StringVar(&e.node, "node", "", "Filter by node name")
 	f.StringVar(&e.payload, "payload", "", "Event payload")

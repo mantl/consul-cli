@@ -16,14 +16,7 @@ func KvWatchAction() Action {
 }
 
 func (k *kvWatch) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	k.addConsistencyFlags(f)
-	k.addDatacenterFlag(f)
-	k.addWaitIndexFlag(f)
-	k.addOutputFlags(f, true)
-
-	return f
+	return k.newFlagSet(FLAG_DATACENTER, FLAG_KVOUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (k *kvWatch) Run(args []string) error {
@@ -52,4 +45,3 @@ RETRY:
 
 	return k.OutputKv(kv)
 }
-

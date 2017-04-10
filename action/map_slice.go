@@ -6,7 +6,7 @@ import (
 )
 
 type mapSliceValue struct {
-	value *[]map[string]interface{}
+	value   *[]map[string]interface{}
 	current map[string]interface{}
 }
 
@@ -31,12 +31,12 @@ func (msv *mapSliceValue) String() string {
 	return fmt.Sprintf("%v", msv.value)
 }
 
-func (msv *mapSliceValue) IsBoolFlag() bool {return true}
+func (msv *mapSliceValue) IsBoolFlag() bool { return true }
 
 type mapValue struct {
-	msv *mapSliceValue
+	msv    *mapSliceValue
 	member string
-	t string
+	t      string
 }
 
 func newMapValue(p *mapSliceValue, member string, t string) *mapValue {
@@ -69,7 +69,7 @@ func (mv *mapValue) Set(val string) error {
 }
 
 func (mv *mapValue) Type() string {
-	return "mapValue"
+	return mv.t
 }
 
 func (mv *mapValue) String() string {

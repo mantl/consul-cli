@@ -17,7 +17,7 @@ func AgentJoinAction() Action {
 }
 
 func (a *agentJoin) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := a.newFlagSet(FLAG_NONE)
 
 	f.BoolVar(&a.wan, "wan", false, "Get list of WAN join instead of LAN")
 

@@ -10,11 +10,11 @@ import (
 
 type sessionCreate struct {
 	lockDelay time.Duration
-	name string
-	node string
-	checks []string
-	behavior string
-	ttl time.Duration
+	name      string
+	node      string
+	checks    []string
+	behavior  string
+	ttl       time.Duration
 
 	*config
 }
@@ -26,10 +26,7 @@ func SessionCreateAction() Action {
 }
 
 func (s *sessionCreate) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addDatacenterFlag(f)
-	s.addRawFlag(f)
+	f := s.newFlagSet(FLAG_DATACENTER, FLAG_RAW)
 
 	f.DurationVar(&s.lockDelay, "lock-delay", 0, "Lock delay as a duration string")
 	f.StringVar(&s.name, "name", "", "Session name")

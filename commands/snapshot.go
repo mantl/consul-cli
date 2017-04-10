@@ -25,11 +25,11 @@ func newSnapshotCommand() *cobra.Command {
 func newSnapshotSaveCommand() *cobra.Command {
 	s := action.SnapshotSaveAction()
 
-        cmd := &cobra.Command{
-                Use:   "save snapshot_path",
-                Short: "Create a new snapshot",
-                Long:  "Create a new snapshot",
-		RunE: func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "save snapshot_path",
+		Short: "Create a new snapshot",
+		Long:  "Create a new snapshot",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}
@@ -42,11 +42,11 @@ func newSnapshotSaveCommand() *cobra.Command {
 func newSnapshotRestoreCommand() *cobra.Command {
 	s := action.SnapshotRestoreAction()
 
-        cmd := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "restore snapshot_path",
 		Short: "Restore a snapshot",
 		Long:  "Restore a snapshot",
-		RunE: func (cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
 	}
@@ -55,4 +55,3 @@ func newSnapshotRestoreCommand() *cobra.Command {
 
 	return cmd
 }
-

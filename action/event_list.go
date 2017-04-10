@@ -17,9 +17,7 @@ func EventListAction() Action {
 }
 
 func (e *eventList) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	e.addOutputFlags(f, false)
+	f := e.newFlagSet(FLAG_OUTPUT, FLAG_BLOCKING)
 
 	f.StringVar(&e.name, "name", "", "Event name to filter on")
 

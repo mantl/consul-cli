@@ -28,10 +28,10 @@ func newHealthChecksCommand() *cobra.Command {
 	h := action.HealthChecksAction()
 
 	cmd := &cobra.Command{
-                Use:   "checks <serviceName>",
-                Short: "Get the health checks for a service",
-                Long:  "Get the health checks for a service",
-		RunE: func(cmd *cobra.Command, args[]string) error {
+		Use:   "checks <serviceName>",
+		Short: "Get the health checks for a service",
+		Long:  "Get the health checks for a service",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Run(args)
 		},
 	}
@@ -45,10 +45,10 @@ func newHealthNodeCommand() *cobra.Command {
 	h := action.HealthNodeAction()
 
 	cmd := &cobra.Command{
-                Use:   "node <nodeName>",
-                Short: "Get the health info for a node",
-                Long:  "Get the health info for a node",
-		RunE: func(cmd *cobra.Command, args[]string) error {
+		Use:   "node <nodeName>",
+		Short: "Get the health info for a node",
+		Long:  "Get the health info for a node",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Run(args)
 		},
 	}
@@ -62,10 +62,10 @@ func newHealthServiceCommand() *cobra.Command {
 	h := action.HealthServiceAction()
 
 	cmd := &cobra.Command{
-                Use:   "service <serviceName>",
-                Short: "Get the nodes and health info for a service",
-                Long:  "Get the nodes and health info for a service",
-		RunE: func(cmd *cobra.Command, args[]string) error {
+		Use:   "service <serviceName>",
+		Short: "Get the nodes and health info for a service",
+		Long:  "Get the nodes and health info for a service",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Run(args)
 		},
 	}
@@ -79,10 +79,10 @@ func newHealthStateCommand() *cobra.Command {
 	h := action.HealthStateAction()
 
 	cmd := &cobra.Command{
-                Use:   "state",
-                Short: "Get the checks in a given state",
-                Long:  "Get the checks in a given state",
-		RunE: func(cmd *cobra.Command, args[]string) error {
+		Use:   "state",
+		Short: "Get the checks in a given state",
+		Long:  "Get the checks in a given state",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return h.Run(args)
 		},
 	}
@@ -91,4 +91,3 @@ func newHealthStateCommand() *cobra.Command {
 
 	return cmd
 }
-

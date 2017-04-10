@@ -17,11 +17,7 @@ func SnapshotRestoreAction() Action {
 }
 
 func (s *snapshotRestore) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addDatacenterFlag(f)
-
-	return f
+	return s.newFlagSet(FLAG_DATACENTER)
 }
 
 func (s *snapshotRestore) Run(args []string) error {

@@ -25,14 +25,14 @@ func newStatusCommand() *cobra.Command {
 func newStatusLeaderCommand() *cobra.Command {
 	s := action.StatusLeaderAction()
 
-        cmd := &cobra.Command{
-                Use:   "leader",
-                Short: "Get the current Raft leader",
-                Long:  "Get the current Raft leader",
-                RunE:  func (cmd *cobra.Command, args []string) error {
+	cmd := &cobra.Command{
+		Use:   "leader",
+		Short: "Get the current Raft leader",
+		Long:  "Get the current Raft leader",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
-        }
+	}
 
 	cmd.Flags().AddGoFlagSet(s.CommandFlags())
 
@@ -42,14 +42,14 @@ func newStatusLeaderCommand() *cobra.Command {
 func newStatusPeersCommand() *cobra.Command {
 	s := action.StatusPeersAction()
 
-        cmd := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "peers",
 		Short: "Get the current Raft peers",
 		Long:  "Get the current Raft peers",
-                RunE:  func (cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			return s.Run(args)
 		},
-        }
+	}
 
 	cmd.Flags().AddGoFlagSet(s.CommandFlags())
 

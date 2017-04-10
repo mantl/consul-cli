@@ -5,6 +5,8 @@ import (
 )
 
 type catalogServices struct {
+	nodeMeta []string
+
 	*config
 }
 
@@ -15,12 +17,8 @@ func CatalogServicesAction() Action {
 }
 
 func (c *catalogServices) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return c.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_NODEMETA)
 }
-
-//	addDatacenterOption(cmd)
-//	addTemplateOption(cmd)
-//	addConsistencyOptions(cmd)
 
 func (c *catalogServices) Run(args []string) error {
 	client, err := c.newCatalog()

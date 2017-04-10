@@ -6,7 +6,7 @@ import (
 )
 
 type healthService struct {
-	tag string
+	tag     string
 	passing bool
 
 	*config
@@ -19,11 +19,7 @@ func HealthServiceAction() Action {
 }
 
 func (h *healthService) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	h.addDatacenterFlag(f)
-	h.addOutputFlags(f, false)
-	h.addConsistencyFlags(f)
+	f := h.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 
 	f.StringVar(&h.tag, "tag", "", "Service tag to filter on")
 	f.BoolVar(&h.passing, "passing", false, "Only return passing checks")
@@ -54,4 +50,3 @@ func (h *healthService) Run(args []string) error {
 
 	return h.Output(s)
 }
-

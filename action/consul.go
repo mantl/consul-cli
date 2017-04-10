@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -28,6 +27,8 @@ type consul struct {
 	waitIndex  uint64
 	consistent bool
 	stale      bool
+	nodeMeta   []string
+	near       string
 }
 
 func (c *consul) newACL() (*consulapi.ACL, error) {
@@ -248,22 +249,22 @@ func (c *consul) queryOptions() *consulapi.QueryOptions {
 		queryOpts.WaitIndex = c.waitIndex
 	}
 
+	if len(c.nodeMeta) > 0 {
+		for _, kvp := range c.nodeMeta {
+			parts := strings.Split(kvp, ":")
+			if len(parts) == 2 {
+				queryOpts.NodeMeta[parts[0]] = parts[1]
+			}
+		}
+	}
+
+	if c.near != "" {
+		queryOpts.Near = c.near
+	}
+
 	queryOpts.RequireConsistent = c.consistent
 	queryOpts.AllowStale = c.stale
 
 	return queryOpts
-}
-
-func (c *consul) addDatacenterFlag(f *flag.FlagSet) {
-	f.StringVar(&c.dc, "datacenter", "", "Consul data center")
-}
-
-func (c *consul) addWaitIndexFlag(f *flag.FlagSet) {
-	f.Uint64Var(&c.waitIndex, "wait-index", 0, "Only return if ModifyIndex is greater than <index>")
-}
-
-func (c *consul) addConsistencyFlags(f *flag.FlagSet) {
-	f.BoolVar(&c.consistent, "consistent", false, "Enable strong consistency")
-	f.BoolVar(&c.stale, "stale", false, "Allow any agent to service the request")
 }
 

@@ -29,14 +29,14 @@ func newCheckCommand() *cobra.Command {
 func newCheckDeregisterCommand() *cobra.Command {
 	c := action.CheckDeregisterAction()
 
-        cmd := &cobra.Command{
-                Use:   "deregister",
-                Short: "Remove a check from the agent",
-                Long:  "Remove a check from the agent",
+	cmd := &cobra.Command{
+		Use:   "deregister",
+		Short: "Remove a check from the agent",
+		Long:  "Remove a check from the agent",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(args)
 		},
-	} 
+	}
 
 	cmd.Flags().AddGoFlagSet(c.CommandFlags())
 
@@ -46,10 +46,10 @@ func newCheckDeregisterCommand() *cobra.Command {
 func newCheckFailCommand() *cobra.Command {
 	c := action.CheckFailAction()
 
-        cmd := &cobra.Command{
-                Use:   "fail <checkId>",
-                Short: "Mark a local check as critical",
-                Long:  "Mark a local check as critical",
+	cmd := &cobra.Command{
+		Use:   "fail <checkId>",
+		Short: "Mark a local check as critical",
+		Long:  "Mark a local check as critical",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(args)
 		},
@@ -62,14 +62,13 @@ func newCheckFailCommand() *cobra.Command {
 func newCheckPassCommand() *cobra.Command {
 	c := action.CheckPassAction()
 
-        cmd := &cobra.Command{
-                Use:   "pass <checkId>",
-                Short: "Mark a local check as passing",
-                Long:  "Mark a local check as passing",
+	cmd := &cobra.Command{
+		Use:   "pass <checkId>",
+		Short: "Mark a local check as passing",
+		Long:  "Mark a local check as passing",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(args)
 		},
-
 	}
 
 	cmd.Flags().AddGoFlagSet(c.CommandFlags())
@@ -88,14 +87,13 @@ be duplicate IDs per agent however.
 func newCheckRegisterCommand() *cobra.Command {
 	c := action.CheckRegisterAction()
 
-        cmd := &cobra.Command{
-                Use:   "register <checkName>",
-                Short: "Register a new local check",
-                Long:  registerLongHelp,
+	cmd := &cobra.Command{
+		Use:   "register <checkName>",
+		Short: "Register a new local check",
+		Long:  registerLongHelp,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(args)
 		},
-
 	}
 
 	cmd.Flags().AddGoFlagSet(c.CommandFlags())
@@ -106,14 +104,13 @@ func newCheckRegisterCommand() *cobra.Command {
 func newCheckUpdateCommand() *cobra.Command {
 	c := action.CheckUpdateAction()
 
-        cmd := &cobra.Command{
-                Use:   "update <checkId>",
-                Short: "Set the status and output of a TTL check",
-                Long: "Set the status and output of a TTL check",
+	cmd := &cobra.Command{
+		Use:   "update <checkId>",
+		Short: "Set the status and output of a TTL check",
+		Long:  "Set the status and output of a TTL check",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(args)
 		},
-
 	}
 
 	cmd.Flags().AddGoFlagSet(c.CommandFlags())
@@ -124,14 +121,13 @@ func newCheckUpdateCommand() *cobra.Command {
 func newCheckWarnCommand() *cobra.Command {
 	c := action.CheckWarnAction()
 
-        cmd := &cobra.Command{
-                Use:   "warn <checkId>",
-                Short: "Mark a local check as warning",
-                Long:  "Mark a local check as warning",
+	cmd := &cobra.Command{
+		Use:   "warn <checkId>",
+		Short: "Mark a local check as warning",
+		Long:  "Mark a local check as warning",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return c.Run(args)
 		},
-
 	}
 
 	cmd.Flags().AddGoFlagSet(c.CommandFlags())

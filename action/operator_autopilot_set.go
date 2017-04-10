@@ -13,7 +13,7 @@ import (
 
 type operatorAutopilotSet struct {
 	modifyIndex string
-	cleanDead bool
+	cleanDead   bool
 
 	*config
 }
@@ -25,12 +25,10 @@ func OperatorAutopilotSetAction() Action {
 }
 
 func (o *operatorAutopilotSet) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := o.newFlagSet(FLAG_DATACENTER)
 
 	f.StringVar(&o.modifyIndex, "modifyindex", "", "Perform a check-and-set operation")
 	f.BoolVar(&o.cleanDead, "clean-dead-servers", false, "Remove dead servers automatically when a new server is added")
-
-	o.addDatacenterFlag(f)
 
 	return f
 }

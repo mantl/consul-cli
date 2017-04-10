@@ -16,13 +16,7 @@ func CatalogNodeAction() Action {
 }
 
 func (c *catalogNode) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	c.addDatacenterFlag(f)
-	c.addConsistencyFlags(f)
-	c.addOutputFlags(f, false)
-
-	return f
+	return c.newFlagSet(FLAG_DATACENTER, FLAG_CONSISTENCY, FLAG_OUTPUT, FLAG_BLOCKING)
 }
 
 func (c *catalogNode) Run(args []string) error {

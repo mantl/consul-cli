@@ -11,7 +11,7 @@ import (
 )
 
 type kvBulkload struct {
-	json string
+	json   string
 	prefix string
 
 	*config
@@ -24,13 +24,10 @@ func KvBulkloadAction() Action {
 }
 
 func (k *kvBulkload) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := k.newFlagSet(FLAG_DATACENTER, FLAG_RAW)
 
 	f.StringVar(&k.json, "json", "", "Path to a JSON file to import")
 	f.StringVar(&k.prefix, "prefix", "", "Base K/V prefix")
-
-	k.addDatacenterFlag(f)
-	k.addRawFlag(f)
 
 	return f
 }
@@ -151,7 +148,7 @@ func (k *kvBulkload) rawDataToPairs() ([]*consulapi.KVPair, error) {
 
 	var kvp consulapi.KVPair
 	if err := json.Unmarshal(data, &kvp); err == nil {
-		return []*consulapi.KVPair{ &kvp }, nil
+		return []*consulapi.KVPair{&kvp}, nil
 	}
 
 	var kvps consulapi.KVPairs

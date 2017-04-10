@@ -16,7 +16,7 @@ func AclDestroyAction() Action {
 }
 
 func (a *aclDestroy) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return a.newFlagSet(FLAG_NONE)
 }
 
 func (a *aclDestroy) Run(args []string) error {

@@ -14,7 +14,7 @@ import (
 
 type kvWrite struct {
 	modifyIndex string
-	flags string
+	flags       string
 
 	*config
 }
@@ -26,13 +26,10 @@ func KvWriteAction() Action {
 }
 
 func (k *kvWrite) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := k.newFlagSet(FLAG_DATACENTER, FLAG_RAW)
 
 	f.StringVar(&k.modifyIndex, "modifyindex", "", "Perform a Check-and-Set write")
 	f.StringVar(&k.flags, "flags", "", "Integer value between 0 and 2^64 - 1")
-
-	k.addDatacenterFlag(f)
-	k.addRawFlag(f)
 
 	return f
 }
@@ -134,5 +131,3 @@ func (k *kvWrite) write(kv *consulapi.KVPair) error {
 
 	return nil
 }
-
-

@@ -15,13 +15,7 @@ func SessionListAction() Action {
 }
 
 func (s *sessionList) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addDatacenterFlag(f)
-	s.addOutputFlags(f, false)
-	s.addConsistencyFlags(f)
-
-	return f
+	return s.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (s *sessionList) Run(args []string) error {

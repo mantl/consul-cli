@@ -15,11 +15,7 @@ func AgentSelfAction() Action {
 }
 
 func (a *agentSelf) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	a.addOutputFlags(f, false)
-
-	return f
+	return a.newFlagSet(FLAG_OUTPUT)
 }
 
 func (a *agentSelf) Run(args []string) error {

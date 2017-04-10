@@ -6,3 +6,6 @@ import:
   - api
 - package: github.com/spf13/cobra
 - package: github.com/hashicorp/hcl
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert

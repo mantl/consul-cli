@@ -19,7 +19,7 @@ func CheckUpdateAction() Action {
 }
 
 func (c *checkUpdate) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := c.newFlagSet(FLAG_NONE)
 
 	f.StringVar(&c.status, "status", "", "Check status. One of passing, warning or critical")
 	f.StringVar(&c.output, "output", "", "Optional human readable message with the status of the check")

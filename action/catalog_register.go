@@ -20,11 +20,10 @@ func CatalogRegisterAction() Action {
 }
 
 func (c *catalogRegister) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := c.newFlagSet(FLAG_DATACENTER)
 
 	f.StringVar(&c.node, "node", "", "Service node")
 
-	c.addDatacenterFlag(f)
 	c.addServiceFlags(f)
 
 	return f

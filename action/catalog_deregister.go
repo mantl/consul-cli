@@ -22,9 +22,7 @@ func CatalogDeregisterAction() Action {
 }
 
 func (c *catalogDeregister) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	c.addDatacenterFlag(f)
+	f := c.newFlagSet(FLAG_DATACENTER)
 
 	f.StringVar(&c.node, "node", "", "Consul node name. Required")
 	f.StringVar(&c.serviceId, "service-id", "", "Service ID to deregister")

@@ -15,13 +15,7 @@ func CoordNodesAction() Action {
 }
 
 func (c *coordNodes) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	c.addDatacenterFlag(f)
-	c.addOutputFlags(f, false)
-	c.addConsistencyFlags(f)
-
-	return f
+	return c.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT, FLAG_CONSISTENCY, FLAG_BLOCKING)
 }
 
 func (c *coordNodes) Run(args []string) error {

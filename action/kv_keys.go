@@ -18,12 +18,9 @@ func KvKeysAction() Action {
 }
 
 func (k *kvKeys) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := k.newFlagSet(FLAG_DATACENTER, FLAG_CONSISTENCY, FLAG_BLOCKING)
 
 	f.StringVar(&k.separator, "separator", "", "List keys only up to a given separator")
-
-	k.addDatacenterFlag(f)
-	k.addConsistencyFlags(f)
 
 	return f
 }
@@ -52,4 +49,3 @@ func (k *kvKeys) Run(args []string) error {
 
 var kv_outputTemplate = `{{range .}}{{.}}
 {{end}}`
-

@@ -16,12 +16,7 @@ func SessionRenewAction() Action {
 }
 
 func (s *sessionRenew) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addDatacenterFlag(f)
-	s.addOutputFlags(f, false)
-
-	return f
+	return s.newFlagSet(FLAG_DATACENTER, FLAG_OUTPUT)
 }
 
 func (s *sessionRenew) Run(args []string) error {

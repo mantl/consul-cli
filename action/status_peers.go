@@ -15,11 +15,7 @@ func StatusPeersAction() Action {
 }
 
 func (s *statusPeers) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addOutputFlags(f, false)
-
-	return f
+	return s.newFlagSet(FLAG_OUTPUT)
 }
 
 func (s *statusPeers) Run(args []string) error {

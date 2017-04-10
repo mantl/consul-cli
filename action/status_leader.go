@@ -15,11 +15,7 @@ func StatusLeaderAction() Action {
 }
 
 func (s *statusLeader) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addOutputFlags(f, false)
-
-	return f
+	return s.newFlagSet(FLAG_OUTPUT)
 }
 
 func (s *statusLeader) Run(args []string) error {

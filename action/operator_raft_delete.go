@@ -16,11 +16,7 @@ func OperatorRaftDeleteAction() Action {
 }
 
 func (o *operatorRaftDelete) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	o.addDatacenterFlag(f)
-
-	return f
+	return o.newFlagSet(FLAG_DATACENTER)
 }
 
 func (o *operatorRaftDelete) Run(args []string) error {

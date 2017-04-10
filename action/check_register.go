@@ -20,10 +20,9 @@ func CheckRegisterAction() Action {
 }
 
 func (c *checkRegister) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
+	f := c.newFlagSet(FLAG_RAW)
 
 	c.addCheckFlags(f)
-	c.addRawFlag(f)
 
 	f.StringVar(&c.serviceId, "service-id", "", "Service ID to associate check")
 
@@ -78,7 +77,7 @@ func (c *checkRegister) Run(args []string) error {
 	}
 
 	client, err := c.newAgent()
-	if err != nil  {
+	if err != nil {
 		return err
 	}
 

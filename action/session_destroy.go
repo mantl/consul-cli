@@ -16,11 +16,7 @@ func SessionDestroyAction() Action {
 }
 
 func (s *sessionDestroy) CommandFlags() *flag.FlagSet {
-	f := newFlagSet()
-
-	s.addDatacenterFlag(f)
-
-	return f
+	return s.newFlagSet(FLAG_DATACENTER)
 }
 
 func (s *sessionDestroy) Run(args []string) error {
@@ -43,4 +39,3 @@ func (s *sessionDestroy) Run(args []string) error {
 
 	return nil
 }
-

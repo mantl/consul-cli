@@ -18,7 +18,7 @@ func OperatorKeyringRemoveAction() Action {
 }
 
 func (o *operatorKeyringRemove) CommandFlags() *flag.FlagSet {
-	return newFlagSet()
+	return o.newFlagSet(FLAG_NONE)
 }
 
 func (o *operatorKeyringRemove) Run(args []string) error {
@@ -43,4 +43,3 @@ func (o *operatorKeyringRemove) Run(args []string) error {
 
 	return result
 }
-
