@@ -1,4 +1,4 @@
-FROM gliderlabs/alpine
+FROM golang:alpine
 
 MAINTAINER Chris Aubuchon <Chris.Aubuchon@gmail.com>
 

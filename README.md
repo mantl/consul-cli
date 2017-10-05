@@ -18,3 +18,9 @@ Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.ht
 | [service](https://github.com/CiscoCloud/consul-cli/wiki/Service) | Consul /agent/service endpoint
 | [session](https://github.com/CiscoCloud/consul-cli/wiki/Session) | Consul /session endpoint
 | [status](https://github.com/CiscoCloud/consul-cli/wiki/Status) | Consul /status endpoint
+
+## Build Docker image
+
+```
+$ docker build -t cmshub-cli .
+```
