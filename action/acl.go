@@ -11,6 +11,7 @@ type rulePath struct {
 }
 
 type aclRule struct {
+	Node     map[string]*rulePath `json:"node,omitempty"`
 	Key      map[string]*rulePath `json:"key,omitempty"`
 	Service  map[string]*rulePath `json:"service,omitempty"`
 	Event    map[string]*rulePath `json:"event,omitempty"`
@@ -45,6 +46,7 @@ func getRulesString(rs []string) (string, error) {
 	}
 
 	rules := &aclRule{
+		Node:    make(map[string]*rulePath),
 		Key:     make(map[string]*rulePath),
 		Service: make(map[string]*rulePath),
 		Event:   make(map[string]*rulePath),
@@ -64,6 +66,8 @@ func getRulesString(rs []string) (string, error) {
 			rules.Keyring = getPolicy(parts, 1)
 		case "key":
 			rules.Key[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
+		case "node":
+			rules.Node[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
 		case "service":
 			rules.Service[getPath(parts, 1)] = &rulePath{Policy: getPolicy(parts, 2)}
 		case "event":
