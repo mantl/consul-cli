@@ -77,11 +77,11 @@ func newCheckPassCommand() *cobra.Command {
 }
 
 var registerLongHelp = `Register a new local check
-                
+
   If --id is not specified, the checkName is used. There cannot\
 be duplicate IDs per agent however.
-                
-  Only one of --http, --script and --ttl can be specified.
+
+  Only one of --http, --script, --tcp and --ttl can be specified.
 `
 
 func newCheckRegisterCommand() *cobra.Command {
