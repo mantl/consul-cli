@@ -52,9 +52,12 @@ func (c *checkRegister) Run(args []string) error {
 		if c.check.ttl != "" {
 			checkCount = checkCount + 1
 		}
+		if c.check.tcp != "" {
+			checkCount = checkCount + 1
+		}
 
 		if checkCount > 1 {
-			return fmt.Errorf("Only one of --http, --script or --ttl can be specified")
+			return fmt.Errorf("Only one of --http, --script, --tcp or --ttl can be specified")
 		}
 
 		check = consulapi.AgentCheckRegistration{
@@ -65,6 +68,7 @@ func (c *checkRegister) Run(args []string) error {
 			AgentServiceCheck: consulapi.AgentServiceCheck{
 				Script:            c.check.script,
 				HTTP:              c.check.http,
+				TCP:               c.check.tcp,
 				Interval:          c.check.interval,
 				TTL:               c.check.ttl,
 				TLSSkipVerify:     c.check.skipVerify,
