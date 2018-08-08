@@ -165,7 +165,7 @@ func (c *consul) newClient() (*consulapi.Client, error) {
 		transport := new(http.Transport)
 
 		if c.sslCert != "" {
-			if c.sslKey != "" {
+			if c.sslKey == "" {
 				return nil, errors.New("--ssl-key must be provided in order to use certificates for authentication")
 			}
 			clientCert, err := tls.LoadX509KeyPair(c.sslCert, c.sslKey)
@@ -195,7 +195,7 @@ func (c *consul) newClient() (*consulapi.Client, error) {
 		}
 
 		transport.TLSClientConfig = tlsConfig
-		config.HttpClient.Transport = transport
+		config.Transport = transport
 	}
 
 	// Auth handling
