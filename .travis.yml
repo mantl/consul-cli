@@ -3,9 +3,12 @@ language: go
 
 go:
   - 1.8.x
-  - 1.10.x
 
 go_import_path: github.com/mantl/consul-cli
+
+env:
+  global:
+    - PATH="$TRAVIS_BUILD_DIR:$PATH"
 
 install:
   - curl https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip -o consul.zip
