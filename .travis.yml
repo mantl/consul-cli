@@ -4,6 +4,7 @@ language: go
 go:
   - 1.8.x
   - 1.10.x
+  - tip
 
 go_import_path: github.com/mantl/consul-cli
 
