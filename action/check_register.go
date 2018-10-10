@@ -66,7 +66,6 @@ func (c *checkRegister) Run(args []string) error {
 			ServiceID: c.serviceId,
 			Notes:     c.check.notes,
 			AgentServiceCheck: consulapi.AgentServiceCheck{
-				Script:            c.check.script,
 				HTTP:              c.check.http,
 				TCP:               c.check.tcp,
 				Interval:          c.check.interval,

@@ -30,7 +30,6 @@ func (s *serviceRegister) CommandFlags() *flag.FlagSet {
 	f.Var(msv, "check", "Begin a new check definition")
 	f.Var(newMapValue(msv, "http", "string"), "http", "A URL to GET every interval")
 	f.Var(newMapValue(msv, "tcp", "string"), "tcp", "A TCP URL to connect to every interval")
-	f.Var(newMapValue(msv, "script", "string"), "script", "A script to run every interval")
 	f.Var(newMapValue(msv, "ttl", "string"), "ttl", "Fail if TTL expires before service checks in")
 	f.Var(newMapValue(msv, "interval", "string"), "interval", "Interval between checks")
 	f.Var(newMapValue(msv, "notes", "string"), "notes", "Description of the check")
@@ -92,9 +91,6 @@ func (s *serviceRegister) parseChecks() ([]*consulapi.AgentServiceCheck, error) 
 	for i, cs := range s.checks {
 		c := new(consulapi.AgentServiceCheck)
 
-		if v, ok := cs["script"]; ok {
-			c.Script = v.(string)
-		}
 		if v, ok := cs["http"]; ok {
 			c.HTTP = v.(string)
 		}
