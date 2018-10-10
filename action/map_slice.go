@@ -61,7 +61,7 @@ func (mv *mapValue) Set(val string) error {
 			strings = append(strings, val)
 			mv.msv.current[mv.member], _ = writeAsCSV(strings)
 		} else {
-			mv.msv.current[mv.member] = val
+			mv.msv.current[mv.member], _ = writeAsCSV([]string{val})
 		}
 	case "bool":
 		v, err := strconv.ParseBool(val)
