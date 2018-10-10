@@ -6,10 +6,6 @@ go:
 
 go_import_path: github.com/mantl/consul-cli
 
-env:
-  global:
-    - PATH="$TRAVIS_BUILD_DIR:$PATH"
-
 install:
   - curl https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip -o consul.zip
   - unzip consul.zip
@@ -18,4 +14,4 @@ install:
   - glide install
   - make vendor
 
-script: make test
+script: env PATH="$TRAVIS_BUILD_DIR:$PATH" make test
