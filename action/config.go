@@ -38,7 +38,6 @@ type check struct {
 	http       string
 	headers    []string
 	tcp        string
-	script     string
 	ttl        string
 	interval   string
 	notes      string
@@ -79,7 +78,6 @@ func (c *config) addCheckFlags(f *flag.FlagSet) {
 	ssv.isCSV = false
 	f.Var(ssv, "header", "Header to be sent with HTTP Requests. Can be specified multiple times.")
 	f.StringVar(&c.check.tcp, "tcp", "", "A TCP URL to connect to every interval")
-	f.StringVar(&c.check.script, "script", "", "A script to run every interval")
 	f.StringVar(&c.check.ttl, "ttl", "", "Fail if TTL expires before service checks in")
 	f.StringVar(&c.check.interval, "interval", "", "Interval between checks")
 	f.StringVar(&c.check.notes, "notes", "", "Description of the check")
