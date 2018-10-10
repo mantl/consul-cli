@@ -67,6 +67,7 @@ func (c *checkRegister) Run(args []string) error {
 			Notes:     c.check.notes,
 			AgentServiceCheck: consulapi.AgentServiceCheck{
 				HTTP:              c.check.http,
+				Header:            parseHeaders(c.check.headers),
 				TCP:               c.check.tcp,
 				Interval:          c.check.interval,
 				TTL:               c.check.ttl,
