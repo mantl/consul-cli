@@ -55,6 +55,24 @@ func (mv *mapValue) Set(val string) error {
 	switch mv.t {
 	case "string":
 		mv.msv.current[mv.member] = val
+	case "stringSlice":
+		if v, ok := mv.msv.current[mv.member]; ok {
+			stringArr, err := readAsCSV(v.(string))
+			if err != nil {
+				return err
+			}
+			stringArr = append(stringArr, val)
+			mv.msv.current[mv.member], err = writeAsCSV(stringArr)
+			if err != nil {
+				return err
+			}
+		} else {
+			var err error
+			mv.msv.current[mv.member], err = writeAsCSV([]string{val})
+			if err != nil {
+				return err
+			}
+		}
 	case "bool":
 		v, err := strconv.ParseBool(val)
 		mv.msv.current[mv.member] = v

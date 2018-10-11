@@ -17,6 +17,7 @@ func testFlagSet(m *[]map[string]interface{}) *flag.FlagSet {
 	f.Var(newMapValue(mv, "stringField2", "string"), "string-field2", "String field 2")
 	f.Var(newMapValue(mv, "boolField", "bool"), "bool-field", "Bool field")
 	f.Var(newMapValue(mv, "uint64Field", "uint64"), "uint64-field", "uint64 field")
+	f.Var(newMapValue(mv, "stringSliceField", "stringSlice"), "stringslice-field", "stringslice field")
 
 	return f
 }
@@ -55,6 +56,10 @@ func TestMapSlice(t *testing.T) {
 		{
 			[]string{"--key", "--uint64-field", "123456789"},
 			[]result{{0, "uint64Field", 123456789}},
+		},
+		{
+			[]string{"--key", "--stringslice-field", "stringSlice", "--stringslice-field", "stringSlice2"},
+			[]result{{0, "stringSliceField", "stringSlice,stringSlice2"}},
 		},
 	}
 

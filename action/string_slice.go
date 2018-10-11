@@ -13,11 +13,13 @@ var _ = fmt.Fprint
 type stringSliceValue struct {
 	value   *[]string
 	changed bool
+	isCSV   bool
 }
 
 func newStringSliceValue(p *[]string) *stringSliceValue {
 	ssv := new(stringSliceValue)
 	ssv.value = p
+	ssv.isCSV = true
 	return ssv
 }
 
@@ -42,7 +44,15 @@ func writeAsCSV(vals []string) (string, error) {
 }
 
 func (s *stringSliceValue) Set(val string) error {
-	v, err := readAsCSV(val)
+	var v []string
+	var err error
+
+	if s.isCSV {
+		v, err = readAsCSV(val)
+	} else {
+		v = []string{val}
+	}
+
 	if err != nil {
 		return err
 	}

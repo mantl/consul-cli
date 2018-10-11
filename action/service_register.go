@@ -3,6 +3,7 @@ package action
 import (
 	"flag"
 	"fmt"
+	"strings"
 
 	consulapi "github.com/hashicorp/consul/api"
 )
@@ -29,8 +30,8 @@ func (s *serviceRegister) CommandFlags() *flag.FlagSet {
 
 	f.Var(msv, "check", "Begin a new check definition")
 	f.Var(newMapValue(msv, "http", "string"), "http", "A URL to GET every interval")
+	f.Var(newMapValue(msv, "headers", "stringSlice"), "header", "Header to be sent with HTTP Requests. Can be specified multiple times.")
 	f.Var(newMapValue(msv, "tcp", "string"), "tcp", "A TCP URL to connect to every interval")
-	f.Var(newMapValue(msv, "script", "string"), "script", "A script to run every interval")
 	f.Var(newMapValue(msv, "ttl", "string"), "ttl", "Fail if TTL expires before service checks in")
 	f.Var(newMapValue(msv, "interval", "string"), "interval", "Interval between checks")
 	f.Var(newMapValue(msv, "notes", "string"), "notes", "Description of the check")
@@ -86,17 +87,36 @@ func (s *serviceRegister) Run(args []string) error {
 	return nil
 }
 
+func parseHeaders(rawHeaders []string) map[string][]string {
+	var headers map[string][]string
+	headers = make(map[string][]string, len(rawHeaders))
+	for _, h := range rawHeaders {
+		header, value := parseHeader(h)
+		headers[header] = append(headers[header], value)
+	}
+	return headers
+}
+
+func parseHeader(header string) (string, string) {
+	headerParts := strings.SplitN(header, ":", 2)
+	if len(headerParts) == 2 {
+		return headerParts[0], strings.TrimSpace(headerParts[1])
+	}
+	return "", ""
+}
+
 func (s *serviceRegister) parseChecks() ([]*consulapi.AgentServiceCheck, error) {
 	rval := make([]*consulapi.AgentServiceCheck, len(s.checks))
 
 	for i, cs := range s.checks {
 		c := new(consulapi.AgentServiceCheck)
 
-		if v, ok := cs["script"]; ok {
-			c.Script = v.(string)
-		}
 		if v, ok := cs["http"]; ok {
 			c.HTTP = v.(string)
+		}
+		if v, ok := cs["headers"]; ok {
+			rawHeaders, _ := readAsCSV(v.(string))
+			c.Header = parseHeaders(rawHeaders)
 		}
 		if v, ok := cs["tcp"]; ok {
 			c.TCP = v.(string)
