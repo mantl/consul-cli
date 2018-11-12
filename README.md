@@ -10,7 +10,7 @@ Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.ht
 | ------- | -------- |
 | [acl](https://github.com/CiscoCloud/consul-cli/wiki/ACL) | Consul /acl endpoint
 | [agent](https://github.com/CiscoCloud/consul-cli/wiki/Agent) | Consul /agent endpoint
-| [catalog](https://github.com/CiscoCloud/consul-cli/wiki/Agent) | Consul /catalog endpoint
+| [catalog](https://github.com/CiscoCloud/consul-cli/wiki/Catalog) | Consul /catalog endpoint
 | [check](https://github.com/CiscoCloud/consul-cli/wiki/Check) | Consul /agent/check endpoint
 | [coordinate](https://github.com/CiscoCloud/consul-cli/wiki/Coordinate) | Consul /coordinate endpoint
 | [health](https://github.com/CiscoCloud/consul-cli/wiki/Health) | Consul /health endpoint
