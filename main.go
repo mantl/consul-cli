@@ -17,7 +17,7 @@ func main() {
 
 	root := commands.NewConsulCliCommand(Name, Version)
 	if err := root.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
