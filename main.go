@@ -10,7 +10,7 @@ import (
 )
 
 const Name = "consul-cli"
-const Version = "0.5.0"
+const Version = "0.5.1"
 
 func main() {
 	log.SetOutput(ioutil.Discard)
