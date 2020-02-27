@@ -10,8 +10,7 @@ go:
 go_import_path: github.com/mantl/consul-cli
 
 env:
-  - CGO_ENABLED=0
-  - GO111MODULE=on
+  - CGO_ENABLED=0 GO111MODULE=on
 
 install:
   - curl https://releases.hashicorp.com/consul/1.7.1/consul_1.7.1_linux_amd64.zip -o consul.zip
