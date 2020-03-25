@@ -22,5 +22,5 @@ Command line interface to [Consul HTTP API](https://consul.io/docs/agent/http.ht
 ## Build Docker image
 
 ```
-$ docker build -t cmshub-cli .
+$ docker build -t consul-cli .
 ```

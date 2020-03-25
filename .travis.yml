@@ -2,18 +2,18 @@
 language: go
 
 go:
-  - 1.8.x
-  - 1.10.x
+  - 1.11.x
+  - 1.12.x
+  - 1.13.x
   - tip
 
 go_import_path: github.com/mantl/consul-cli
 
+env:
+  - CGO_ENABLED=0 GO111MODULE=on
+
 install:
-  - curl https://releases.hashicorp.com/consul/1.2.3/consul_1.2.3_linux_amd64.zip -o consul.zip
+  - curl https://releases.hashicorp.com/consul/1.7.1/consul_1.7.1_linux_amd64.zip -o consul.zip
   - unzip consul.zip
-  - go get -v github.com/Masterminds/glide
-  - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.13.2 && go install && cd -
-  - glide install
-  - make vendor
 
 script: env PATH="$TRAVIS_BUILD_DIR:$PATH" make test

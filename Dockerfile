@@ -1,14 +1,15 @@
-FROM golang:alpine
+FROM golang:1.13-alpine AS builder
 
-MAINTAINER Chris Aubuchon <Chris.Aubuchon@gmail.com>
+RUN apk --no-cache add git make
 
-COPY . /go/src/github.com/CiscoCloud/consul-cli
-RUN apk add --update go git mercurial \
-	&& cd /go/src/github.com/CiscoCloud/consul-cli \
-	&& export GOPATH=/go \
-	&& go get \
-	&& go build -o /bin/consul-cli \
-	&& rm -rf /go \
-	&& apk del --purge go git mercurial
+WORKDIR /src/consul-cli
+COPY . .
+RUN CGO_ENABLED=0 make build
 
-ENTRYPOINT [ "/bin/consul-cli" ]
+FROM busybox
+LABEL maintainer "Chris Aubuchon <Chris.Aubuchon@gmail.com>"
+
+ENTRYPOINT ["consul-cli"]
+
+COPY --from=builder /etc/ssl/certs /etc/ssl/certs
+COPY --from=builder /src/consul-cli/bin/consul-cli /usr/local/bin/
