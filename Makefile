@@ -10,6 +10,10 @@ build:
 deps:
 	go mod download
 
+update-deps:
+	go get -t -u ./...
+	go mod tidy -compat=1.17
+
 test:
 	go test ./... $(TESTARGS) -timeout=30s -parallel=4
 	go vet  ./...
@@ -32,4 +36,4 @@ package: xcompile
 package-clean:
 	-@rm -rf build/
 
-.PHONY: all deps updatedeps build test xcompile package package-clean
+.PHONY: all build deps update-deps test xcompile package package-clean

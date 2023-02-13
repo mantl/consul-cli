@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 	flag.Parse()
 
 	// create a test Consul server
-	consulTestServer, err := testutil.NewTestServerConfig(func(c *testutil.TestServerConfig) {
+	consulTestServer, err := testutil.NewTestServerConfigT(&testing.T{}, func(c *testutil.TestServerConfig) {
 		c.Connect = nil
 
 		if !consulServerOutputEnabled {
